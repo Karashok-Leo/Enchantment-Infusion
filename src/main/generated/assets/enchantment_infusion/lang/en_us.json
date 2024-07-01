@@ -1,0 +1,8 @@
+{
+  "block.enchantment_infusion.enchantment_infusion_pedestal": "Enchantment Infusion Pedestal",
+  "block.enchantment_infusion.enchantment_infusion_table": "Enchantment Infusion Table",
+  "compat.enchantment_infusion.enchantment_infusion_title": "Enchantment Infusion",
+  "text.enchantment_infusion.enchantment_infusion_interrupt": "Enchantment infusion interrupted!",
+  "text.enchantment_infusion.pedestal_not_found": "Pedestal not found!",
+  "text.enchantment_infusion.recipe_not_found": "Recipe not found!"
+}

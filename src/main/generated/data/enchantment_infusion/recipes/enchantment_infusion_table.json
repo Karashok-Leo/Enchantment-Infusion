@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    },
+    "P": {
+      "item": "enchantment_infusion:enchantment_infusion_pedestal"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    }
+  },
+  "pattern": [
+    "DRD",
+    " P ",
+    "OOO"
+  ],
+  "result": {
+    "item": "enchantment_infusion:enchantment_infusion_table"
+  },
+  "show_notification": true
+}

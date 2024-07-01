@@ -1,0 +1,8 @@
+{
+  "block.enchantment_infusion.enchantment_infusion_pedestal": "附魔灌注基座",
+  "block.enchantment_infusion.enchantment_infusion_table": "附魔灌注台",
+  "compat.enchantment_infusion.enchantment_infusion_title": "附魔灌注",
+  "text.enchantment_infusion.enchantment_infusion_interrupt": "灌注中断！",
+  "text.enchantment_infusion.pedestal_not_found": "未找到基座！",
+  "text.enchantment_infusion.recipe_not_found": "未找到配方！"
+}

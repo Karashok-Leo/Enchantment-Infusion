@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "enchantment_infusion",
+  "version": "${version}",
+  "name": "Enchantment Infusion",
+  "description": "Enchantment Infusion",
+  "authors": [
+    "Karashok Leo"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "LGPLv2.1",
+  "icon": "assets/enchantment_infusion/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "karashokleo.enchantment_infusion.fabric.EnchantmentInfusion"
+    ],
+    "client": [
+      "karashokleo.enchantment_infusion.fabric.EnchantmentInfusionClient"
+    ],
+    "fabric-datagen": [
+      "karashokleo.enchantment_infusion.fabric.EnchantmentInfusionDataGenerator"
+    ],
+    "emi": [
+      "karashokleo.enchantment_infusion.content.compat.emi.EMICompat"
+    ],
+    "rei_client": [
+      "karashokleo.enchantment_infusion.content.compat.rei.REICompat"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.15.11",
+    "minecraft": "~1.20.1",
+    "java": ">=17",
+    "fabric-api": "*"
+  }
+}

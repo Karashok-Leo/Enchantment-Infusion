@@ -1,0 +1,52 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "enchantment_infusion:block/pedestal_top",
+		"1": "enchantment_infusion:block/pedestal_body",
+		"2": "enchantment_infusion:block/pedestal_bottom",
+		"particle": "enchantment_infusion:block/pedestal_body"
+	},
+	"elements": [
+		{
+			"name": "cube1",
+			"from": [0, 8, 0],
+			"to": [16, 10, 16],
+			"faces": {
+				"north": {"uv": [8, 0, 16, 1], "texture": "#0"},
+				"east": {"uv": [8, 0, 16, 1], "texture": "#0"},
+				"south": {"uv": [8, 0, 16, 1], "texture": "#0"},
+				"west": {"uv": [8, 0, 16, 1], "texture": "#0"},
+				"up": {"uv": [8, 8, 0, 0], "texture": "#0"},
+				"down": {"uv": [8, 8, 0, 16], "texture": "#0"}
+			}
+		},
+		{
+			"name": "cube2",
+			"from": [3, 2, 3],
+			"to": [13, 8, 13],
+			"faces": {
+				"north": {"uv": [5, 0, 10, 3], "texture": "#1"},
+				"east": {"uv": [5, 0, 10, 3], "texture": "#1"},
+				"south": {"uv": [5, 0, 10, 3], "texture": "#1"},
+				"west": {"uv": [5, 0, 10, 3], "texture": "#1"},
+				"up": {"uv": [5, 5, 0, 0], "texture": "#1"},
+				"down": {"uv": [5, 0, 0, 5], "texture": "#1"}
+			}
+		},
+		{
+			"name": "cube3",
+			"from": [2, 0, 2],
+			"to": [14, 2, 14],
+			"faces": {
+				"north": {"uv": [6, 0, 12, 1], "texture": "#2"},
+				"east": {"uv": [6, 0, 12, 1], "texture": "#2"},
+				"south": {"uv": [6, 0, 12, 1], "texture": "#2"},
+				"west": {"uv": [6, 0, 12, 1], "texture": "#2"},
+				"up": {"uv": [6, 6, 0, 0], "texture": "#2"},
+				"down": {"uv": [6, 6, 0, 12], "texture": "#2"}
+			}
+		}
+	]
+}
