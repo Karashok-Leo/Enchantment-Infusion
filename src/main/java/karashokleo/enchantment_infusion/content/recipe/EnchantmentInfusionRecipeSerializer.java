@@ -1,10 +1,11 @@
 package karashokleo.enchantment_infusion.content.recipe;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import karashokleo.enchantment_infusion.api.recipe.EnchantmentIngredient;
 import karashokleo.enchantment_infusion.api.util.EnchantmentSerial;
+import karashokleo.enchantment_infusion.init.EIRecipes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
@@ -18,11 +19,11 @@ public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<Enc
     @Override
     public EnchantmentInfusionRecipe read(Identifier id, JsonObject json)
     {
-        Ingredient input = null;
+        EnchantmentIngredient input = null;
         if (JsonHelper.hasElement(json, "input"))
         {
-            JsonElement inputJson = JsonHelper.getElement(json, "input");
-            input = Ingredient.fromJson(inputJson);
+            JsonObject inputJson = JsonHelper.getObject(json, "input");
+            input = EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER.read(inputJson);
         }
         DefaultedList<Ingredient> ingredients = getIngredients(JsonHelper.getArray(json, "ingredients"));
         if (ingredients.isEmpty())
@@ -51,9 +52,9 @@ public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<Enc
     @Override
     public EnchantmentInfusionRecipe read(Identifier id, PacketByteBuf buf)
     {
-        Ingredient input = null;
+        EnchantmentIngredient input = null;
         if (buf.readBoolean())
-            input = Ingredient.fromPacket(buf);
+            input = EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER.read(buf);
         DefaultedList<Ingredient> ingredients = DefaultedList.ofSize(buf.readVarInt(), Ingredient.EMPTY);
         ingredients.replaceAll(ingredient -> Ingredient.fromPacket(buf));
         Enchantment enchantment = EnchantmentSerial.decode(buf.readString());
@@ -68,7 +69,7 @@ public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<Enc
     {
         buf.writeBoolean(recipe.input() != null);
         if (recipe.input() != null)
-            recipe.input().write(buf);
+            EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER.write(buf, recipe.input());
         buf.writeVarInt(recipe.ingredients().size());
         for (Ingredient ingredient : recipe.ingredients())
             ingredient.write(buf);

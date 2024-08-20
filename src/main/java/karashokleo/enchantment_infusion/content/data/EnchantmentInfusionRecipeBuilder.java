@@ -21,15 +21,15 @@ import java.util.function.Consumer;
 
 public class EnchantmentInfusionRecipeBuilder
 {
-    private Ingredient input = null;
+    private EnchantmentIngredient input = null;
     private final List<Ingredient> ingredients = new ArrayList<>();
 
     public EnchantmentInfusionRecipeBuilder withTableIngredient(Enchantment enchantment, int min_level)
     {
-        return this.withTableIngredient(EnchantmentIngredient.of(enchantment, min_level));
+        return this.withTableIngredient(new EnchantmentIngredient(enchantment, min_level));
     }
 
-    public EnchantmentInfusionRecipeBuilder withTableIngredient(Ingredient input)
+    public EnchantmentInfusionRecipeBuilder withTableIngredient(EnchantmentIngredient input)
     {
         this.input = input;
         return this;
@@ -67,7 +67,7 @@ public class EnchantmentInfusionRecipeBuilder
 
     public record EnchantmentInfusionRecipeJsonProvider(
             Identifier recipeId,
-            @Nullable Ingredient input,
+            @Nullable EnchantmentIngredient input,
             List<Ingredient> ingredients,
             Enchantment enchantment,
             EnchantmentInfusionRecipe.Mode mode,
@@ -79,7 +79,11 @@ public class EnchantmentInfusionRecipeBuilder
         public void serialize(JsonObject json)
         {
             if (input != null)
-                json.add("input", input.toJson());
+            {
+                JsonObject inputJson = new JsonObject();
+                EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER.write(inputJson, input);
+                json.add("input", inputJson);
+            }
             JsonArray jsonArray = new JsonArray();
             for (Ingredient ingredient : ingredients)
                 jsonArray.add(ingredient.toJson());

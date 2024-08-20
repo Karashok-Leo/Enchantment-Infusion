@@ -19,7 +19,7 @@ import java.util.Map;
 
 public record EnchantmentInfusionRecipe(
         Identifier id,
-        @Nullable Ingredient input,
+        @Nullable EnchantmentIngredient input,
         DefaultedList<Ingredient> ingredients,
         Enchantment enchantment,
         Mode mode,
@@ -35,7 +35,7 @@ public record EnchantmentInfusionRecipe(
     @Override
     public Ingredient getTableIngredient()
     {
-        if (input != null) return input;
+        if (input != null) return input.toVanilla();
         else return switch (mode)
         {
             case ADD -> EnchantmentIngredient.of(enchantment, level - 1);
