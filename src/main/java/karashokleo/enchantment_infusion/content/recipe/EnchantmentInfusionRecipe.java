@@ -13,11 +13,13 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 public record EnchantmentInfusionRecipe(
         Identifier id,
+        @Nullable Ingredient input,
         DefaultedList<Ingredient> ingredients,
         Enchantment enchantment,
         Mode mode,
@@ -33,7 +35,8 @@ public record EnchantmentInfusionRecipe(
     @Override
     public Ingredient getTableIngredient()
     {
-        return switch (mode)
+        if (input != null) return input;
+        else return switch (mode)
         {
             case ADD -> EnchantmentIngredient.of(enchantment, level - 1);
             case SET -> Ingredient.ofItems(Items.BOOK);
@@ -62,8 +65,13 @@ public record EnchantmentInfusionRecipe(
         boolean acceptable = stack.isOf(Items.BOOK) ||
                 stack.isOf(Items.ENCHANTED_BOOK) ||
                 enchantment.isAcceptableItem(stack);
+
+        boolean input = this.input != null && this.input.test(stack);
+
         boolean compatible = EnchantmentHelper.isCompatible(EnchantmentHelper.get(stack).keySet(), enchantment);
-        boolean flag = force || (acceptable && compatible);
+
+        boolean flag = force || (acceptable && input && compatible);
+
         int current_level = EnchantmentHelper.get(stack).getOrDefault(enchantment, 0);
         return switch (mode)
         {

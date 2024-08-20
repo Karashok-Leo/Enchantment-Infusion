@@ -1,6 +1,7 @@
 package karashokleo.enchantment_infusion.content.recipe;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import karashokleo.enchantment_infusion.api.util.EnchantmentSerial;
@@ -17,6 +18,12 @@ public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<Enc
     @Override
     public EnchantmentInfusionRecipe read(Identifier id, JsonObject json)
     {
+        Ingredient input = null;
+        if (JsonHelper.hasElement(json, "input"))
+        {
+            JsonElement inputJson = JsonHelper.getElement(json, "input");
+            input = Ingredient.fromJson(inputJson);
+        }
         DefaultedList<Ingredient> ingredients = getIngredients(JsonHelper.getArray(json, "ingredients"));
         if (ingredients.isEmpty())
             throw new JsonParseException("No ingredients for enchantment infusion recipe");
@@ -26,7 +33,7 @@ public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<Enc
         EnchantmentInfusionRecipe.Mode mode = EnchantmentInfusionRecipe.Mode.valueOf(JsonHelper.getString(json, "mode"));
         int level = JsonHelper.getInt(json, "level");
         boolean force = JsonHelper.getBoolean(json, "force", false);
-        return new EnchantmentInfusionRecipe(id, ingredients, enchantment, mode, level, force);
+        return new EnchantmentInfusionRecipe(id, input, ingredients, enchantment, mode, level, force);
     }
 
     private static DefaultedList<Ingredient> getIngredients(JsonArray json)
@@ -44,18 +51,24 @@ public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<Enc
     @Override
     public EnchantmentInfusionRecipe read(Identifier id, PacketByteBuf buf)
     {
-        DefaultedList<Ingredient> input = DefaultedList.ofSize(buf.readVarInt(), Ingredient.EMPTY);
-        input.replaceAll(ingredient -> Ingredient.fromPacket(buf));
+        Ingredient input = null;
+        if (buf.readBoolean())
+            input = Ingredient.fromPacket(buf);
+        DefaultedList<Ingredient> ingredients = DefaultedList.ofSize(buf.readVarInt(), Ingredient.EMPTY);
+        ingredients.replaceAll(ingredient -> Ingredient.fromPacket(buf));
         Enchantment enchantment = EnchantmentSerial.decode(buf.readString());
         EnchantmentInfusionRecipe.Mode mode = buf.readEnumConstant(EnchantmentInfusionRecipe.Mode.class);
         int level = buf.readInt();
         boolean force = buf.readBoolean();
-        return new EnchantmentInfusionRecipe(id, input, enchantment, mode, level, force);
+        return new EnchantmentInfusionRecipe(id, input, ingredients, enchantment, mode, level, force);
     }
 
     @Override
     public void write(PacketByteBuf buf, EnchantmentInfusionRecipe recipe)
     {
+        buf.writeBoolean(recipe.input() != null);
+        if (recipe.input() != null)
+            recipe.input().write(buf);
         buf.writeVarInt(recipe.ingredients().size());
         for (Ingredient ingredient : recipe.ingredients())
             ingredient.write(buf);

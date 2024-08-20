@@ -33,7 +33,7 @@ public record EnchantmentIngredient(
     @Override
     public boolean test(ItemStack stack)
     {
-        return stack.getItem() instanceof EnchantedBookItem && EnchantmentHelper.get(stack).getOrDefault(this.enchantment, 0) >= this.min_level;
+        return EnchantmentHelper.get(stack).getOrDefault(this.enchantment, 0) >= this.min_level;
     }
 
     @Override

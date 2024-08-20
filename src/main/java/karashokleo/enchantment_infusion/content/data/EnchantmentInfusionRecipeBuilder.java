@@ -3,9 +3,10 @@ package karashokleo.enchantment_infusion.content.data;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import karashokleo.enchantment_infusion.init.EIRecipes;
-import karashokleo.enchantment_infusion.content.recipe.EnchantmentInfusionRecipe;
+import karashokleo.enchantment_infusion.api.recipe.EnchantmentIngredient;
 import karashokleo.enchantment_infusion.api.util.EnchantmentSerial;
+import karashokleo.enchantment_infusion.content.recipe.EnchantmentInfusionRecipe;
+import karashokleo.enchantment_infusion.init.EIRecipes;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemConvertible;
@@ -20,7 +21,19 @@ import java.util.function.Consumer;
 
 public class EnchantmentInfusionRecipeBuilder
 {
+    private Ingredient input = null;
     private final List<Ingredient> ingredients = new ArrayList<>();
+
+    public EnchantmentInfusionRecipeBuilder withTableIngredient(Enchantment enchantment, int min_level)
+    {
+        return this.withTableIngredient(EnchantmentIngredient.of(enchantment, min_level));
+    }
+
+    public EnchantmentInfusionRecipeBuilder withTableIngredient(Ingredient input)
+    {
+        this.input = input;
+        return this;
+    }
 
     public EnchantmentInfusionRecipeBuilder withPedestalItem(int count, ItemConvertible item)
     {
@@ -49,11 +62,12 @@ public class EnchantmentInfusionRecipeBuilder
             throw new JsonParseException("No ingredients for enchantment infusion recipe");
         if (ingredients.size() > 8)
             throw new JsonParseException("Too many ingredients for enchantment infusion recipe");
-        exporter.accept(new EnchantmentInfusionRecipeJsonProvider(recipeId, ingredients, enchantment, mode, level, force));
+        exporter.accept(new EnchantmentInfusionRecipeJsonProvider(recipeId, input, ingredients, enchantment, mode, level, force));
     }
 
     public record EnchantmentInfusionRecipeJsonProvider(
             Identifier recipeId,
+            @Nullable Ingredient input,
             List<Ingredient> ingredients,
             Enchantment enchantment,
             EnchantmentInfusionRecipe.Mode mode,
@@ -61,10 +75,11 @@ public class EnchantmentInfusionRecipeBuilder
             boolean force
     ) implements RecipeJsonProvider
     {
-
         @Override
         public void serialize(JsonObject json)
         {
+            if (input != null)
+                json.add("input", input.toJson());
             JsonArray jsonArray = new JsonArray();
             for (Ingredient ingredient : ingredients)
                 jsonArray.add(ingredient.toJson());
