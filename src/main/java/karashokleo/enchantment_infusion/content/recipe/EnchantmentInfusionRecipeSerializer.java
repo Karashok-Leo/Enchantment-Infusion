@@ -31,10 +31,9 @@ public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<Enc
         if (ingredients.size() > 8)
             throw new JsonParseException("Too many ingredients for enchantment infusion recipe");
         Enchantment enchantment = EnchantmentSerial.decode(JsonHelper.getString(json, "enchantment"));
-        EnchantmentInfusionRecipe.Mode mode = EnchantmentInfusionRecipe.Mode.valueOf(JsonHelper.getString(json, "mode"));
         int level = JsonHelper.getInt(json, "level");
         boolean force = JsonHelper.getBoolean(json, "force", false);
-        return new EnchantmentInfusionRecipe(id, input, ingredients, enchantment, mode, level, force);
+        return new EnchantmentInfusionRecipe(id, input, ingredients, enchantment, level, force);
     }
 
     private static DefaultedList<Ingredient> getIngredients(JsonArray json)
@@ -58,10 +57,9 @@ public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<Enc
         DefaultedList<Ingredient> ingredients = DefaultedList.ofSize(buf.readVarInt(), Ingredient.EMPTY);
         ingredients.replaceAll(ingredient -> Ingredient.fromPacket(buf));
         Enchantment enchantment = EnchantmentSerial.decode(buf.readString());
-        EnchantmentInfusionRecipe.Mode mode = buf.readEnumConstant(EnchantmentInfusionRecipe.Mode.class);
         int level = buf.readInt();
         boolean force = buf.readBoolean();
-        return new EnchantmentInfusionRecipe(id, input, ingredients, enchantment, mode, level, force);
+        return new EnchantmentInfusionRecipe(id, input, ingredients, enchantment, level, force);
     }
 
     @Override
@@ -74,7 +72,6 @@ public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<Enc
         for (Ingredient ingredient : recipe.ingredients())
             ingredient.write(buf);
         buf.writeString(EnchantmentSerial.encode(recipe.enchantment()));
-        buf.writeEnumConstant(recipe.mode());
         buf.writeInt(recipe.level());
         buf.writeBoolean(recipe.force());
     }

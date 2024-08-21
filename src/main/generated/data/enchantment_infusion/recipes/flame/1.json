@@ -13,6 +13,9 @@
       "item": "minecraft:blaze_rod"
     }
   ],
-  "level": 1,
-  "mode": "ADD"
+  "input": {
+    "enchantment": "minecraft:flame",
+    "min_level": 0
+  },
+  "level": 1
 }

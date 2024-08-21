@@ -16,6 +16,9 @@
       "item": "minecraft:lapis_block"
     }
   ],
-  "level": 3,
-  "mode": "ADD"
+  "input": {
+    "enchantment": "minecraft:sharpness",
+    "min_level": 2
+  },
+  "level": 3
 }

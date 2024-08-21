@@ -1,7 +1,6 @@
 package karashokleo.enchantment_infusion.api.util;
 
 import karashokleo.enchantment_infusion.content.data.EnchantmentInfusionRecipeBuilder;
-import karashokleo.enchantment_infusion.content.recipe.EnchantmentInfusionRecipe;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.util.Identifier;
@@ -15,13 +14,13 @@ public class EIRecipeUtil
     {
         EnchantmentInfusionRecipeBuilder builder = new EnchantmentInfusionRecipeBuilder();
         consumer.accept(builder);
-        builder.offerTo(
-                exporter,
-                recipeId,
-                enchantment,
-                EnchantmentInfusionRecipe.Mode.ADD,
-                level
-        );
+        builder.withTableIngredient(enchantment, level - 1)
+                .offerTo(
+                        exporter,
+                        recipeId,
+                        enchantment,
+                        level
+                );
     }
 
     public static void set(Consumer<EnchantmentInfusionRecipeBuilder> consumer, Enchantment enchantment, int level, Consumer<RecipeJsonProvider> exporter, Identifier recipeId)
@@ -32,7 +31,6 @@ public class EIRecipeUtil
                 exporter,
                 recipeId,
                 enchantment,
-                EnchantmentInfusionRecipe.Mode.SET,
                 level
         );
     }

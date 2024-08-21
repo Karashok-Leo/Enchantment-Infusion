@@ -28,6 +28,9 @@
       "item": "minecraft:obsidian"
     }
   ],
-  "level": 3,
-  "mode": "ADD"
+  "input": {
+    "enchantment": "minecraft:efficiency",
+    "min_level": 2
+  },
+  "level": 3
 }

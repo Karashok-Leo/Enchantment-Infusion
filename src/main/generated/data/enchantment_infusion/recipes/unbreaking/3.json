@@ -28,6 +28,9 @@
       "item": "minecraft:lapis_block"
     }
   ],
-  "level": 3,
-  "mode": "ADD"
+  "input": {
+    "enchantment": "minecraft:unbreaking",
+    "min_level": 2
+  },
+  "level": 3
 }

@@ -19,6 +19,9 @@
       "item": "minecraft:lapis_block"
     }
   ],
-  "level": 2,
-  "mode": "ADD"
+  "input": {
+    "enchantment": "minecraft:smite",
+    "min_level": 1
+  },
+  "level": 2
 }

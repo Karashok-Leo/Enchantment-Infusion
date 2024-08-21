@@ -25,6 +25,9 @@
       "item": "minecraft:blaze_rod"
     }
   ],
-  "level": 3,
-  "mode": "ADD"
+  "input": {
+    "enchantment": "minecraft:fire_protection",
+    "min_level": 2
+  },
+  "level": 3
 }

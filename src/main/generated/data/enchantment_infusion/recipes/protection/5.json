@@ -28,6 +28,9 @@
       "item": "minecraft:diamond_block"
     }
   ],
-  "level": 5,
-  "mode": "ADD"
+  "input": {
+    "enchantment": "minecraft:protection",
+    "min_level": 4
+  },
+  "level": 5
 }

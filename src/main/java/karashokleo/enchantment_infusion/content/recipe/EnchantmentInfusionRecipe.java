@@ -17,30 +17,27 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
+/**
+ * @param id          Recipe id
+ * @param input       The enchantment that table stack should have
+ * @param ingredients Ingredients on the pedestals
+ * @param enchantment The output enchantment
+ * @param level       The output level
+ * @param force       Ignore enchantment target matching and enchantment compatibility
+ */
 public record EnchantmentInfusionRecipe(
         Identifier id,
         @Nullable EnchantmentIngredient input,
         DefaultedList<Ingredient> ingredients,
         Enchantment enchantment,
-        Mode mode,
         int level,
         boolean force
 ) implements InfusionRecipe
 {
-    public enum Mode
-    {
-        ADD, SET
-    }
-
     @Override
     public Ingredient getTableIngredient()
     {
-        if (input != null) return input.toVanilla();
-        else return switch (mode)
-        {
-            case ADD -> EnchantmentIngredient.of(enchantment, level - 1);
-            case SET -> Ingredient.ofItems(Items.BOOK);
-        };
+        return input == null ? Ingredient.ofItems(Items.BOOK) : input.toVanilla();
     }
 
     @Override
@@ -53,8 +50,13 @@ public record EnchantmentInfusionRecipe(
     public ItemStack infuse(ItemStack tableStack)
     {
         ItemStack stack = tableStack.isOf(Items.BOOK) ? Items.ENCHANTED_BOOK.getDefaultStack() : tableStack;
+
         Map<Enchantment, Integer> enchantments = EnchantmentHelper.get(stack);
+        if (input != null) enchantments.remove(input.enchantment());
         enchantments.put(enchantment, level);
+
+        tableStack.removeSubNbt("Enchantments");
+        tableStack.removeSubNbt("StoredEnchantments");
         EnchantmentHelper.set(enchantments, stack);
         return stack;
     }
@@ -66,18 +68,15 @@ public record EnchantmentInfusionRecipe(
                 stack.isOf(Items.ENCHANTED_BOOK) ||
                 enchantment.isAcceptableItem(stack);
 
-        boolean input = this.input != null && this.input.test(stack);
-
         boolean compatible = EnchantmentHelper.isCompatible(EnchantmentHelper.get(stack).keySet(), enchantment);
 
-        boolean flag = force || (acceptable && input && compatible);
+        boolean flag = force || (acceptable && compatible);
 
-        int current_level = EnchantmentHelper.get(stack).getOrDefault(enchantment, 0);
-        return switch (mode)
-        {
-            case ADD -> flag && current_level == level - 1;
-            case SET -> flag && current_level < level;
-        };
+        boolean input = this.input == null || this.input.test(stack);
+
+        boolean upgrade = EnchantmentHelper.get(stack).getOrDefault(enchantment, 0) < level;
+
+        return flag && input && upgrade;
     }
 
     @Override

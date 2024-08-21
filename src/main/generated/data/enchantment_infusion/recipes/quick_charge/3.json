@@ -19,6 +19,9 @@
       "item": "minecraft:amethyst_shard"
     }
   ],
-  "level": 3,
-  "mode": "ADD"
+  "input": {
+    "enchantment": "minecraft:quick_charge",
+    "min_level": 2
+  },
+  "level": 3
 }

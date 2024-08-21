@@ -19,6 +19,9 @@
       "item": "minecraft:amethyst_shard"
     }
   ],
-  "level": 1,
-  "mode": "ADD"
+  "input": {
+    "enchantment": "minecraft:protection",
+    "min_level": 0
+  },
+  "level": 1
 }

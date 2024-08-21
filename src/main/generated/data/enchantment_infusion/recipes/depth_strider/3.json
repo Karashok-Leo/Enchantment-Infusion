@@ -28,6 +28,9 @@
       "item": "minecraft:nautilus_shell"
     }
   ],
-  "level": 3,
-  "mode": "ADD"
+  "input": {
+    "enchantment": "minecraft:depth_strider",
+    "min_level": 2
+  },
+  "level": 3
 }
