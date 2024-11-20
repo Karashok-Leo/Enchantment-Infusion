@@ -16,6 +16,7 @@ import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @param id          Recipe id
@@ -65,10 +66,12 @@ public record EnchantmentInfusionRecipe(
     public boolean matchTableStack(ItemStack stack)
     {
         boolean acceptable = stack.isOf(Items.BOOK) ||
-                stack.isOf(Items.ENCHANTED_BOOK) ||
-                enchantment.isAcceptableItem(stack);
+                             stack.isOf(Items.ENCHANTED_BOOK) ||
+                             enchantment.isAcceptableItem(stack);
 
-        boolean compatible = EnchantmentHelper.isCompatible(EnchantmentHelper.get(stack).keySet(), enchantment);
+        Set<Enchantment> existing = EnchantmentHelper.get(stack).keySet();
+        if (this.input != null) existing.remove(this.input.enchantment());
+        boolean compatible = EnchantmentHelper.isCompatible(existing, enchantment);
 
         boolean flag = force || (acceptable && compatible);
 
