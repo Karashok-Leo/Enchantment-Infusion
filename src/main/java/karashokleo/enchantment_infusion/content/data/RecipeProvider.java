@@ -580,7 +580,7 @@ public class RecipeProvider extends FabricRecipeProvider
         add(
                 builder -> builder
                         .withPedestalItem(1, Items.PHANTOM_MEMBRANE)
-                        .withPedestalItem(1, Items.GOLDEN_APPLE)
+                        .withPedestalItem(2, Items.GOLDEN_APPLE)
                         .withPedestalItem(2, Items.AMETHYST_SHARD),
                 Enchantments.QUICK_CHARGE, 1, exporter
         );
