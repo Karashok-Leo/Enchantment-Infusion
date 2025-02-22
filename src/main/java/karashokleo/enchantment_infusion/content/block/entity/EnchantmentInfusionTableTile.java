@@ -2,10 +2,10 @@ package karashokleo.enchantment_infusion.content.block.entity;
 
 import karashokleo.enchantment_infusion.api.block.entity.AbstractInfusionTile;
 import karashokleo.enchantment_infusion.api.block.entity.InfusionInventory;
+import karashokleo.enchantment_infusion.content.recipe.EnchantmentInfusionRecipe;
 import karashokleo.enchantment_infusion.init.EIBlocks;
 import karashokleo.enchantment_infusion.init.EIRecipes;
 import karashokleo.enchantment_infusion.init.EITexts;
-import karashokleo.enchantment_infusion.content.recipe.EnchantmentInfusionRecipe;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -14,6 +14,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -63,12 +65,14 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         {
             spawnEnchantParticles(world, pos, 4.2, 500, 0.02, 0.1, 0.02, 2);
             spawnScrapeParticles(world, pos, 66, 2.5);
+            playProcessSound(world, pos, 0.60f);
         } else if (ticks == 62)
         {
             spawnEnchantParticles(world, pos, 3.4, 150, 0.01, 0.05, 0.01, 0.4);
         } else if (ticks == 60)
         {
             spawnScrapeParticles(world, pos, 30, 1.8);
+            playProcessSound(world, pos, 0.85f);
         } else if (ticks == 59)
         {
             spawnEnchantParticles(world, pos, 3, 100, 0.01, 0.05, 0.01, 0.25);
@@ -78,6 +82,7 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         } else if (ticks == 30)
         {
             spawnScrapeParticles(world, pos, 15, 0.75);
+            playProcessSound(world, pos, 1.1f);
         }
     }
 
@@ -114,12 +119,22 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         }
     }
 
+    public static void playProcessSound(ServerWorld world, Vec3d pos, float pitch)
+    {
+        world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.BLOCKS, 0.6f, pitch);
+    }
+
+    public static void playCompleteSound(ServerWorld world, Vec3d pos)
+    {
+        world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.BLOCKS, 1.0f, 1.0f);
+    }
+
     public static void spawnEndRodParticles(ServerWorld world, Vec3d pos)
     {
         world.spawnParticles(
                 ParticleTypes.END_ROD,
                 pos.getX(),
-                pos.getY()+1.5,
+                pos.getY() + 1.5,
                 pos.getZ(),
                 16,
                 0.01,
@@ -131,13 +146,10 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
 
     public static void spawnLightning(World world, Vec3d pos)
     {
-        LightningEntity lightningEntity;
-        if ((lightningEntity = EntityType.LIGHTNING_BOLT.create(world)) != null)
-        {
-            lightningEntity.refreshPositionAfterTeleport(pos);
-            lightningEntity.setCosmetic(true);
-            world.spawnEntity(lightningEntity);
-        }
+        LightningEntity lightningEntity = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
+        lightningEntity.refreshPositionAfterTeleport(pos);
+        lightningEntity.setCosmetic(true);
+        world.spawnEntity(lightningEntity);
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, EnchantmentInfusionTableTile entity)
@@ -149,20 +161,20 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         spawnParticles(serverWorld, center, entity.ticks);
         if (entity.ticks % 10 == 0)
         {
-            DefaultedList<AbstractInfusionTile> pedestalInventory = entity.getPedestalTiles(world);
+            DefaultedList<AbstractInfusionTile> pedestalInventory = entity.getPedestalTiles(serverWorld);
             if (pedestalInventory.size() < 8)
             {
-                entity.interrupt(world);
+                entity.interrupt(serverWorld);
                 return;
             }
             InfusionInventory inventory = new InfusionInventory(entity, pedestalInventory);
-            Optional<EnchantmentInfusionRecipe> match = entity.matchGetter.getFirstMatch(inventory, world);
-            if (match.isEmpty()) entity.interrupt(world);
+            Optional<EnchantmentInfusionRecipe> match = entity.matchGetter.getFirstMatch(inventory, serverWorld);
+            if (match.isEmpty()) entity.interrupt(serverWorld);
             else if (entity.ticks == 0)
             {
-                entity.craft(world, match.get(), inventory);
+                entity.craft(serverWorld, match.get(), inventory);
                 spawnEndRodParticles(serverWorld, center);
-                spawnLightning(world, center);
+                playCompleteSound(serverWorld, center);
             }
         }
     }

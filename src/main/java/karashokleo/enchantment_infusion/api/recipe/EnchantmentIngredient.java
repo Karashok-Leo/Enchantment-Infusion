@@ -17,6 +17,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public record EnchantmentIngredient(
@@ -40,8 +41,16 @@ public record EnchantmentIngredient(
     public List<ItemStack> getMatchingStacks()
     {
         return min_level > 0 ?
-                List.of(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, min_level))) :
+                this.getBookStacks() :
                 List.of(Items.BOOK.getDefaultStack());
+    }
+
+    private List<ItemStack> getBookStacks()
+    {
+        List<ItemStack> stacks = new ArrayList<>();
+        for (int i = min_level; i <= enchantment.getMaxLevel(); i++)
+            stacks.add(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, i)));
+        return stacks;
     }
 
     @Override
