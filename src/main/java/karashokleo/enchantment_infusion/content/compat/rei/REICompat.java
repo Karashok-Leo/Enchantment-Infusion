@@ -11,7 +11,7 @@ import me.shedaniel.rei.api.common.util.EntryStacks;
 
 public class REICompat implements REIClientPlugin
 {
-    public static final CategoryIdentifier<AbstractREIInfusionDisplay> EI = CategoryIdentifier.of(EIRecipes.getId());
+    public static final CategoryIdentifier<AbstractREIInfusionDisplay> EI = CategoryIdentifier.of(EIRecipes.INFUSION_ID);
 
     @Override
     public void registerCategories(CategoryRegistry registry)
@@ -27,6 +27,6 @@ public class REICompat implements REIClientPlugin
     @Override
     public void registerDisplays(DisplayRegistry registry)
     {
-        registry.getRecipeManager().listAllOfType(EIRecipes.EI_TYPE).forEach(recipe -> registry.add(new REIEIDisplay(recipe)));
+        registry.getRecipeManager().listAllOfType(EIRecipes.INFUSION_RECIPE_TYPE).forEach(recipe -> registry.add(new REIEIDisplay(recipe)));
     }
 }

@@ -1,7 +1,7 @@
 package karashokleo.enchantment_infusion.api.recipe;
 
 import com.google.gson.JsonObject;
-import karashokleo.enchantment_infusion.api.util.EnchantmentSerial;
+import karashokleo.enchantment_infusion.api.util.SerialUtil;
 import karashokleo.enchantment_infusion.fabric.EnchantmentInfusion;
 import karashokleo.enchantment_infusion.init.EIRecipes;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
@@ -78,7 +78,7 @@ public record EnchantmentIngredient(
         @Override
         public EnchantmentIngredient read(JsonObject json)
         {
-            Enchantment enchantment = EnchantmentSerial.decode(JsonHelper.getString(json, "enchantment"));
+            Enchantment enchantment = SerialUtil.enchantmentFromString(JsonHelper.getString(json, "enchantment"));
             int min_level = JsonHelper.getInt(json, "min_level");
             return new EnchantmentIngredient(enchantment, min_level);
         }
@@ -86,14 +86,14 @@ public record EnchantmentIngredient(
         @Override
         public void write(JsonObject json, EnchantmentIngredient ingredient)
         {
-            json.addProperty("enchantment", EnchantmentSerial.encode(ingredient.enchantment));
+            json.addProperty("enchantment", SerialUtil.enchantmentToString(ingredient.enchantment));
             json.addProperty("min_level", ingredient.min_level);
         }
 
         @Override
         public EnchantmentIngredient read(PacketByteBuf buf)
         {
-            Enchantment enchantment = EnchantmentSerial.decode(buf.readString());
+            Enchantment enchantment = SerialUtil.enchantmentFromString(buf.readString());
             int min_level = buf.readInt();
             return new EnchantmentIngredient(enchantment, min_level);
         }
@@ -101,7 +101,7 @@ public record EnchantmentIngredient(
         @Override
         public void write(PacketByteBuf buf, EnchantmentIngredient ingredient)
         {
-            buf.writeString(EnchantmentSerial.encode(ingredient.enchantment));
+            buf.writeString(SerialUtil.enchantmentToString(ingredient.enchantment));
             buf.writeInt(ingredient.min_level);
         }
     }

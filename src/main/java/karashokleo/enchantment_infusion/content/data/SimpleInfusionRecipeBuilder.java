@@ -1,12 +1,11 @@
 package karashokleo.enchantment_infusion.content.data;
 
 import com.google.gson.JsonObject;
-import karashokleo.enchantment_infusion.api.recipe.EnchantmentIngredient;
 import karashokleo.enchantment_infusion.api.util.SerialUtil;
 import karashokleo.enchantment_infusion.init.EIRecipes;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
@@ -16,29 +15,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class EnchantmentInfusionRecipeBuilder
+public class SimpleInfusionRecipeBuilder
 {
-    private EnchantmentIngredient input = null;
+    private Ingredient input = null;
     private final List<Ingredient> ingredients = new ArrayList<>();
-    private boolean force = false;
+    private boolean copyNbt = true;
 
-    public EnchantmentInfusionRecipeBuilder withTableIngredient(Enchantment enchantment, int min_level)
-    {
-        return this.withTableIngredient(new EnchantmentIngredient(enchantment, min_level));
-    }
-
-    public EnchantmentInfusionRecipeBuilder withTableIngredient(EnchantmentIngredient input)
+    public SimpleInfusionRecipeBuilder withTableIngredient(Ingredient input)
     {
         this.input = input;
         return this;
     }
 
-    public EnchantmentInfusionRecipeBuilder withPedestalItem(int count, ItemConvertible item)
+    public SimpleInfusionRecipeBuilder withPedestalItem(int count, ItemConvertible item)
     {
         return withPedestalItem(count, Ingredient.ofItems(item));
     }
 
-    public EnchantmentInfusionRecipeBuilder withPedestalItem(int count, Ingredient ingredient)
+    public SimpleInfusionRecipeBuilder withPedestalItem(int count, Ingredient ingredient)
     {
         for (int i = 0; i < count; i++)
         {
@@ -49,48 +43,36 @@ public class EnchantmentInfusionRecipeBuilder
         return this;
     }
 
-    public EnchantmentInfusionRecipeBuilder force()
+    public SimpleInfusionRecipeBuilder copyNbt(boolean copyNbt)
     {
-        return force(true);
-    }
-
-    public EnchantmentInfusionRecipeBuilder force(boolean force)
-    {
-        this.force = force;
+        this.copyNbt = copyNbt;
         return this;
     }
 
-    public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId, Enchantment enchantment, int level)
+    public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId, ItemStack output)
     {
         if (ingredients.isEmpty())
             throw new IllegalArgumentException("No ingredients for enchantment infusion recipe");
         if (ingredients.size() > 8)
             throw new IllegalArgumentException("Too many ingredients for enchantment infusion recipe");
-        exporter.accept(new EnchantmentInfusionRecipeJsonProvider(recipeId, input, ingredients, enchantment, level, force));
+        exporter.accept(new SimpleInfusionRecipeJsonProvider(recipeId, input, ingredients, output, copyNbt));
     }
 
-    public record EnchantmentInfusionRecipeJsonProvider(
+    public record SimpleInfusionRecipeJsonProvider(
             Identifier recipeId,
-            @Nullable EnchantmentIngredient input,
+            Ingredient input,
             List<Ingredient> ingredients,
-            Enchantment enchantment,
-            int level,
-            boolean force
+            ItemStack output,
+            boolean copyNbt
     ) implements RecipeJsonProvider
     {
         @Override
         public void serialize(JsonObject json)
         {
-            if (input != null)
-            {
-                JsonObject inputJson = new JsonObject();
-                EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER.write(inputJson, input);
-                json.add("input", inputJson);
-            }
+            json.add("input", input.toJson());
             json.add("ingredients", SerialUtil.ingredientsToJsonArray(ingredients));
-            json.addProperty("enchantment", SerialUtil.enchantmentToString(enchantment));
-            json.addProperty("level", level);
-            json.addProperty("force", force);
+            json.add("output", SerialUtil.itemStackToJson(output));
+            json.addProperty("copy_nbt", copyNbt);
         }
 
         @Override
@@ -102,7 +84,7 @@ public class EnchantmentInfusionRecipeBuilder
         @Override
         public RecipeSerializer<?> getSerializer()
         {
-            return EIRecipes.EI_SERIALIZER;
+            return EIRecipes.SI_SERIALIZER;
         }
 
         @Nullable

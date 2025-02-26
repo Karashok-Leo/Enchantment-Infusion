@@ -20,7 +20,7 @@ public abstract class AbstractREIInfusionDisplay implements Display
     {
         this(
                 EntryIngredients.ofIngredient(recipe.getTableIngredient()),
-                EntryIngredients.ofIngredients(recipe.getIngredients()),
+                EntryIngredients.ofIngredients(recipe.getPedestalIngredient()),
                 Collections.singletonList(EntryIngredients.of(recipe.getOutput(BasicDisplay.registryAccess())))
         );
     }

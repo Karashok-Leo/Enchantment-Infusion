@@ -2,7 +2,7 @@ package karashokleo.enchantment_infusion.content.block.entity;
 
 import karashokleo.enchantment_infusion.api.block.entity.AbstractInfusionTile;
 import karashokleo.enchantment_infusion.api.block.entity.InfusionInventory;
-import karashokleo.enchantment_infusion.content.recipe.EnchantmentInfusionRecipe;
+import karashokleo.enchantment_infusion.api.recipe.InfusionRecipe;
 import karashokleo.enchantment_infusion.init.EIBlocks;
 import karashokleo.enchantment_infusion.init.EIRecipes;
 import karashokleo.enchantment_infusion.init.EITexts;
@@ -28,13 +28,13 @@ import java.util.Optional;
 public class EnchantmentInfusionTableTile extends AbstractInfusionTile
 {
     private static final int TOTAL_CRAFT_TICKS = 100;
-    private final RecipeManager.MatchGetter<InfusionInventory, EnchantmentInfusionRecipe> matchGetter;
+    private final RecipeManager.MatchGetter<InfusionInventory, InfusionRecipe> matchGetter;
     private int ticks;
 
     public EnchantmentInfusionTableTile(BlockPos pos, BlockState state)
     {
         super(EIBlocks.INFUSION_TABLE_TILE, pos, state);
-        this.matchGetter = RecipeManager.createCachedMatchGetter(EIRecipes.EI_TYPE);
+        this.matchGetter = RecipeManager.createCachedMatchGetter(EIRecipes.INFUSION_RECIPE_TYPE);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
             return;
         }
         InfusionInventory inventory = new InfusionInventory(this, pedestalInventory);
-        Optional<EnchantmentInfusionRecipe> match = matchGetter.getFirstMatch(inventory, world);
+        Optional<InfusionRecipe> match = matchGetter.getFirstMatch(inventory, world);
         if (match.isPresent()) ticks = TOTAL_CRAFT_TICKS;
         else
         {
@@ -168,7 +168,7 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
                 return;
             }
             InfusionInventory inventory = new InfusionInventory(entity, pedestalInventory);
-            Optional<EnchantmentInfusionRecipe> match = entity.matchGetter.getFirstMatch(inventory, serverWorld);
+            Optional<InfusionRecipe> match = entity.matchGetter.getFirstMatch(inventory, serverWorld);
             if (match.isEmpty()) entity.interrupt(serverWorld);
             else if (entity.ticks == 0)
             {
@@ -179,7 +179,7 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         }
     }
 
-    public void craft(World world, EnchantmentInfusionRecipe recipe, InfusionInventory inventory)
+    public void craft(World world, InfusionRecipe recipe, InfusionInventory inventory)
     {
         this.setStack(recipe.craft(inventory, world.getRegistryManager()));
         inventory.setRemainder(recipe.getRemainder(inventory));

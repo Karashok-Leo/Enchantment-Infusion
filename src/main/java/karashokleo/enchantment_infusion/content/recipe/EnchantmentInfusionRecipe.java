@@ -5,6 +5,8 @@ import karashokleo.enchantment_infusion.api.recipe.InfusionRecipe;
 import karashokleo.enchantment_infusion.init.EIRecipes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.EnchantmentLevelEntry;
+import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
@@ -91,7 +93,7 @@ public record EnchantmentInfusionRecipe(
     @Override
     public ItemStack getOutput(DynamicRegistryManager registryManager)
     {
-        return infuse(Items.BOOK.getDefaultStack());
+        return EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, level));
     }
 
     @Override
@@ -103,6 +105,6 @@ public record EnchantmentInfusionRecipe(
     @Override
     public RecipeType<?> getType()
     {
-        return EIRecipes.EI_TYPE;
+        return EIRecipes.INFUSION_RECIPE_TYPE;
     }
 }
