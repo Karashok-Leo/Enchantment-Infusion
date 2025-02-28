@@ -54,7 +54,7 @@ public record SimpleInfusionRecipe(
     @Override
     public RecipeSerializer<?> getSerializer()
     {
-        return null;
+        return EIRecipes.SI_SERIALIZER;
     }
 
     @Override
