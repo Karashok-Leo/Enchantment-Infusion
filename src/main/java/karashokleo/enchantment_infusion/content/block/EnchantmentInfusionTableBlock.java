@@ -4,11 +4,15 @@ import karashokleo.enchantment_infusion.api.block.AbstractInfusionBlock;
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionTableTile;
 import karashokleo.enchantment_infusion.init.EIBlocks;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.Instrument;
+import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -19,16 +23,17 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("deprecation")
 public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
 {
-    protected static final VoxelShape TOP = Block.createCuboidShape(0.0, 10.0, 0.0, 16.0, 12.0, 16.0);
-    protected static final VoxelShape MID_TOP = Block.createCuboidShape(2.0, 9.0, 2.0, 14.0, 10.0, 14.0);
-    protected static final VoxelShape BODY = Block.createCuboidShape(4.0, 3.0, 4.0, 12.0, 9.0, 12.0);
-    protected static final VoxelShape MID_BOTTOM = Block.createCuboidShape(3.0, 2.0, 3.0, 13.0, 3.0, 13.0);
-    protected static final VoxelShape BOTTOM = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 2.0, 14.0);
-    protected static final VoxelShape CORNER_1 = Block.createCuboidShape(0.0, 12.0, 13.0, 3.0, 13.0, 16.0);
-    protected static final VoxelShape CORNER_2 = Block.createCuboidShape(13.0, 12.0, 13.0, 16.0, 13.0, 16.0);
-    protected static final VoxelShape CORNER_3 = Block.createCuboidShape(0.0, 12.0, 0.0, 3.0, 13.0, 3.0);
-    protected static final VoxelShape CORNER_4 = Block.createCuboidShape(13.0, 12.0, 0.0, 16.0, 13.0, 3.0);
-    protected static final VoxelShape SHAPE = VoxelShapes.union(TOP, MID_TOP, BODY, MID_BOTTOM, BOTTOM, CORNER_1, CORNER_2, CORNER_3, CORNER_4);
+    protected static final VoxelShape SHAPE = VoxelShapes.union(
+            // top
+            Block.createCuboidShape(1.0, 4.0, 1.0, 15.0, 13.0, 15.0),
+            // bottom
+            Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
+            // corner
+            Block.createCuboidShape(0.05, 12.0, 0.05, 3.05, 14.0, 3.05),
+            Block.createCuboidShape(0.05, 12.0, 12.95, 3.0, 14.0, 15.95),
+            Block.createCuboidShape(12.95, 12.0, 12.95, 15.95, 14.0, 15.95),
+            Block.createCuboidShape(12.95, 12.0, 0.0, 15.95, 14.0, 3.0)
+    );
 
     public EnchantmentInfusionTableBlock()
     {
@@ -39,7 +44,15 @@ public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
                         .strength(5.0f, 1200.0f)
                         .requiresTool()
                         .nonOpaque()
+                        .luminance(state -> state.get(EIBlocks.INFUSING) ? 12 : 0)
         );
+        this.setDefaultState(this.stateManager.getDefaultState().with(EIBlocks.INFUSING, false));
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
+    {
+        builder.add(EIBlocks.INFUSING);
     }
 
     @Override

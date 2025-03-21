@@ -9,9 +9,11 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.state.property.BooleanProperty;
 
 public class EIBlocks
 {
+    public static final BooleanProperty INFUSING = BooleanProperty.of("infusing");
     public static EnchantmentInfusionTableBlock INFUSION_TABLE;
     public static EnchantmentInfusionPedestalBlock INFUSION_PEDESTAL;
     public static BlockEntityType<EnchantmentInfusionTableTile> INFUSION_TABLE_TILE;

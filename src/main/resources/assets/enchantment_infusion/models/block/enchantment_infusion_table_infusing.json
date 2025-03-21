@@ -1,6 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
+		"0": "enchantment_infusion:block/table_3",
+		"3": "enchantment_infusion:block/table_2",
 		"4": "enchantment_infusion:block/table_1",
 		"particle": "enchantment_infusion:block/pedestal_1"
 	},
@@ -239,6 +241,26 @@
 				"west": {"uv": [11, 8.5, 13, 8.75], "texture": "#4"},
 				"down": {"uv": [3.5, 9.5, 0, 11.5], "texture": "#4"}
 			}
+		},
+		{
+			"from": [1.5, 4.5, 1.5],
+			"to": [14.5, 10.5, 14.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7.5, 6.5, 8]},
+			"faces": {
+				"north": {"uv": [0, 4, 10, 8], "texture": "#3"},
+				"east": {"uv": [0, 0, 10, 4], "texture": "#3"},
+				"south": {"uv": [0, 4, 10, 8], "texture": "#3"},
+				"west": {"uv": [0, 0, 10, 4], "texture": "#3"}
+			}
+		},
+		{
+			"from": [0, 15, 0],
+			"to": [16, 15, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 13, 0]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#0"}
+			}
 		}
 	],
 	"display": {
@@ -305,6 +327,18 @@
 					"children": [15, 16, 17, 18, 19]
 				}
 			]
+		},
+		{
+			"name": "2-1",
+			"origin": [7, 7.5, 7],
+			"color": 0,
+			"children": [20]
+		},
+		{
+			"name": "1-2",
+			"origin": [0, 13, 0],
+			"color": 0,
+			"children": [21]
 		}
 	]
 }

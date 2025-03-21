@@ -37,6 +37,26 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         this.matchGetter = RecipeManager.createCachedMatchGetter(EIRecipes.INFUSION_RECIPE_TYPE);
     }
 
+    protected void onInfusingStateChanged(ServerWorld world, BlockPos pos, boolean infusing)
+    {
+        BlockState state = world.getBlockState(pos);
+        if (state.isOf(EIBlocks.INFUSION_TABLE) &&
+            state.get(EIBlocks.INFUSING) != infusing)
+        {
+            world.setBlockState(pos, state.with(EIBlocks.INFUSING, infusing));
+        }
+        List<BlockPos> pedestalPoses = getPedestalPoses();
+        for (BlockPos pedestalPos : pedestalPoses)
+        {
+            BlockState pedestalState = world.getBlockState(pedestalPos);
+            if (pedestalState.isOf(EIBlocks.INFUSION_PEDESTAL) &&
+                state.get(EIBlocks.INFUSING) != infusing)
+            {
+                world.setBlockState(pedestalPos, pedestalState.with(EIBlocks.INFUSING, infusing));
+            }
+        }
+    }
+
     @Override
     public void onUse(ServerWorld world, BlockPos pos, PlayerEntity player)
     {
@@ -51,8 +71,11 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         }
         InfusionInventory inventory = new InfusionInventory(this, pedestalInventory);
         Optional<InfusionRecipe> match = matchGetter.getFirstMatch(inventory, world);
-        if (match.isPresent()) ticks = TOTAL_CRAFT_TICKS;
-        else
+        if (match.isPresent())
+        {
+            ticks = TOTAL_CRAFT_TICKS;
+            onInfusingStateChanged(world, pos, true);
+        } else
         {
             player.sendMessage(EITexts.RNF.get(), true);
             player.getInventory().offerOrDrop(this.removeStack());
@@ -119,6 +142,21 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         }
     }
 
+    public static void spawnEndRodParticles(ServerWorld world, Vec3d pos)
+    {
+        world.spawnParticles(
+                ParticleTypes.END_ROD,
+                pos.getX(),
+                pos.getY() + 1.3,
+                pos.getZ(),
+                16,
+                0.01,
+                0.01,
+                0.01,
+                0.06
+        );
+    }
+
     public static void playProcessSound(ServerWorld world, Vec3d pos, float pitch)
     {
         world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.BLOCKS, 0.6f, pitch);
@@ -127,21 +165,6 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
     public static void playCompleteSound(ServerWorld world, Vec3d pos)
     {
         world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.BLOCKS, 1.0f, 1.0f);
-    }
-
-    public static void spawnEndRodParticles(ServerWorld world, Vec3d pos)
-    {
-        world.spawnParticles(
-                ParticleTypes.END_ROD,
-                pos.getX(),
-                pos.getY() + 1.5,
-                pos.getZ(),
-                16,
-                0.01,
-                0.01,
-                0.01,
-                0.06
-        );
     }
 
     public static void spawnLightning(World world, Vec3d pos)
@@ -175,6 +198,7 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
                 entity.craft(serverWorld, match.get(), inventory);
                 spawnEndRodParticles(serverWorld, center);
                 playCompleteSound(serverWorld, center);
+                entity.onInfusingStateChanged(serverWorld, pos, false);
             }
         }
     }
@@ -185,11 +209,12 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         inventory.setRemainder(recipe.getRemainder(inventory));
     }
 
-    public void interrupt(World world)
+    public void interrupt(ServerWorld world)
     {
         this.ticks = 0;
         Vec3d center = Vec3d.ofBottomCenter(getPos());
         spawnLightning(world, center);
+        onInfusingStateChanged(world, getPos(), false);
         PlayerEntity player = world.getClosestPlayer(center.getX(), center.getY(), center.getZ(), 8, false);
         if (player != null) player.sendMessage(EITexts.EII.get(), true);
     }

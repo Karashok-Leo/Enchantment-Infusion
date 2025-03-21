@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
+    "infusing=false": {
       "model": "enchantment_infusion:block/enchantment_infusion_table"
+    },
+    "infusing=true": {
+      "model": "enchantment_infusion:block/enchantment_infusion_table_infusing"
     }
   }
 }

@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
+    "infusing=false": {
       "model": "enchantment_infusion:block/enchantment_infusion_pedestal"
+    },
+    "infusing=true": {
+      "model": "enchantment_infusion:block/enchantment_infusion_pedestal_infusing"
     }
   }
 }
