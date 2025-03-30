@@ -2,6 +2,7 @@ package karashokleo.enchantment_infusion.content.block.entity;
 
 import karashokleo.enchantment_infusion.api.block.entity.AbstractInfusionTile;
 import karashokleo.enchantment_infusion.api.block.entity.InfusionInventory;
+import karashokleo.enchantment_infusion.api.event.InfusionCompleteCallback;
 import karashokleo.enchantment_infusion.api.recipe.InfusionRecipe;
 import karashokleo.enchantment_infusion.init.EIBlocks;
 import karashokleo.enchantment_infusion.init.EIRecipes;
@@ -10,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
@@ -203,10 +205,12 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         }
     }
 
-    public void craft(World world, InfusionRecipe recipe, InfusionInventory inventory)
+    public void craft(ServerWorld world, InfusionRecipe recipe, InfusionInventory inventory)
     {
-        this.setStack(recipe.craft(inventory, world.getRegistryManager()));
+        ItemStack crafted = recipe.craft(inventory, world.getRegistryManager());
+        this.setStack(crafted);
         inventory.setRemainder(recipe.getRemainder(inventory));
+        InfusionCompleteCallback.EVENT.invoker().onInfusionComplete(world, pos, crafted, inventory, recipe);
     }
 
     public void interrupt(ServerWorld world)
