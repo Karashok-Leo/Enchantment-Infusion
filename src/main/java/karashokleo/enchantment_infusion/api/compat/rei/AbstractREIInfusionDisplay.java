@@ -6,6 +6,7 @@ import me.shedaniel.rei.api.common.display.basic.BasicDisplay;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,6 +14,7 @@ public abstract class AbstractREIInfusionDisplay implements Display
 {
     private final EntryIngredient tableIngredient;
     private final List<EntryIngredient> pedestalIngredients;
+    private final List<EntryIngredient> input;
     private final List<EntryIngredient> output;
 
     @SuppressWarnings("all")
@@ -29,6 +31,8 @@ public abstract class AbstractREIInfusionDisplay implements Display
     {
         this.tableIngredient = tableIngredient;
         this.pedestalIngredients = pedestalIngredients;
+        this.input = new ArrayList<>(pedestalIngredients);
+        this.input.add(tableIngredient);
         this.output = output;
     }
 
@@ -40,7 +44,7 @@ public abstract class AbstractREIInfusionDisplay implements Display
     @Override
     public List<EntryIngredient> getInputEntries()
     {
-        return pedestalIngredients;
+        return input;
     }
 
     @Override

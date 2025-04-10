@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public abstract class AbstractEMIInfusionRecipe implements EmiRecipe
     protected final Identifier id;
     protected final EmiIngredient tableIngredient;
     protected final List<EmiIngredient> pedestalIngredients;
+    protected final List<EmiIngredient> input;
     protected final List<EmiStack> output;
 
     @SuppressWarnings("all")
@@ -54,6 +56,8 @@ public abstract class AbstractEMIInfusionRecipe implements EmiRecipe
         this.id = id;
         this.tableIngredient = tableIngredient;
         this.pedestalIngredients = pedestalIngredients;
+        this.input = new ArrayList<>(pedestalIngredients);
+        this.input.add(tableIngredient);
         this.output = output;
     }
 
@@ -66,7 +70,7 @@ public abstract class AbstractEMIInfusionRecipe implements EmiRecipe
     @Override
     public List<EmiIngredient> getInputs()
     {
-        return pedestalIngredients;
+        return input;
     }
 
     @Override
