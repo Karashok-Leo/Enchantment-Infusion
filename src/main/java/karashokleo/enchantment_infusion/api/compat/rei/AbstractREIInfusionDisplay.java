@@ -41,6 +41,11 @@ public abstract class AbstractREIInfusionDisplay implements Display
         return tableIngredient;
     }
 
+    public List<EntryIngredient> getPedestalIngredients()
+    {
+        return pedestalIngredients;
+    }
+
     @Override
     public List<EntryIngredient> getInputEntries()
     {
