@@ -34,20 +34,20 @@ public abstract class AbstractEMIInfusionRecipe implements EmiRecipe
     public AbstractEMIInfusionRecipe(InfusionRecipe recipe)
     {
         this(
-                recipe.getId(),
-                recipe.getTableIngredient(),
-                recipe.getPedestalIngredient(),
-                recipe.getOutput(MinecraftClient.getInstance().world.getRegistryManager())
+            recipe.getId(),
+            recipe.getTableIngredient(),
+            recipe.getPedestalIngredient(),
+            recipe.getOutput(MinecraftClient.getInstance().world.getRegistryManager())
         );
     }
 
     public AbstractEMIInfusionRecipe(Identifier id, Ingredient tableIngredient, List<Ingredient> pedestalIngredients, ItemStack output)
     {
         this(
-                id,
-                EmiIngredient.of(tableIngredient),
-                pedestalIngredients.stream().map(EmiIngredient::of).toList(),
-                Collections.singletonList(EmiStack.of(output))
+            id,
+            EmiIngredient.of(tableIngredient),
+            pedestalIngredients.stream().map(EmiIngredient::of).toList(),
+            Collections.singletonList(EmiStack.of(output))
         );
     }
 
@@ -106,6 +106,6 @@ public abstract class AbstractEMIInfusionRecipe implements EmiRecipe
         }
         widgets.addSlot(tableIngredient, centerX - 9 + INPUT_OFFSET, centerY - 9);
         widgets.addTexture(EmiTexture.EMPTY_ARROW, centerX - 9 + ARROW_OFFSET, centerY - 8);
-        widgets.addSlot(output.get(0), centerX - 9 + OUTPUT_OFFSET, centerY - 13).large(true);
+        widgets.addSlot(output.get(0), centerX - 9 + OUTPUT_OFFSET, centerY - 13).large(true).recipeContext(this);
     }
 }

@@ -24,27 +24,27 @@ import org.jetbrains.annotations.Nullable;
 public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
 {
     protected static final VoxelShape SHAPE = VoxelShapes.union(
-            // top
-            Block.createCuboidShape(1.0, 4.0, 1.0, 15.0, 13.0, 15.0),
-            // bottom
-            Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
-            // corner
-            Block.createCuboidShape(0.05, 12.0, 0.05, 3.05, 14.0, 3.05),
-            Block.createCuboidShape(0.05, 12.0, 12.95, 3.0, 14.0, 15.95),
-            Block.createCuboidShape(12.95, 12.0, 12.95, 15.95, 14.0, 15.95),
-            Block.createCuboidShape(12.95, 12.0, 0.0, 15.95, 14.0, 3.0)
+        // top
+        Block.createCuboidShape(1.0, 4.0, 1.0, 15.0, 13.0, 15.0),
+        // bottom
+        Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
+        // corner
+        Block.createCuboidShape(0.05, 12.0, 0.05, 3.05, 14.0, 3.05),
+        Block.createCuboidShape(0.05, 12.0, 12.95, 3.0, 14.0, 15.95),
+        Block.createCuboidShape(12.95, 12.0, 12.95, 15.95, 14.0, 15.95),
+        Block.createCuboidShape(12.95, 12.0, 0.0, 15.95, 14.0, 3.0)
     );
 
     public EnchantmentInfusionTableBlock()
     {
         super(
-                FabricBlockSettings.create()
-                        .mapColor(MapColor.BLACK)
-                        .instrument(Instrument.BASEDRUM)
-                        .strength(5.0f, 1200.0f)
-                        .requiresTool()
-                        .nonOpaque()
-                        .luminance(state -> state.get(EIBlocks.INFUSING) ? 12 : 0)
+            FabricBlockSettings.create()
+                .mapColor(MapColor.BLACK)
+                .instrument(Instrument.BASEDRUM)
+                .strength(5.0f, 1200.0f)
+                .requiresTool()
+                .nonOpaque()
+                .luminance(state -> state.get(EIBlocks.INFUSING) ? 12 : 0)
         );
         this.setDefaultState(this.stateManager.getDefaultState().with(EIBlocks.INFUSING, false));
     }

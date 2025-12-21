@@ -30,7 +30,10 @@ public interface InfusionRecipe extends Recipe<InfusionInventory>
         int i = 0;
         for (ItemStack itemStack : stacks)
         {
-            if (itemStack.isEmpty()) continue;
+            if (itemStack.isEmpty())
+            {
+                continue;
+            }
             ++i;
             recipeMatcher.addInput(itemStack, 1);
         }
@@ -41,7 +44,7 @@ public interface InfusionRecipe extends Recipe<InfusionInventory>
     default boolean matches(InfusionInventory inventory, World world)
     {
         return this.matchTableStack(inventory.getTableStack()) &&
-                this.matchPedestalStacks(inventory.getPedestalStacks());
+            this.matchPedestalStacks(inventory.getPedestalStacks());
     }
 
     @Override

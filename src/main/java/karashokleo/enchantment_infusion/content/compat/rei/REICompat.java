@@ -18,9 +18,9 @@ public class REICompat implements REIClientPlugin
     {
         registry.add(new REIEICategory());
         registry.addWorkstations(
-                EI,
-                EntryStacks.of(EIBlocks.INFUSION_TABLE),
-                EntryStacks.of(EIBlocks.INFUSION_PEDESTAL)
+            EI,
+            EntryStacks.of(EIBlocks.INFUSION_TABLE),
+            EntryStacks.of(EIBlocks.INFUSION_PEDESTAL)
         );
     }
 

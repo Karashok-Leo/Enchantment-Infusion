@@ -35,7 +35,9 @@ public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<Enc
     {
         EnchantmentIngredient input = null;
         if (buf.readBoolean())
+        {
             input = EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER.read(buf);
+        }
         DefaultedList<Ingredient> ingredients = SerialUtil.ingredientsFromPacket(buf);
         Enchantment enchantment = SerialUtil.enchantmentFromString(buf.readString());
         int level = buf.readInt();
@@ -48,7 +50,9 @@ public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<Enc
     {
         buf.writeBoolean(recipe.input() != null);
         if (recipe.input() != null)
+        {
             EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER.write(buf, recipe.input());
+        }
         SerialUtil.ingredientsToPacket(buf, recipe.ingredients());
         buf.writeString(SerialUtil.enchantmentToString(recipe.enchantment()));
         buf.writeInt(recipe.level());

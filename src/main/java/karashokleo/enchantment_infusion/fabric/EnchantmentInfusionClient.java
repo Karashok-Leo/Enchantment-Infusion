@@ -13,9 +13,9 @@ public class EnchantmentInfusionClient implements ClientModInitializer
     public void onInitializeClient()
     {
         BlockRenderLayerMap.INSTANCE.putBlocks(
-                RenderLayer.getCutout(),
-                EIBlocks.INFUSION_TABLE,
-                EIBlocks.INFUSION_PEDESTAL
+            RenderLayer.getCutout(),
+            EIBlocks.INFUSION_TABLE,
+            EIBlocks.INFUSION_PEDESTAL
         );
 
         BlockEntityRendererFactories.register(EIBlocks.INFUSION_TABLE_TILE, ctx -> new InfusionTableTileRenderer<>(1.3F, ctx));

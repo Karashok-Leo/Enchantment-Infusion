@@ -21,24 +21,24 @@ import org.jetbrains.annotations.Nullable;
 public class EnchantmentInfusionPedestalBlock extends AbstractInfusionBlock
 {
     protected static final VoxelShape SHAPE = VoxelShapes.union(
-            // top
-            Block.createCuboidShape(3.5, 6.0, 3.5, 12.5, 8.5, 12.5),
-            // middle
-            Block.createCuboidShape(4.0, 4.0, 4.0, 12.0, 6.0, 12.0),
-            // bottom
-            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0)
+        // top
+        Block.createCuboidShape(3.5, 6.0, 3.5, 12.5, 8.5, 12.5),
+        // middle
+        Block.createCuboidShape(4.0, 4.0, 4.0, 12.0, 6.0, 12.0),
+        // bottom
+        Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0)
     );
 
     public EnchantmentInfusionPedestalBlock()
     {
         super(
-                FabricBlockSettings.create()
-                        .mapColor(MapColor.BLACK)
-                        .instrument(Instrument.BASEDRUM)
-                        .strength(5.0f, 1200.0f)
-                        .requiresTool()
-                        .nonOpaque()
-                        .luminance(state -> state.get(EIBlocks.INFUSING) ? 10 : 0)
+            FabricBlockSettings.create()
+                .mapColor(MapColor.BLACK)
+                .instrument(Instrument.BASEDRUM)
+                .strength(5.0f, 1200.0f)
+                .requiresTool()
+                .nonOpaque()
+                .luminance(state -> state.get(EIBlocks.INFUSING) ? 10 : 0)
         );
         this.setDefaultState(this.stateManager.getDefaultState().with(EIBlocks.INFUSING, false));
     }

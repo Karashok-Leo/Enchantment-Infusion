@@ -44,7 +44,9 @@ public class EnchantmentInfusionRecipeBuilder
         {
             ingredients.add(ingredient);
             if (ingredients.size() > 8)
+            {
                 throw new UnsupportedOperationException();
+            }
         }
         return this;
     }
@@ -63,19 +65,23 @@ public class EnchantmentInfusionRecipeBuilder
     public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId, Enchantment enchantment, int level)
     {
         if (ingredients.isEmpty())
+        {
             throw new IllegalArgumentException("No ingredients for enchantment infusion recipe");
+        }
         if (ingredients.size() > 8)
+        {
             throw new IllegalArgumentException("Too many ingredients for enchantment infusion recipe");
+        }
         exporter.accept(new EnchantmentInfusionRecipeJsonProvider(recipeId, input, ingredients, enchantment, level, force));
     }
 
     public record EnchantmentInfusionRecipeJsonProvider(
-            Identifier recipeId,
-            @Nullable EnchantmentIngredient input,
-            List<Ingredient> ingredients,
-            Enchantment enchantment,
-            int level,
-            boolean force
+        Identifier recipeId,
+        @Nullable EnchantmentIngredient input,
+        List<Ingredient> ingredients,
+        Enchantment enchantment,
+        int level,
+        boolean force
     ) implements RecipeJsonProvider
     {
         @Override

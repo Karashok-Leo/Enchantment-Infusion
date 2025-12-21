@@ -62,9 +62,15 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
     @Override
     public void onUse(ServerWorld world, BlockPos pos, PlayerEntity player)
     {
-        if (ticks != 0) return;
+        if (ticks != 0)
+        {
+            return;
+        }
         super.onUse(world, pos, player);
-        if (isEmpty()) return;
+        if (isEmpty())
+        {
+            return;
+        }
         DefaultedList<AbstractInfusionTile> pedestalInventory = getPedestalTiles(world);
         if (pedestalInventory.size() < 8)
         {
@@ -114,14 +120,14 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
     public static void spawnEnchantParticles(ServerWorld world, Vec3d pos, double yOffset, int count, double deltaX, double deltaY, double deltaZ, double speed)
     {
         world.spawnParticles(
-                ParticleTypes.ENCHANT,
-                pos.getX(),
-                pos.getY() + yOffset,
-                pos.getZ(),
-                count, deltaX,
-                deltaY,
-                deltaZ,
-                speed
+            ParticleTypes.ENCHANT,
+            pos.getX(),
+            pos.getY() + yOffset,
+            pos.getZ(),
+            count, deltaX,
+            deltaY,
+            deltaZ,
+            speed
         );
     }
 
@@ -131,15 +137,15 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         {
             double angle = 2 * Math.PI * i / count;
             world.spawnParticles(
-                    ParticleTypes.SCRAPE,
-                    pos.getX() + radius * Math.cos(angle),
-                    pos.getY() + 1.5,
-                    pos.getZ() + radius * Math.sin(angle),
-                    1,
-                    0.02,
-                    0.01,
-                    0.02,
-                    0.01
+                ParticleTypes.SCRAPE,
+                pos.getX() + radius * Math.cos(angle),
+                pos.getY() + 1.5,
+                pos.getZ() + radius * Math.sin(angle),
+                1,
+                0.02,
+                0.01,
+                0.02,
+                0.01
             );
         }
     }
@@ -147,15 +153,15 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
     public static void spawnEndRodParticles(ServerWorld world, Vec3d pos)
     {
         world.spawnParticles(
-                ParticleTypes.END_ROD,
-                pos.getX(),
-                pos.getY() + 1.3,
-                pos.getZ(),
-                16,
-                0.01,
-                0.01,
-                0.01,
-                0.06
+            ParticleTypes.END_ROD,
+            pos.getX(),
+            pos.getY() + 1.3,
+            pos.getZ(),
+            16,
+            0.01,
+            0.01,
+            0.01,
+            0.06
         );
     }
 
@@ -179,8 +185,14 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
 
     public static void serverTick(World world, BlockPos pos, BlockState state, EnchantmentInfusionTableTile entity)
     {
-        if (!(world instanceof ServerWorld serverWorld)) return;
-        if (entity.ticks == 0) return;
+        if (!(world instanceof ServerWorld serverWorld))
+        {
+            return;
+        }
+        if (entity.ticks == 0)
+        {
+            return;
+        }
         entity.ticks--;
         Vec3d center = Vec3d.ofBottomCenter(pos);
         spawnParticles(serverWorld, center, entity.ticks);
@@ -194,8 +206,10 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
             }
             InfusionInventory inventory = new InfusionInventory(entity, pedestalInventory);
             Optional<InfusionRecipe> match = entity.matchGetter.getFirstMatch(inventory, serverWorld);
-            if (match.isEmpty()) entity.interrupt(serverWorld);
-            else if (entity.ticks == 0)
+            if (match.isEmpty())
+            {
+                entity.interrupt(serverWorld);
+            } else if (entity.ticks == 0)
             {
                 entity.craft(serverWorld, match.get(), inventory);
                 spawnEndRodParticles(serverWorld, center);
@@ -220,7 +234,10 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         spawnLightning(world, center);
         onInfusingStateChanged(world, getPos(), false);
         PlayerEntity player = world.getClosestPlayer(center.getX(), center.getY(), center.getZ(), 8, false);
-        if (player != null) player.sendMessage(EITexts.EII.get(), true);
+        if (player != null)
+        {
+            player.sendMessage(EITexts.EII.get(), true);
+        }
     }
 
     public List<BlockPos> getPedestalPoses()
@@ -242,8 +259,12 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
     {
         DefaultedList<AbstractInfusionTile> tiles = DefaultedList.of();
         for (BlockPos pos : getPedestalPoses())
+        {
             if (world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
+            {
                 tiles.add(tile);
+            }
+        }
         return tiles;
     }
 

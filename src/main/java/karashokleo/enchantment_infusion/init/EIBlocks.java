@@ -22,24 +22,24 @@ public class EIBlocks
     public static void register()
     {
         INFUSION_TABLE = Registry.register(
-                Registries.BLOCK,
-                EnchantmentInfusion.id("enchantment_infusion_table"),
-                new EnchantmentInfusionTableBlock()
+            Registries.BLOCK,
+            EnchantmentInfusion.id("enchantment_infusion_table"),
+            new EnchantmentInfusionTableBlock()
         );
         INFUSION_PEDESTAL = Registry.register(
-                Registries.BLOCK,
-                EnchantmentInfusion.id("enchantment_infusion_pedestal"),
-                new EnchantmentInfusionPedestalBlock()
+            Registries.BLOCK,
+            EnchantmentInfusion.id("enchantment_infusion_pedestal"),
+            new EnchantmentInfusionPedestalBlock()
         );
         INFUSION_TABLE_TILE = Registry.register(
-                Registries.BLOCK_ENTITY_TYPE,
-                EnchantmentInfusion.id("enchantment_infusion_table"),
-                FabricBlockEntityTypeBuilder.create(EnchantmentInfusionTableTile::new, INFUSION_TABLE).build()
+            Registries.BLOCK_ENTITY_TYPE,
+            EnchantmentInfusion.id("enchantment_infusion_table"),
+            FabricBlockEntityTypeBuilder.create(EnchantmentInfusionTableTile::new, INFUSION_TABLE).build()
         );
         INFUSION_PEDESTAL_TILE = Registry.register(
-                Registries.BLOCK_ENTITY_TYPE,
-                EnchantmentInfusion.id("enchantment_infusion_pedestal"),
-                FabricBlockEntityTypeBuilder.create(EnchantmentInfusionPedestalTile::new, INFUSION_PEDESTAL).build()
+            Registries.BLOCK_ENTITY_TYPE,
+            EnchantmentInfusion.id("enchantment_infusion_pedestal"),
+            FabricBlockEntityTypeBuilder.create(EnchantmentInfusionPedestalTile::new, INFUSION_PEDESTAL).build()
         );
     }
 }

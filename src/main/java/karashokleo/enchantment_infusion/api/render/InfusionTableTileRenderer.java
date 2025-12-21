@@ -24,21 +24,24 @@ public class InfusionTableTileRenderer<T extends AbstractInfusionTile> implement
     @Override
     public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay)
     {
-        if (entity.getStack() == null || entity.getStack().isEmpty()) return;
+        if (entity.getStack() == null || entity.getStack().isEmpty())
+        {
+            return;
+        }
 
         matrices.push();
         matrices.translate(0.5f, yOffset, 0.5f);
         matrices.scale(0.5f, 0.5f, 0.5f);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((tickDelta + entity.getWorld().getTime()) * 3f));
         itemRenderer.renderItem(
-                entity.getStack(),
-                ModelTransformationMode.FIXED,
-                light,
-                overlay,
-                matrices,
-                vertexConsumers,
-                entity.getWorld(),
-                (int) entity.getPos().asLong()
+            entity.getStack(),
+            ModelTransformationMode.FIXED,
+            light,
+            overlay,
+            matrices,
+            vertexConsumers,
+            entity.getWorld(),
+            (int) entity.getPos().asLong()
         );
         matrices.pop();
     }

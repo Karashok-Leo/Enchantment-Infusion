@@ -4,7 +4,6 @@ import karashokleo.enchantment_infusion.init.EIBlocks;
 import karashokleo.enchantment_infusion.init.EIItems;
 import karashokleo.enchantment_infusion.init.EIRecipes;
 import net.fabricmc.api.ModInitializer;
-
 import net.minecraft.util.Identifier;
 
 public class EnchantmentInfusion implements ModInitializer

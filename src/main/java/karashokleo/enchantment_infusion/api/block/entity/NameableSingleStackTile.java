@@ -72,7 +72,10 @@ public class NameableSingleStackTile extends BlockEntity implements SingleStackI
     public void update()
     {
         this.markDirty();
-        if (world == null || world.isClient()) return;
+        if (world == null || world.isClient())
+        {
+            return;
+        }
         world.updateListeners(pos, getCachedState(), getCachedState(), Block.NOTIFY_ALL);
     }
 
@@ -82,7 +85,9 @@ public class NameableSingleStackTile extends BlockEntity implements SingleStackI
         super.readNbt(nbt);
         this.item = ItemStack.fromNbt(nbt.getCompound("Item"));
         if (nbt.contains("CustomName", NbtElement.STRING_TYPE))
+        {
             this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
+        }
     }
 
     @Override
@@ -91,7 +96,9 @@ public class NameableSingleStackTile extends BlockEntity implements SingleStackI
         super.writeNbt(nbt);
         nbt.put("Item", this.item.writeNbt(new NbtCompound()));
         if (this.hasCustomName())
+        {
             nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
+        }
     }
 
     @Override
@@ -111,7 +118,9 @@ public class NameableSingleStackTile extends BlockEntity implements SingleStackI
     public Text getName()
     {
         if (this.customName != null)
+        {
             return this.customName;
+        }
         return this.getCachedState().getBlock().getName();
     }
 

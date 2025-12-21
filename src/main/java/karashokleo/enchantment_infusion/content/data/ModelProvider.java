@@ -37,10 +37,10 @@ public class ModelProvider extends FabricModelProvider
         Identifier falseModel = ModelIds.getBlockModelId(block);
 
         generator.blockStateCollector.accept(
-                VariantsBlockStateSupplier.create(block)
-                        .coordinate(
-                                BlockStateModelGenerator.createBooleanModelMap(EIBlocks.INFUSING, trueModel, falseModel)
-                        )
+            VariantsBlockStateSupplier.create(block)
+                .coordinate(
+                    BlockStateModelGenerator.createBooleanModelMap(EIBlocks.INFUSING, trueModel, falseModel)
+                )
         );
     }
 }

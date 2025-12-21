@@ -7,11 +7,10 @@ import net.minecraft.util.Util;
 
 public enum EITexts
 {
-    PNF("text","pedestal_not_found"),
-    RNF("text","recipe_not_found"),
-    EII("text","enchantment_infusion_interrupt"),
-    CATEGORY("compat", "enchantment_infusion_title")
-    ;
+    PNF("text", "pedestal_not_found"),
+    RNF("text", "recipe_not_found"),
+    EII("text", "enchantment_infusion_interrupt"),
+    CATEGORY("compat", "enchantment_infusion_title");
 
     public final String key;
 

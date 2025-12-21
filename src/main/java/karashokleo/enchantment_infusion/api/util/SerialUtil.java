@@ -21,31 +21,31 @@ public class SerialUtil
     public static String enchantmentToString(Enchantment enchantment)
     {
         return Optional
-                .ofNullable(Registries.ENCHANTMENT.getId(enchantment))
-                .orElseThrow(() -> new IllegalArgumentException("Enchantment " + enchantment + " is not registered"))
-                .toString();
+            .ofNullable(Registries.ENCHANTMENT.getId(enchantment))
+            .orElseThrow(() -> new IllegalArgumentException("Enchantment " + enchantment + " is not registered"))
+            .toString();
     }
 
     public static Enchantment enchantmentFromString(String id)
     {
         return Registries.ENCHANTMENT
-                .getOrEmpty(new Identifier(id))
-                .orElseThrow(() -> new IllegalArgumentException("Unknown enchantment '" + id + "'"));
+            .getOrEmpty(new Identifier(id))
+            .orElseThrow(() -> new IllegalArgumentException("Unknown enchantment '" + id + "'"));
     }
 
     public static ItemStack itemStackFromJson(JsonElement json)
     {
         return Util.getResult(
-                ItemStack.CODEC.decode(JsonOps.INSTANCE, json),
-                JsonParseException::new
+            ItemStack.CODEC.decode(JsonOps.INSTANCE, json),
+            JsonParseException::new
         ).getFirst();
     }
 
     public static JsonElement itemStackToJson(ItemStack stack)
     {
         return Util.getResult(
-                ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, stack),
-                JsonParseException::new
+            ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, stack),
+            JsonParseException::new
         );
     }
 
@@ -53,7 +53,9 @@ public class SerialUtil
     {
         JsonArray json = new JsonArray();
         for (Ingredient ingredient : ingredients)
+        {
             json.add(ingredient.toJson());
+        }
         return json;
     }
 
@@ -63,13 +65,20 @@ public class SerialUtil
         for (int i = 0; i < json.size(); ++i)
         {
             Ingredient ingredient = Ingredient.fromJson(json.get(i), false);
-            if (ingredient.isEmpty()) continue;
+            if (ingredient.isEmpty())
+            {
+                continue;
+            }
             ingredients.add(ingredient);
         }
         if (ingredients.isEmpty())
+        {
             throw new JsonParseException("No ingredients for enchantment infusion recipe");
+        }
         if (ingredients.size() > 8)
+        {
             throw new JsonParseException("Too many ingredients for enchantment infusion recipe");
+        }
         return ingredients;
     }
 
@@ -77,7 +86,9 @@ public class SerialUtil
     {
         buf.writeVarInt(ingredients.size());
         for (Ingredient ingredient : ingredients)
+        {
             ingredient.write(buf);
+        }
     }
 
     public static DefaultedList<Ingredient> ingredientsFromPacket(PacketByteBuf buf)

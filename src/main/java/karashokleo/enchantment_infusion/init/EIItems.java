@@ -17,14 +17,14 @@ public class EIItems
     public static void register()
     {
         INFUSION_TABLE_ITEM = Registry.register(
-                Registries.ITEM,
-                EnchantmentInfusion.id("enchantment_infusion_table"),
-                new BlockItem(EIBlocks.INFUSION_TABLE, new FabricItemSettings())
+            Registries.ITEM,
+            EnchantmentInfusion.id("enchantment_infusion_table"),
+            new BlockItem(EIBlocks.INFUSION_TABLE, new FabricItemSettings())
         );
         INFUSION_PEDESTAL_ITEM = Registry.register(
-                Registries.ITEM,
-                EnchantmentInfusion.id("enchantment_infusion_pedestal"),
-                new BlockItem(EIBlocks.INFUSION_PEDESTAL, new FabricItemSettings())
+            Registries.ITEM,
+            EnchantmentInfusion.id("enchantment_infusion_pedestal"),
+            new BlockItem(EIBlocks.INFUSION_PEDESTAL, new FabricItemSettings())
         );
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> content.addAfter(Items.ENCHANTING_TABLE, INFUSION_TABLE_ITEM, INFUSION_PEDESTAL_ITEM));
     }

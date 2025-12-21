@@ -11,11 +11,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 public record SimpleInfusionRecipe(
-        Identifier id,
-        Ingredient input,
-        DefaultedList<Ingredient> ingredients,
-        ItemStack output,
-        boolean copyNbt
+    Identifier id,
+    Ingredient input,
+    DefaultedList<Ingredient> ingredients,
+    ItemStack output,
+    boolean copyNbt
 ) implements InfusionRecipe
 {
     @Override
@@ -35,7 +35,9 @@ public record SimpleInfusionRecipe(
     {
         ItemStack output = this.output.copy();
         if (copyNbt)
+        {
             output.getOrCreateNbt().copyFrom(tableStack.getOrCreateNbt());
+        }
         return output;
     }
 

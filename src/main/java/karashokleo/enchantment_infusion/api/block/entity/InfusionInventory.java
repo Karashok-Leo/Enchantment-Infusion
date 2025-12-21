@@ -34,7 +34,9 @@ public class InfusionInventory implements Inventory
     public void setRemainder(DefaultedList<ItemStack> remainder)
     {
         for (int i = 0; i < SIZE; i++)
+        {
             setStack(i, remainder.get(i));
+        }
     }
 
     @Override
@@ -47,7 +49,12 @@ public class InfusionInventory implements Inventory
     public boolean isEmpty()
     {
         for (AbstractInfusionTile inv : this.pedestalInventory)
-            if (!inv.isEmpty()) return false;
+        {
+            if (!inv.isEmpty())
+            {
+                return false;
+            }
+        }
         return tableInventory.isEmpty();
     }
 

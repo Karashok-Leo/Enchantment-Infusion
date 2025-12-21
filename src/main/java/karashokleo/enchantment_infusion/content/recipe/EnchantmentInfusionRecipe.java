@@ -29,12 +29,12 @@ import java.util.Set;
  * @param force       Ignore enchantment target matching and enchantment compatibility
  */
 public record EnchantmentInfusionRecipe(
-        Identifier id,
-        @Nullable EnchantmentIngredient input,
-        DefaultedList<Ingredient> ingredients,
-        Enchantment enchantment,
-        int level,
-        boolean force
+    Identifier id,
+    @Nullable EnchantmentIngredient input,
+    DefaultedList<Ingredient> ingredients,
+    Enchantment enchantment,
+    int level,
+    boolean force
 ) implements InfusionRecipe
 {
     @Override
@@ -55,7 +55,10 @@ public record EnchantmentInfusionRecipe(
         ItemStack stack = tableStack.isOf(Items.BOOK) ? Items.ENCHANTED_BOOK.getDefaultStack() : tableStack;
 
         Map<Enchantment, Integer> enchantments = EnchantmentHelper.get(stack);
-        if (input != null) enchantments.remove(input.enchantment());
+        if (input != null)
+        {
+            enchantments.remove(input.enchantment());
+        }
         enchantments.put(enchantment, level);
 
         tableStack.removeSubNbt("Enchantments");
@@ -68,11 +71,14 @@ public record EnchantmentInfusionRecipe(
     public boolean matchTableStack(ItemStack stack)
     {
         boolean acceptable = stack.isOf(Items.BOOK) ||
-                             stack.isOf(Items.ENCHANTED_BOOK) ||
-                             enchantment.isAcceptableItem(stack);
+            stack.isOf(Items.ENCHANTED_BOOK) ||
+            enchantment.isAcceptableItem(stack);
 
         Set<Enchantment> existing = EnchantmentHelper.get(stack).keySet();
-        if (this.input != null) existing.remove(this.input.enchantment());
+        if (this.input != null)
+        {
+            existing.remove(this.input.enchantment());
+        }
         boolean compatible = EnchantmentHelper.isCompatible(existing, enchantment);
 
         boolean flag = force || (acceptable && compatible);

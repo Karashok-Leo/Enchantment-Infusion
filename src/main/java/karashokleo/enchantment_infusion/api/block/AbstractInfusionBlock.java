@@ -36,27 +36,38 @@ public abstract class AbstractInfusionBlock extends BlockWithEntity
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit)
     {
         if (hand == Hand.OFF_HAND)
+        {
             return ActionResult.PASS;
+        }
         if (world instanceof ServerWorld serverWorld && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
+        {
             tile.onUse(serverWorld, pos, player);
+        }
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        if (itemStack.hasCustomName() && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile) {
-           tile.setCustomName(itemStack.getName());
+    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack)
+    {
+        if (itemStack.hasCustomName() && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
+        {
+            tile.setCustomName(itemStack.getName());
         }
     }
 
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved)
     {
-        if (state.isOf(newState.getBlock())) return;
+        if (state.isOf(newState.getBlock()))
+        {
+            return;
+        }
         if (world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
         {
             if (world instanceof ServerWorld)
+            {
                 ItemScatterer.spawn(world, pos, tile);
+            }
             world.updateComparators(pos, this);
         }
         super.onStateReplaced(state, world, pos, newState, moved);

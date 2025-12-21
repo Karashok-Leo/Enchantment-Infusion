@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record EnchantmentIngredient(
-        Enchantment enchantment,
-        int min_level
+    Enchantment enchantment,
+    int min_level
 ) implements CustomIngredient
 {
     @SuppressWarnings("unused")
@@ -41,15 +41,17 @@ public record EnchantmentIngredient(
     public List<ItemStack> getMatchingStacks()
     {
         return min_level > 0 ?
-                this.getBookStacks() :
-                List.of(Items.BOOK.getDefaultStack());
+            this.getBookStacks() :
+            List.of(Items.BOOK.getDefaultStack());
     }
 
     private List<ItemStack> getBookStacks()
     {
         List<ItemStack> stacks = new ArrayList<>();
         for (int i = min_level; i <= enchantment.getMaxLevel(); i++)
+        {
             stacks.add(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, i)));
+        }
         return stacks;
     }
 

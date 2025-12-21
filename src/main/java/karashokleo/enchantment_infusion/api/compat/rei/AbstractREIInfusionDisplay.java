@@ -21,9 +21,9 @@ public abstract class AbstractREIInfusionDisplay implements Display
     public AbstractREIInfusionDisplay(InfusionRecipe recipe)
     {
         this(
-                EntryIngredients.ofIngredient(recipe.getTableIngredient()),
-                EntryIngredients.ofIngredients(recipe.getPedestalIngredient()),
-                Collections.singletonList(EntryIngredients.of(recipe.getOutput(BasicDisplay.registryAccess())))
+            EntryIngredients.ofIngredient(recipe.getTableIngredient()),
+            EntryIngredients.ofIngredients(recipe.getPedestalIngredient()),
+            Collections.singletonList(EntryIngredients.of(recipe.getOutput(BasicDisplay.registryAccess())))
         );
     }
 
