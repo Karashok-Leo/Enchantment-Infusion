@@ -1,5 +1,7 @@
 # Enchantment Infusion
 
+This version targets Fabric for Minecraft **1.21.1** and requires **Java 21**. See the [1.21.1 migration notes](docs/MIGRATION_1.21.1.md) for changes and verification status.
+
 ## 🪄Introduction
 
 This mod adds a directional enchanting method, inspired by the Enchanting Apparatus recipes from [Ars Nouveau](https://www.curseforge.com/minecraft/mc-mods/ars-nouveau).
@@ -89,11 +91,10 @@ Since mod version `1.2.0`, a new recipe type (`enchantment_infusion:simple_infus
     }
   ],
   "input": {
-    "item": "minecraft:leather_boots",
-    "min_level": 4
+    "item": "minecraft:leather_boots"
   },
   "output": {
-    "Count": 1,
+    "count": 1,
     "id": "artifacts:running_shoes"
   },
   "copy_nbt": false
@@ -106,7 +107,7 @@ Since mod version `1.2.0`, a new recipe type (`enchantment_infusion:simple_infus
 | ingredients | Required | the ingredients of the recipe, is up to 8, the order does not matter (this is a shapeless recipe)                      |
 | input       | Required | input ingredient for the central infusion table                                                                        |
 | output      | Required | output item                                                                                                            |
-| copy_nbt    | Optional | whether or not to copy the NBT of the input item in the central infusion table to the output item, defaults to `true`. |
+| copy_nbt    | Optional | whether or not to copy the input item's component changes and custom data to the output item, defaults to `true`. |
 
 ## 🧩Compatibility
 

@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeMatcher;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -48,9 +48,9 @@ public interface InfusionRecipe extends Recipe<InfusionInventory>
     }
 
     @Override
-    default ItemStack craft(InfusionInventory inventory, DynamicRegistryManager registryManager)
+    default ItemStack craft(InfusionInventory inventory, RegistryWrapper.WrapperLookup registryManager)
     {
-        return infuse(inventory.getTableStack());
+        return infuse(inventory.getTableStack().copy());
     }
 
     @Override

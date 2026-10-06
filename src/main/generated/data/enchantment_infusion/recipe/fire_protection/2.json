@@ -1,0 +1,26 @@
+{
+  "type": "enchantment_infusion:enchantment_infusion",
+  "enchantment": "minecraft:fire_protection",
+  "ingredients": [
+    {
+      "item": "minecraft:fire_charge"
+    },
+    {
+      "item": "minecraft:fire_charge"
+    },
+    {
+      "item": "minecraft:golden_apple"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    }
+  ],
+  "input": {
+    "enchantment": "minecraft:fire_protection",
+    "min_level": 1
+  },
+  "level": 2
+}

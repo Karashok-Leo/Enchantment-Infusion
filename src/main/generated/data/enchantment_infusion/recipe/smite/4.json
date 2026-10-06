@@ -1,0 +1,32 @@
+{
+  "type": "enchantment_infusion:enchantment_infusion",
+  "enchantment": "minecraft:smite",
+  "ingredients": [
+    {
+      "item": "minecraft:bone_block"
+    },
+    {
+      "item": "minecraft:bone_block"
+    },
+    {
+      "item": "minecraft:bone_block"
+    },
+    {
+      "item": "minecraft:bone_block"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "minecraft:lapis_block"
+    }
+  ],
+  "input": {
+    "enchantment": "minecraft:smite",
+    "min_level": 3
+  },
+  "level": 4
+}

@@ -2,14 +2,14 @@ package karashokleo.enchantment_infusion.api.block.entity;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
+import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.List;
 
-public class InfusionInventory implements Inventory
+public class InfusionInventory implements RecipeInput
 {
     private static final int SIZE = 8;
     private final AbstractInfusionTile tableInventory;
@@ -40,6 +40,17 @@ public class InfusionInventory implements Inventory
     }
 
     @Override
+    public ItemStack getStackInSlot(int slot)
+    {
+        return getStack(slot);
+    }
+
+    @Override
+    public int getSize()
+    {
+        return size();
+    }
+
     public int size()
     {
         return SIZE;
@@ -58,44 +69,37 @@ public class InfusionInventory implements Inventory
         return tableInventory.isEmpty();
     }
 
-    @Override
     public ItemStack getStack(int slot)
     {
         return pedestalInventory.get(slot).getStack();
     }
 
-    @Override
     public ItemStack removeStack(int slot, int amount)
     {
-        return pedestalInventory.get(slot).removeStack(amount);
+        return pedestalInventory.get(slot).decreaseStack(amount);
     }
 
-    @Override
     public ItemStack removeStack(int slot)
     {
-        return pedestalInventory.get(slot).removeStack();
+        return pedestalInventory.get(slot).emptyStack();
     }
 
-    @Override
     public void setStack(int slot, ItemStack stack)
     {
         pedestalInventory.get(slot).setStack(stack);
     }
 
-    @Override
     public void markDirty()
     {
         tableInventory.markDirty();
         pedestalInventory.forEach(BlockEntity::markDirty);
     }
 
-    @Override
     public boolean canPlayerUse(PlayerEntity player)
     {
         return false;
     }
 
-    @Override
     public void clear()
     {
         pedestalInventory.forEach(SingleStackInventory::clear);

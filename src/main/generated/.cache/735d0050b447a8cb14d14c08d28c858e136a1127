@@ -1,3 +1,3 @@
-// 1.20.1	2025-03-21T15:29:14.3216497	Enchantment Infusion/Block Loot Tables
-4214d599d9298e93f254d0ee5a247172ccc22eb7 data\enchantment_infusion\loot_tables\blocks\enchantment_infusion_pedestal.json
-47d850556b7bdd6508f181218baa08d487c7b466 data\enchantment_infusion\loot_tables\blocks\enchantment_infusion_table.json
+// 1.21.1	2026-10-06T19:39:35.314069887	Enchantment Infusion/Block Loot Tables
+1580b20fb69dad9985ddff75e69b8a7138763608 data/enchantment_infusion/loot_table/blocks/enchantment_infusion_pedestal.json
+2792cc16946cc9e75af325d477d922429ee2d42b data/enchantment_infusion/loot_table/blocks/enchantment_infusion_table.json

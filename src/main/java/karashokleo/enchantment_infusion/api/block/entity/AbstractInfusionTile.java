@@ -23,7 +23,7 @@ public abstract class AbstractInfusionTile extends NameableSingleStackTile
     private void swapStack(PlayerInventory playerInv)
     {
         ItemStack player2tile = playerInv.removeStack(playerInv.selectedSlot, 1);
-        ItemStack tile2player = this.removeStack();
+        ItemStack tile2player = this.emptyStack();
         this.setStack(player2tile);
         playerInv.offerOrDrop(tile2player);
     }

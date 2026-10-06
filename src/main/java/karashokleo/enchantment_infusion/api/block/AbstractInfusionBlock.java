@@ -9,6 +9,8 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -33,12 +35,22 @@ public abstract class AbstractInfusionBlock extends BlockWithEntity
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit)
+    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit)
     {
         if (hand == Hand.OFF_HAND)
         {
-            return ActionResult.PASS;
+            return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
+        if (world instanceof ServerWorld serverWorld && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
+        {
+            tile.onUse(serverWorld, pos, player);
+        }
+        return ItemActionResult.SUCCESS;
+    }
+
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit)
+    {
         if (world instanceof ServerWorld serverWorld && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
         {
             tile.onUse(serverWorld, pos, player);
@@ -49,7 +61,7 @@ public abstract class AbstractInfusionBlock extends BlockWithEntity
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack)
     {
-        if (itemStack.hasCustomName() && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
+        if (itemStack.contains(DataComponentTypes.CUSTOM_NAME) && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
         {
             tile.setCustomName(itemStack.getName());
         }
@@ -85,7 +97,7 @@ public abstract class AbstractInfusionBlock extends BlockWithEntity
         return (world.getBlockEntity(pos) instanceof SingleStackInventory inventory && !inventory.getStack().isEmpty()) ? 15 : 0;
     }
 
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type)
+    public boolean canPathfindThrough(BlockState state, NavigationType type)
     {
         return false;
     }

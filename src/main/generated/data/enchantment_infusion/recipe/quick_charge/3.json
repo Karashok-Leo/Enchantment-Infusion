@@ -1,0 +1,26 @@
+{
+  "type": "enchantment_infusion:enchantment_infusion",
+  "enchantment": "minecraft:quick_charge",
+  "ingredients": [
+    {
+      "item": "minecraft:phantom_membrane"
+    },
+    {
+      "item": "minecraft:golden_apple"
+    },
+    {
+      "item": "minecraft:golden_apple"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    }
+  ],
+  "input": {
+    "enchantment": "minecraft:quick_charge",
+    "min_level": 2
+  },
+  "level": 3
+}

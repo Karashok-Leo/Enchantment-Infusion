@@ -3,6 +3,8 @@ package karashokleo.enchantment_infusion.content.recipe;
 import karashokleo.enchantment_infusion.api.recipe.EnchantmentIngredient;
 import karashokleo.enchantment_infusion.api.recipe.InfusionRecipe;
 import karashokleo.enchantment_infusion.init.EIRecipes;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
@@ -12,16 +14,15 @@ import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @param id          Recipe id
  * @param input       The enchantment that table stack should have
  * @param ingredients Ingredients on the pedestals
  * @param enchantment The output enchantment
@@ -29,10 +30,9 @@ import java.util.Set;
  * @param force       Ignore enchantment target matching and enchantment compatibility
  */
 public record EnchantmentInfusionRecipe(
-    Identifier id,
     @Nullable EnchantmentIngredient input,
     DefaultedList<Ingredient> ingredients,
-    Enchantment enchantment,
+    RegistryEntry<Enchantment> enchantment,
     int level,
     boolean force
 ) implements InfusionRecipe
@@ -54,16 +54,16 @@ public record EnchantmentInfusionRecipe(
     {
         ItemStack stack = tableStack.isOf(Items.BOOK) ? Items.ENCHANTED_BOOK.getDefaultStack() : tableStack;
 
-        Map<Enchantment, Integer> enchantments = EnchantmentHelper.get(stack);
+        ItemEnchantmentsComponent.Builder enchantments = new ItemEnchantmentsComponent.Builder(EnchantmentHelper.getEnchantments(stack));
         if (input != null)
         {
-            enchantments.remove(input.enchantment());
+            enchantments.remove(input.enchantment()::equals);
         }
-        enchantments.put(enchantment, level);
+        enchantments.set(enchantment, level);
 
-        tableStack.removeSubNbt("Enchantments");
-        tableStack.removeSubNbt("StoredEnchantments");
-        EnchantmentHelper.set(enchantments, stack);
+        stack.remove(DataComponentTypes.ENCHANTMENTS);
+        stack.remove(DataComponentTypes.STORED_ENCHANTMENTS);
+        EnchantmentHelper.set(stack, enchantments.build());
         return stack;
     }
 
@@ -72,9 +72,9 @@ public record EnchantmentInfusionRecipe(
     {
         boolean acceptable = stack.isOf(Items.BOOK) ||
             stack.isOf(Items.ENCHANTED_BOOK) ||
-            enchantment.isAcceptableItem(stack);
+            enchantment.value().isAcceptableItem(stack);
 
-        Set<Enchantment> existing = EnchantmentHelper.get(stack).keySet();
+        Set<RegistryEntry<Enchantment>> existing = new HashSet<>(EnchantmentHelper.getEnchantments(stack).getEnchantments());
         if (this.input != null)
         {
             existing.remove(this.input.enchantment());
@@ -85,19 +85,13 @@ public record EnchantmentInfusionRecipe(
 
         boolean input = this.input == null || this.input.test(stack);
 
-        boolean upgrade = EnchantmentHelper.get(stack).getOrDefault(enchantment, 0) < level;
+        boolean upgrade = EnchantmentHelper.getEnchantments(stack).getLevel(enchantment) < level;
 
         return flag && input && upgrade;
     }
 
     @Override
-    public Identifier getId()
-    {
-        return id;
-    }
-
-    @Override
-    public ItemStack getOutput(DynamicRegistryManager registryManager)
+    public ItemStack getResult(RegistryWrapper.WrapperLookup registryManager)
     {
         return EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, level));
     }

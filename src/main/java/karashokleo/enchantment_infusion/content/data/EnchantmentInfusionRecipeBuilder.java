@@ -1,28 +1,22 @@
 package karashokleo.enchantment_infusion.content.data;
 
-import com.google.gson.JsonObject;
 import karashokleo.enchantment_infusion.api.recipe.EnchantmentIngredient;
-import karashokleo.enchantment_infusion.api.util.SerialUtil;
-import karashokleo.enchantment_infusion.init.EIRecipes;
-import net.minecraft.data.server.recipe.RecipeJsonProvider;
+import karashokleo.enchantment_infusion.content.recipe.EnchantmentInfusionRecipe;
+import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
+import net.minecraft.util.collection.DefaultedList;
 
 public class EnchantmentInfusionRecipeBuilder
 {
     private EnchantmentIngredient input = null;
-    private final List<Ingredient> ingredients = new ArrayList<>();
+    private final DefaultedList<Ingredient> ingredients = DefaultedList.of();
     private boolean force = false;
 
-    public EnchantmentInfusionRecipeBuilder withTableIngredient(Enchantment enchantment, int min_level)
+    public EnchantmentInfusionRecipeBuilder withTableIngredient(RegistryEntry<Enchantment> enchantment, int min_level)
     {
         return this.withTableIngredient(new EnchantmentIngredient(enchantment, min_level));
     }
@@ -62,7 +56,7 @@ public class EnchantmentInfusionRecipeBuilder
         return this;
     }
 
-    public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId, Enchantment enchantment, int level)
+    public void offerTo(RecipeExporter exporter, Identifier recipeId, RegistryEntry<Enchantment> enchantment, int level)
     {
         if (ingredients.isEmpty())
         {
@@ -72,57 +66,6 @@ public class EnchantmentInfusionRecipeBuilder
         {
             throw new IllegalArgumentException("Too many ingredients for enchantment infusion recipe");
         }
-        exporter.accept(new EnchantmentInfusionRecipeJsonProvider(recipeId, input, ingredients, enchantment, level, force));
-    }
-
-    public record EnchantmentInfusionRecipeJsonProvider(
-        Identifier recipeId,
-        @Nullable EnchantmentIngredient input,
-        List<Ingredient> ingredients,
-        Enchantment enchantment,
-        int level,
-        boolean force
-    ) implements RecipeJsonProvider
-    {
-        @Override
-        public void serialize(JsonObject json)
-        {
-            if (input != null)
-            {
-                JsonObject inputJson = new JsonObject();
-                EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER.write(inputJson, input);
-                json.add("input", inputJson);
-            }
-            json.add("ingredients", SerialUtil.ingredientsToJsonArray(ingredients));
-            json.addProperty("enchantment", SerialUtil.enchantmentToString(enchantment));
-            json.addProperty("level", level);
-            json.addProperty("force", force);
-        }
-
-        @Override
-        public Identifier getRecipeId()
-        {
-            return recipeId;
-        }
-
-        @Override
-        public RecipeSerializer<?> getSerializer()
-        {
-            return EIRecipes.EI_SERIALIZER;
-        }
-
-        @Nullable
-        @Override
-        public JsonObject toAdvancementJson()
-        {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public Identifier getAdvancementId()
-        {
-            return null;
-        }
+        exporter.accept(recipeId, new EnchantmentInfusionRecipe(input, ingredients, enchantment, level, force), null);
     }
 }

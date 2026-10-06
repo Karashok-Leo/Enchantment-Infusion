@@ -1,0 +1,23 @@
+{
+  "type": "enchantment_infusion:enchantment_infusion",
+  "enchantment": "minecraft:unbreaking",
+  "ingredients": [
+    {
+      "item": "minecraft:golden_apple"
+    },
+    {
+      "item": "minecraft:diamond"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "minecraft:lapis_block"
+    }
+  ],
+  "input": {
+    "enchantment": "minecraft:unbreaking",
+    "min_level": 0
+  },
+  "level": 1
+}

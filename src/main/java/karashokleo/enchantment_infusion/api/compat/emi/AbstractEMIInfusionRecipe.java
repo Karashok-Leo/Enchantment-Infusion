@@ -9,6 +9,7 @@ import karashokleo.enchantment_infusion.api.recipe.InfusionRecipe;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
@@ -31,13 +32,13 @@ public abstract class AbstractEMIInfusionRecipe implements EmiRecipe
     protected final List<EmiStack> output;
 
     @SuppressWarnings("all")
-    public AbstractEMIInfusionRecipe(InfusionRecipe recipe)
+    public AbstractEMIInfusionRecipe(RecipeEntry<? extends InfusionRecipe> recipe)
     {
         this(
-            recipe.getId(),
-            recipe.getTableIngredient(),
-            recipe.getPedestalIngredient(),
-            recipe.getOutput(MinecraftClient.getInstance().world.getRegistryManager())
+            recipe.id(),
+            recipe.value().getTableIngredient(),
+            recipe.value().getPedestalIngredient(),
+            recipe.value().getResult(MinecraftClient.getInstance().world.getRegistryManager())
         );
     }
 

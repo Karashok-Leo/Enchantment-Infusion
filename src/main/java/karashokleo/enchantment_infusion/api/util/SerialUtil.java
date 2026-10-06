@@ -3,98 +3,100 @@ package karashokleo.enchantment_infusion.api.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.List;
-import java.util.Optional;
 
 public class SerialUtil
 {
-    public static String enchantmentToString(Enchantment enchantment)
-    {
-        return Optional
-            .ofNullable(Registries.ENCHANTMENT.getId(enchantment))
-            .orElseThrow(() -> new IllegalArgumentException("Enchantment " + enchantment + " is not registered"))
-            .toString();
-    }
+    public static final Codec<DefaultedList<Ingredient>> INGREDIENTS_CODEC = Ingredient.DISALLOW_EMPTY_CODEC.listOf()
+        .comapFlatMap(SerialUtil::validateIngredients, ingredients -> ingredients);
 
-    public static Enchantment enchantmentFromString(String id)
-    {
-        return Registries.ENCHANTMENT
-            .getOrEmpty(new Identifier(id))
-            .orElseThrow(() -> new IllegalArgumentException("Unknown enchantment '" + id + "'"));
-    }
-
-    public static ItemStack itemStackFromJson(JsonElement json)
-    {
-        return Util.getResult(
-            ItemStack.CODEC.decode(JsonOps.INSTANCE, json),
-            JsonParseException::new
-        ).getFirst();
-    }
-
-    public static JsonElement itemStackToJson(ItemStack stack)
-    {
-        return Util.getResult(
-            ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, stack),
-            JsonParseException::new
-        );
-    }
-
-    public static JsonArray ingredientsToJsonArray(List<Ingredient> ingredients)
-    {
-        JsonArray json = new JsonArray();
-        for (Ingredient ingredient : ingredients)
-        {
-            json.add(ingredient.toJson());
-        }
-        return json;
-    }
-
-    public static DefaultedList<Ingredient> ingredientsFromJsonArray(JsonArray json)
+    private static DataResult<DefaultedList<Ingredient>> validateIngredients(List<Ingredient> values)
     {
         DefaultedList<Ingredient> ingredients = DefaultedList.of();
-        for (int i = 0; i < json.size(); ++i)
+        for (Ingredient ingredient : values)
         {
-            Ingredient ingredient = Ingredient.fromJson(json.get(i), false);
-            if (ingredient.isEmpty())
+            if (!ingredient.isEmpty())
             {
-                continue;
+                ingredients.add(ingredient);
             }
-            ingredients.add(ingredient);
         }
         if (ingredients.isEmpty())
         {
-            throw new JsonParseException("No ingredients for enchantment infusion recipe");
+            return DataResult.error(() -> "No ingredients for enchantment infusion recipe");
         }
         if (ingredients.size() > 8)
         {
-            throw new JsonParseException("Too many ingredients for enchantment infusion recipe");
+            return DataResult.error(() -> "Too many ingredients for enchantment infusion recipe");
         }
-        return ingredients;
+        return DataResult.success(ingredients);
     }
 
-    public static void ingredientsToPacket(PacketByteBuf buf, DefaultedList<Ingredient> ingredients)
+    public static String enchantmentToString(RegistryEntry<Enchantment> enchantment)
+    {
+        return enchantment.getKey()
+            .orElseThrow(() -> new IllegalArgumentException("Enchantment " + enchantment + " is not registered"))
+            .getValue().toString();
+    }
+
+    public static RegistryEntry<Enchantment> enchantmentFromString(String id, RegistryWrapper.WrapperLookup lookup)
+    {
+        return lookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT)
+            .getOrThrow(RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.of(id)));
+    }
+
+    public static ItemStack itemStackFromJson(JsonElement json, RegistryWrapper.WrapperLookup lookup)
+    {
+        return ItemStack.CODEC.parse(lookup.getOps(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
+    }
+
+    public static JsonElement itemStackToJson(ItemStack stack, RegistryWrapper.WrapperLookup lookup)
+    {
+        return ItemStack.CODEC.encodeStart(lookup.getOps(JsonOps.INSTANCE), stack).getOrThrow(JsonParseException::new);
+    }
+
+    public static JsonArray ingredientsToJsonArray(List<Ingredient> ingredients, RegistryWrapper.WrapperLookup lookup)
+    {
+        return Ingredient.DISALLOW_EMPTY_CODEC.listOf()
+            .encodeStart(lookup.getOps(JsonOps.INSTANCE), ingredients).getOrThrow(JsonParseException::new).getAsJsonArray();
+    }
+
+    public static DefaultedList<Ingredient> ingredientsFromJsonArray(JsonArray json, RegistryWrapper.WrapperLookup lookup)
+    {
+        return INGREDIENTS_CODEC.parse(lookup.getOps(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
+    }
+
+    public static void ingredientsToPacket(RegistryByteBuf buf, DefaultedList<Ingredient> ingredients)
     {
         buf.writeVarInt(ingredients.size());
         for (Ingredient ingredient : ingredients)
         {
-            ingredient.write(buf);
+            Ingredient.PACKET_CODEC.encode(buf, ingredient);
         }
     }
 
-    public static DefaultedList<Ingredient> ingredientsFromPacket(PacketByteBuf buf)
+    public static DefaultedList<Ingredient> ingredientsFromPacket(RegistryByteBuf buf)
     {
-        DefaultedList<Ingredient> ingredients = DefaultedList.ofSize(buf.readVarInt(), Ingredient.EMPTY);
-        ingredients.replaceAll(ingredient -> Ingredient.fromPacket(buf));
+        int size = buf.readVarInt();
+        if (size < 1 || size > 8)
+        {
+            throw new IllegalArgumentException("Infusion recipes must have between 1 and 8 ingredients");
+        }
+        DefaultedList<Ingredient> ingredients = DefaultedList.ofSize(size, Ingredient.EMPTY);
+        ingredients.replaceAll(ingredient -> Ingredient.PACKET_CODEC.decode(buf));
         return ingredients;
     }
 }

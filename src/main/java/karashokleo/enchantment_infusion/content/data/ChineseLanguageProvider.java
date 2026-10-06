@@ -4,16 +4,19 @@ import karashokleo.enchantment_infusion.init.EIBlocks;
 import karashokleo.enchantment_infusion.init.EITexts;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
+import net.minecraft.registry.RegistryWrapper;
+
+import java.util.concurrent.CompletableFuture;
 
 public class ChineseLanguageProvider extends FabricLanguageProvider
 {
-    public ChineseLanguageProvider(FabricDataOutput dataOutput)
+    public ChineseLanguageProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture)
     {
-        super(dataOutput, "zh_cn");
+        super(dataOutput, "zh_cn", registriesFuture);
     }
 
     @Override
-    public void generateTranslations(TranslationBuilder translationBuilder)
+    public void generateTranslations(RegistryWrapper.WrapperLookup registryLookup, TranslationBuilder translationBuilder)
     {
         translationBuilder.add(EIBlocks.INFUSION_TABLE, "魔咒灌注台");
         translationBuilder.add(EIBlocks.INFUSION_PEDESTAL, "魔咒灌注基座");

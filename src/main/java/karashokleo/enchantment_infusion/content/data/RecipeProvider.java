@@ -5,17 +5,19 @@ import karashokleo.enchantment_infusion.fabric.EnchantmentInfusion;
 import karashokleo.enchantment_infusion.init.EIBlocks;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.data.server.recipe.RecipeJsonProvider;
+import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 
-import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class RecipeProvider extends FabricRecipeProvider
@@ -31,24 +33,27 @@ public class RecipeProvider extends FabricRecipeProvider
      * WILDEN_SPIKE          ---->   SWEET_BERRIES
      * */
 
-    public RecipeProvider(FabricDataOutput output)
+    private final CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture;
+
+    public RecipeProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture)
     {
-        super(output);
+        super(output, registriesFuture);
+        this.registriesFuture = registriesFuture;
     }
 
-    private static void add(Consumer<EnchantmentInfusionRecipeBuilder> consumer, Enchantment enchantment, int level, Consumer<RecipeJsonProvider> exporter)
+    private void add(Consumer<EnchantmentInfusionRecipeBuilder> consumer, RegistryKey<Enchantment> enchantment, int level, RecipeExporter exporter)
     {
         EIRecipeUtil.add(
             consumer,
-            enchantment,
+            registriesFuture.join().getWrapperOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(enchantment),
             level,
             exporter,
-            EnchantmentInfusion.id(Objects.requireNonNull(Registries.ENCHANTMENT.getId(enchantment)).getPath() + "/" + level)
+            EnchantmentInfusion.id((enchantment.equals(Enchantments.SWEEPING_EDGE) ? "sweeping" : enchantment.getValue().getPath()) + "/" + level)
         );
     }
 
     @Override
-    public void generate(Consumer<RecipeJsonProvider> exporter)
+    public void generate(RecipeExporter exporter)
     {
         ShapedRecipeJsonBuilder
             .create(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_TABLE)
@@ -716,7 +721,7 @@ public class RecipeProvider extends FabricRecipeProvider
                 .withPedestalItem(1, Items.CLOCK)
                 .withPedestalItem(1, Items.AMETHYST_SHARD)
                 .withPedestalItem(1, Items.LAPIS_BLOCK),
-            Enchantments.SWEEPING, 1, exporter
+            Enchantments.SWEEPING_EDGE, 1, exporter
         );
 
         add(
@@ -724,7 +729,7 @@ public class RecipeProvider extends FabricRecipeProvider
                 .withPedestalItem(2, Items.CLOCK)
                 .withPedestalItem(2, Items.AMETHYST_SHARD)
                 .withPedestalItem(2, Items.LAPIS_BLOCK),
-            Enchantments.SWEEPING, 2, exporter
+            Enchantments.SWEEPING_EDGE, 2, exporter
         );
 
         add(
@@ -732,7 +737,7 @@ public class RecipeProvider extends FabricRecipeProvider
                 .withPedestalItem(3, Items.CLOCK)
                 .withPedestalItem(2, Items.AMETHYST_SHARD)
                 .withPedestalItem(3, Items.LAPIS_BLOCK),
-            Enchantments.SWEEPING, 3, exporter
+            Enchantments.SWEEPING_EDGE, 3, exporter
         );
 
         add(

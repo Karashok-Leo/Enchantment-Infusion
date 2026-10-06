@@ -13,8 +13,10 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -78,7 +80,7 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
             return;
         }
         InfusionInventory inventory = new InfusionInventory(this, pedestalInventory);
-        Optional<InfusionRecipe> match = matchGetter.getFirstMatch(inventory, world);
+        Optional<RecipeEntry<InfusionRecipe>> match = matchGetter.getFirstMatch(inventory, world);
         if (match.isPresent())
         {
             ticks = TOTAL_CRAFT_TICKS;
@@ -86,7 +88,7 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         } else
         {
             player.sendMessage(EITexts.RNF.get(), true);
-            player.getInventory().offerOrDrop(this.removeStack());
+            player.getInventory().offerOrDrop(this.emptyStack());
         }
     }
 
@@ -205,13 +207,13 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
                 return;
             }
             InfusionInventory inventory = new InfusionInventory(entity, pedestalInventory);
-            Optional<InfusionRecipe> match = entity.matchGetter.getFirstMatch(inventory, serverWorld);
+            Optional<RecipeEntry<InfusionRecipe>> match = entity.matchGetter.getFirstMatch(inventory, serverWorld);
             if (match.isEmpty())
             {
                 entity.interrupt(serverWorld);
             } else if (entity.ticks == 0)
             {
-                entity.craft(serverWorld, match.get(), inventory);
+                entity.craft(serverWorld, match.get().value(), inventory);
                 spawnEndRodParticles(serverWorld, center);
                 playCompleteSound(serverWorld, center);
                 entity.onInfusingStateChanged(serverWorld, pos, false);
@@ -269,16 +271,16 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt)
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries)
     {
-        super.writeNbt(nbt);
+        super.writeNbt(nbt, registries);
         nbt.putInt("Ticks", ticks);
     }
 
     @Override
-    public void readNbt(NbtCompound nbt)
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries)
     {
-        super.readNbt(nbt);
+        super.readNbt(nbt, registries);
         this.ticks = nbt.getInt("Ticks");
     }
 }

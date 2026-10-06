@@ -3,7 +3,7 @@ package karashokleo.enchantment_infusion.content.block;
 import karashokleo.enchantment_infusion.api.block.AbstractInfusionBlock;
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionTableTile;
 import karashokleo.enchantment_infusion.init.EIBlocks;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.MapColor;
@@ -11,7 +11,7 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -35,18 +35,31 @@ public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
         Block.createCuboidShape(12.95, 12.0, 0.0, 15.95, 14.0, 3.0)
     );
 
+    public static final MapCodec<EnchantmentInfusionTableBlock> CODEC = createCodec(EnchantmentInfusionTableBlock::new);
+
     public EnchantmentInfusionTableBlock()
     {
-        super(
-            FabricBlockSettings.create()
+        this(
+            Settings.create()
                 .mapColor(MapColor.BLACK)
-                .instrument(Instrument.BASEDRUM)
+                .instrument(NoteBlockInstrument.BASEDRUM)
                 .strength(5.0f, 1200.0f)
                 .requiresTool()
                 .nonOpaque()
                 .luminance(state -> state.get(EIBlocks.INFUSING) ? 12 : 0)
         );
+    }
+
+    public EnchantmentInfusionTableBlock(Settings settings)
+    {
+        super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(EIBlocks.INFUSING, false));
+    }
+
+    @Override
+    protected MapCodec<EnchantmentInfusionTableBlock> getCodec()
+    {
+        return CODEC;
     }
 
     @Override
@@ -72,6 +85,6 @@ public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type)
     {
-        return world.isClient ? null : checkType(type, EIBlocks.INFUSION_TABLE_TILE, EnchantmentInfusionTableTile::serverTick);
+        return world.isClient ? null : validateTicker(type, EIBlocks.INFUSION_TABLE_TILE, EnchantmentInfusionTableTile::serverTick);
     }
 }

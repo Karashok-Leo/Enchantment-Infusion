@@ -27,6 +27,6 @@ public class REICompat implements REIClientPlugin
     @Override
     public void registerDisplays(DisplayRegistry registry)
     {
-        registry.getRecipeManager().listAllOfType(EIRecipes.INFUSION_RECIPE_TYPE).forEach(recipe -> registry.add(new REIEIDisplay(recipe)));
+        registry.getRecipeManager().listAllOfType(EIRecipes.INFUSION_RECIPE_TYPE).forEach(recipe -> registry.add(new REIEIDisplay(recipe.value())));
     }
 }

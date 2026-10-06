@@ -1,24 +1,17 @@
 package karashokleo.enchantment_infusion.content.data;
 
-import com.google.gson.JsonObject;
-import karashokleo.enchantment_infusion.api.util.SerialUtil;
-import karashokleo.enchantment_infusion.init.EIRecipes;
-import net.minecraft.data.server.recipe.RecipeJsonProvider;
+import karashokleo.enchantment_infusion.content.recipe.SimpleInfusionRecipe;
+import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
+import net.minecraft.util.collection.DefaultedList;
 
 public class SimpleInfusionRecipeBuilder
 {
     private Ingredient input = null;
-    private final List<Ingredient> ingredients = new ArrayList<>();
+    private final DefaultedList<Ingredient> ingredients = DefaultedList.of();
     private boolean copyNbt = true;
 
     public SimpleInfusionRecipeBuilder withTableIngredient(Ingredient input)
@@ -51,7 +44,7 @@ public class SimpleInfusionRecipeBuilder
         return this;
     }
 
-    public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId, ItemStack output)
+    public void offerTo(RecipeExporter exporter, Identifier recipeId, ItemStack output)
     {
         if (ingredients.isEmpty())
         {
@@ -61,50 +54,6 @@ public class SimpleInfusionRecipeBuilder
         {
             throw new IllegalArgumentException("Too many ingredients for enchantment infusion recipe");
         }
-        exporter.accept(new SimpleInfusionRecipeJsonProvider(recipeId, input, ingredients, output, copyNbt));
-    }
-
-    public record SimpleInfusionRecipeJsonProvider(
-        Identifier recipeId,
-        Ingredient input,
-        List<Ingredient> ingredients,
-        ItemStack output,
-        boolean copyNbt
-    ) implements RecipeJsonProvider
-    {
-        @Override
-        public void serialize(JsonObject json)
-        {
-            json.add("input", input.toJson());
-            json.add("ingredients", SerialUtil.ingredientsToJsonArray(ingredients));
-            json.add("output", SerialUtil.itemStackToJson(output));
-            json.addProperty("copy_nbt", copyNbt);
-        }
-
-        @Override
-        public Identifier getRecipeId()
-        {
-            return recipeId;
-        }
-
-        @Override
-        public RecipeSerializer<?> getSerializer()
-        {
-            return EIRecipes.SI_SERIALIZER;
-        }
-
-        @Nullable
-        @Override
-        public JsonObject toAdvancementJson()
-        {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public Identifier getAdvancementId()
-        {
-            return null;
-        }
+        exporter.accept(recipeId, new SimpleInfusionRecipe(input, ingredients, output, copyNbt), null);
     }
 }

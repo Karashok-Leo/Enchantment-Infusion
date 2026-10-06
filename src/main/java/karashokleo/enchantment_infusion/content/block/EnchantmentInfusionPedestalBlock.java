@@ -3,13 +3,13 @@ package karashokleo.enchantment_infusion.content.block;
 import karashokleo.enchantment_infusion.api.block.AbstractInfusionBlock;
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionPedestalTile;
 import karashokleo.enchantment_infusion.init.EIBlocks;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -29,18 +29,31 @@ public class EnchantmentInfusionPedestalBlock extends AbstractInfusionBlock
         Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0)
     );
 
+    public static final MapCodec<EnchantmentInfusionPedestalBlock> CODEC = createCodec(EnchantmentInfusionPedestalBlock::new);
+
     public EnchantmentInfusionPedestalBlock()
     {
-        super(
-            FabricBlockSettings.create()
+        this(
+            Settings.create()
                 .mapColor(MapColor.BLACK)
-                .instrument(Instrument.BASEDRUM)
+                .instrument(NoteBlockInstrument.BASEDRUM)
                 .strength(5.0f, 1200.0f)
                 .requiresTool()
                 .nonOpaque()
                 .luminance(state -> state.get(EIBlocks.INFUSING) ? 10 : 0)
         );
+    }
+
+    public EnchantmentInfusionPedestalBlock(Settings settings)
+    {
+        super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(EIBlocks.INFUSING, false));
+    }
+
+    @Override
+    protected MapCodec<EnchantmentInfusionPedestalBlock> getCodec()
+    {
+        return CODEC;
     }
 
     @Override

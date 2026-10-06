@@ -1,7 +1,7 @@
 package karashokleo.enchantment_infusion.init;
 
 import karashokleo.enchantment_infusion.fabric.EnchantmentInfusion;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.item.Item;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroups;
@@ -19,12 +19,12 @@ public class EIItems
         INFUSION_TABLE_ITEM = Registry.register(
             Registries.ITEM,
             EnchantmentInfusion.id("enchantment_infusion_table"),
-            new BlockItem(EIBlocks.INFUSION_TABLE, new FabricItemSettings())
+            new BlockItem(EIBlocks.INFUSION_TABLE, new Item.Settings())
         );
         INFUSION_PEDESTAL_ITEM = Registry.register(
             Registries.ITEM,
             EnchantmentInfusion.id("enchantment_infusion_pedestal"),
-            new BlockItem(EIBlocks.INFUSION_PEDESTAL, new FabricItemSettings())
+            new BlockItem(EIBlocks.INFUSION_PEDESTAL, new Item.Settings())
         );
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> content.addAfter(Items.ENCHANTING_TABLE, INFUSION_TABLE_ITEM, INFUSION_PEDESTAL_ITEM));
     }

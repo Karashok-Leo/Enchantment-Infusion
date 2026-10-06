@@ -1,60 +1,63 @@
 package karashokleo.enchantment_infusion.content.recipe;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import karashokleo.enchantment_infusion.api.recipe.EnchantmentIngredient;
 import karashokleo.enchantment_infusion.api.util.SerialUtil;
-import karashokleo.enchantment_infusion.init.EIRecipes;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.collection.DefaultedList;
+
+import java.util.Optional;
 
 public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<EnchantmentInfusionRecipe>
 {
+    public static final MapCodec<EnchantmentInfusionRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+        EnchantmentIngredient.CODEC.codec().optionalFieldOf("input").forGetter(recipe -> Optional.ofNullable(recipe.input())),
+        SerialUtil.INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(EnchantmentInfusionRecipe::ingredients),
+        Enchantment.ENTRY_CODEC.fieldOf("enchantment").forGetter(EnchantmentInfusionRecipe::enchantment),
+        Codec.intRange(1, 255).fieldOf("level").forGetter(EnchantmentInfusionRecipe::level),
+        Codec.BOOL.optionalFieldOf("force", false).forGetter(EnchantmentInfusionRecipe::force)
+    ).apply(instance, (input, ingredients, enchantment, level, force) ->
+        new EnchantmentInfusionRecipe(input.orElse(null), ingredients, enchantment, level, force)));
+
+    public static final PacketCodec<RegistryByteBuf, EnchantmentInfusionRecipe> PACKET_CODEC = PacketCodec.ofStatic(
+        EnchantmentInfusionRecipeSerializer::write, EnchantmentInfusionRecipeSerializer::read
+    );
+
     @Override
-    public EnchantmentInfusionRecipe read(Identifier id, JsonObject json)
+    public MapCodec<EnchantmentInfusionRecipe> codec()
     {
-        EnchantmentIngredient input = null;
-        if (JsonHelper.hasElement(json, "input"))
-        {
-            JsonObject inputJson = JsonHelper.getObject(json, "input");
-            input = EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER.read(inputJson);
-        }
-        DefaultedList<Ingredient> ingredients = SerialUtil.ingredientsFromJsonArray(JsonHelper.getArray(json, "ingredients"));
-        Enchantment enchantment = SerialUtil.enchantmentFromString(JsonHelper.getString(json, "enchantment"));
-        int level = JsonHelper.getInt(json, "level");
-        boolean force = JsonHelper.getBoolean(json, "force", false);
-        return new EnchantmentInfusionRecipe(id, input, ingredients, enchantment, level, force);
+        return CODEC;
     }
 
     @Override
-    public EnchantmentInfusionRecipe read(Identifier id, PacketByteBuf buf)
+    public PacketCodec<RegistryByteBuf, EnchantmentInfusionRecipe> packetCodec()
     {
-        EnchantmentIngredient input = null;
-        if (buf.readBoolean())
-        {
-            input = EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER.read(buf);
-        }
-        DefaultedList<Ingredient> ingredients = SerialUtil.ingredientsFromPacket(buf);
-        Enchantment enchantment = SerialUtil.enchantmentFromString(buf.readString());
+        return PACKET_CODEC;
+    }
+
+    private static EnchantmentInfusionRecipe read(RegistryByteBuf buf)
+    {
+        EnchantmentIngredient input = buf.readBoolean() ? EnchantmentIngredient.PACKET_CODEC.decode(buf) : null;
+        var ingredients = SerialUtil.ingredientsFromPacket(buf);
+        var enchantment = Enchantment.ENTRY_PACKET_CODEC.decode(buf);
         int level = buf.readInt();
         boolean force = buf.readBoolean();
-        return new EnchantmentInfusionRecipe(id, input, ingredients, enchantment, level, force);
+        return new EnchantmentInfusionRecipe(input, ingredients, enchantment, level, force);
     }
 
-    @Override
-    public void write(PacketByteBuf buf, EnchantmentInfusionRecipe recipe)
+    private static void write(RegistryByteBuf buf, EnchantmentInfusionRecipe recipe)
     {
         buf.writeBoolean(recipe.input() != null);
         if (recipe.input() != null)
         {
-            EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER.write(buf, recipe.input());
+            EnchantmentIngredient.PACKET_CODEC.encode(buf, recipe.input());
         }
         SerialUtil.ingredientsToPacket(buf, recipe.ingredients());
-        buf.writeString(SerialUtil.enchantmentToString(recipe.enchantment()));
+        Enchantment.ENTRY_PACKET_CODEC.encode(buf, recipe.enchantment());
         buf.writeInt(recipe.level());
         buf.writeBoolean(recipe.force());
     }
