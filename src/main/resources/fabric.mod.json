@@ -27,6 +27,9 @@
     "emi": [
       "karashokleo.enchantment_infusion.content.compat.emi.EMICompat"
     ],
+    "jei_mod_plugin": [
+      "karashokleo.enchantment_infusion.content.compat.jei.JEICompat"
+    ],
     "rei_client": [
       "karashokleo.enchantment_infusion.content.compat.rei.REICompat"
     ]

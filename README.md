@@ -110,7 +110,7 @@ Since mod version `1.2.0`, a new recipe type (`enchantment_infusion:simple_infus
 
 ## 🧩Compatibility
 
-This mod has built-in REI and EMI compatible plug-ins, which means you can use either to view all recipes in this mod.
+This mod has built-in JEI, REI and EMI compatible plug-ins, which means you can use any of them to view all recipes in this mod.
 
 ## ✉️Feedback
 
