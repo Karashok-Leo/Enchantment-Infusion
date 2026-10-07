@@ -111,7 +111,16 @@ Since mod version `1.2.0`, a new recipe type (`enchantment_infusion:simple_infus
 
 ## 🧩Compatibility
 
-This mod has built-in REI and EMI compatible plug-ins, which means you can use either to view all recipes in this mod.
+This mod has optional JEI, REI and EMI integrations for viewing both enchantment and simple infusion recipes. JEI uses the same central input, circular pedestal inputs, output preview, and table/pedestal catalysts as the existing viewers. No recipe transfer or new gameplay behavior is added.
+
+Development runtime selection (Java 21):
+
+- `./gradlew runClient -PrecipeViewer=jei`: JEI 19.27.0.340 only
+- `./gradlew runClient -PrecipeViewer=emi`: EMI only (default)
+- `./gradlew runClient -PrecipeViewer=none`: no recipe viewer
+- `./gradlew runClient -PrecipeViewer=coexist`: JEI and EMI
+
+Viewer APIs are compile-only, with no viewer bundled or required by the released JAR. REI remains compile-only. See [JEI verification notes](docs/JEI.md) for the checks and manual coverage.
 
 ## ✉️Feedback
 

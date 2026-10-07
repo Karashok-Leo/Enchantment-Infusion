@@ -19,6 +19,7 @@ repositories {
     maven { url = 'https://maven.shedaniel.me/' }
     maven { url = 'https://maven.architectury.dev/' }
     maven { url = 'https://maven.terraformersmc.com/' }
+    maven { url = 'https://maven.blamejared.com/' }
     mavenCentral()
 }
 neoForge {
@@ -43,9 +44,21 @@ neoForge {
     }
 }
 configurations { runtimeClasspath.extendsFrom localRuntime }
+// Viewer runtimes are local development conveniences, never bundled or required.
+def recipeViewer = providers.gradleProperty('recipeViewer').getOrElse('emi')
+if (!(recipeViewer in ['emi', 'jei', 'none', 'coexist'])) {
+    throw new GradleException("recipeViewer must be emi, jei, none, or coexist")
+}
 dependencies {
     compileOnly "dev.emi:emi-neoforge:${project.emi_version}:api"
-    localRuntime "dev.emi:emi-neoforge:${project.emi_version}"
+    if (recipeViewer in ['emi', 'coexist']) {
+        localRuntime "dev.emi:emi-neoforge:${project.emi_version}"
+    }
+    compileOnly "mezz.jei:jei-${project.minecraft_version}-common-api:${project.jei_version}"
+    compileOnly "mezz.jei:jei-${project.minecraft_version}-neoforge-api:${project.jei_version}"
+    if (recipeViewer in ['jei', 'coexist']) {
+        localRuntime "mezz.jei:jei-${project.minecraft_version}-neoforge:${project.jei_version}"
+    }
     compileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:${project.rei_version}"
     testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

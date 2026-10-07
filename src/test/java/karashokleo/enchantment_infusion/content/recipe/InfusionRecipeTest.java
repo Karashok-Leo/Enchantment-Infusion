@@ -70,6 +70,29 @@ class InfusionRecipeTest
         ), exclusiveSet, DataComponentMap.EMPTY);
     }
 
+    @Test
+    void viewerPreviewsPreservePrerequisiteBookLevels()
+    {
+        ItemStack[] previews = new EnchantmentIngredient(prerequisite, 3).toVanilla().getItems();
+        assertEquals(3, previews.length);
+        for (int i = 0; i < previews.length; i++)
+        {
+            assertTrue(previews[i].is(Items.ENCHANTED_BOOK));
+            assertEquals(i + 3, EnchantmentHelper.getEnchantmentsForCrafting(previews[i]).getLevel(prerequisite));
+        }
+        ItemStack[] plain = new EnchantmentIngredient(prerequisite, 0).toVanilla().getItems();
+        assertEquals(1, plain.length);
+        assertTrue(plain[0].is(Items.BOOK));
+    }
+
+    @Test
+    void viewerOutputIsNativeEnchantedBookWithExactLevel()
+    {
+        ItemStack output = enchantmentRecipe(null, 4, false).getResultItem(registryManager);
+        assertTrue(output.is(Items.ENCHANTED_BOOK));
+        assertEquals(4, EnchantmentHelper.getEnchantmentsForCrafting(output).getLevel(target));
+    }
+
     private static NonNullList<Ingredient> ingredients()
     {
         return NonNullList.of(Ingredient.EMPTY, Ingredient.of(Items.DIAMOND), Ingredient.of(Items.LAPIS_LAZULI));
