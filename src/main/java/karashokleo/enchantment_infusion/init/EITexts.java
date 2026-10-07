@@ -1,9 +1,9 @@
 package karashokleo.enchantment_infusion.init;
 
-import karashokleo.enchantment_infusion.fabric.EnchantmentInfusion;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Util;
+import karashokleo.enchantment_infusion.neoforge.EnchantmentInfusion;
+import net.minecraft.Util;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 public enum EITexts
 {
@@ -16,7 +16,7 @@ public enum EITexts
 
     EITexts(String type, String path)
     {
-        this(Util.createTranslationKey(type, EnchantmentInfusion.id(path)));
+        this(Util.makeDescriptionId(type, EnchantmentInfusion.id(path)));
     }
 
     EITexts(String key)
@@ -24,8 +24,8 @@ public enum EITexts
         this.key = key;
     }
 
-    public MutableText get()
+    public MutableComponent get()
     {
-        return Text.translatable(key);
+        return Component.translatable(key);
     }
 }

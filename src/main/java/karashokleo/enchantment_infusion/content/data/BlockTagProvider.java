@@ -1,24 +1,26 @@
 package karashokleo.enchantment_infusion.content.data;
 
 import karashokleo.enchantment_infusion.init.EIBlocks;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.BlockTags;
+import karashokleo.enchantment_infusion.neoforge.EnchantmentInfusion;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
+import net.minecraft.tags.BlockTags;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
-public class BlockTagProvider extends FabricTagProvider.BlockTagProvider
+public class BlockTagProvider extends BlockTagsProvider
 {
-    public BlockTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture)
+    public BlockTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture, ExistingFileHelper existingFileHelper)
     {
-        super(output, registriesFuture);
+        super(output, registriesFuture, EnchantmentInfusion.MOD_ID, existingFileHelper);
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup arg)
+    protected void addTags(HolderLookup.Provider registries)
     {
-        getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE)
+        tag(BlockTags.MINEABLE_WITH_PICKAXE)
             .add(EIBlocks.INFUSION_TABLE, EIBlocks.INFUSION_PEDESTAL);
     }
 }

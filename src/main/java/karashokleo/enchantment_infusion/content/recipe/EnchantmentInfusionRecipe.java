@@ -3,20 +3,20 @@ package karashokleo.enchantment_infusion.content.recipe;
 import karashokleo.enchantment_infusion.api.recipe.EnchantmentIngredient;
 import karashokleo.enchantment_infusion.api.recipe.InfusionRecipe;
 import karashokleo.enchantment_infusion.init.EIRecipes;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.EnchantmentLevelEntry;
-import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -31,8 +31,8 @@ import java.util.Set;
  */
 public record EnchantmentInfusionRecipe(
     @Nullable EnchantmentIngredient input,
-    DefaultedList<Ingredient> ingredients,
-    RegistryEntry<Enchantment> enchantment,
+    NonNullList<Ingredient> ingredients,
+    Holder<Enchantment> enchantment,
     int level,
     boolean force
 ) implements InfusionRecipe
@@ -40,11 +40,11 @@ public record EnchantmentInfusionRecipe(
     @Override
     public Ingredient getTableIngredient()
     {
-        return input == null ? Ingredient.ofItems(Items.BOOK) : input.toVanilla();
+        return input == null ? Ingredient.of(Items.BOOK) : input.toVanilla();
     }
 
     @Override
-    public DefaultedList<Ingredient> getPedestalIngredient()
+    public NonNullList<Ingredient> getPedestalIngredient()
     {
         return ingredients;
     }
@@ -52,48 +52,48 @@ public record EnchantmentInfusionRecipe(
     @Override
     public ItemStack infuse(ItemStack tableStack)
     {
-        ItemStack stack = tableStack.isOf(Items.BOOK) ? Items.ENCHANTED_BOOK.getDefaultStack() : tableStack;
+        ItemStack stack = tableStack.is(Items.BOOK) ? Items.ENCHANTED_BOOK.getDefaultInstance() : tableStack;
 
-        ItemEnchantmentsComponent.Builder enchantments = new ItemEnchantmentsComponent.Builder(EnchantmentHelper.getEnchantments(stack));
+        ItemEnchantments.Mutable enchantments = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(stack));
         if (input != null)
         {
-            enchantments.remove(input.enchantment()::equals);
+            enchantments.removeIf(input.enchantment()::equals);
         }
         enchantments.set(enchantment, level);
 
-        stack.remove(DataComponentTypes.ENCHANTMENTS);
-        stack.remove(DataComponentTypes.STORED_ENCHANTMENTS);
-        EnchantmentHelper.set(stack, enchantments.build());
+        stack.remove(DataComponents.ENCHANTMENTS);
+        stack.remove(DataComponents.STORED_ENCHANTMENTS);
+        EnchantmentHelper.setEnchantments(stack, enchantments.toImmutable());
         return stack;
     }
 
     @Override
     public boolean matchTableStack(ItemStack stack)
     {
-        boolean acceptable = stack.isOf(Items.BOOK) ||
-            stack.isOf(Items.ENCHANTED_BOOK) ||
-            enchantment.value().isAcceptableItem(stack);
+        boolean acceptable = stack.is(Items.BOOK) ||
+            stack.is(Items.ENCHANTED_BOOK) ||
+            enchantment.value().canEnchant(stack);
 
-        Set<RegistryEntry<Enchantment>> existing = new HashSet<>(EnchantmentHelper.getEnchantments(stack).getEnchantments());
+        Set<Holder<Enchantment>> existing = new HashSet<>(EnchantmentHelper.getEnchantmentsForCrafting(stack).keySet());
         if (this.input != null)
         {
             existing.remove(this.input.enchantment());
         }
-        boolean compatible = EnchantmentHelper.isCompatible(existing, enchantment);
+        boolean compatible = EnchantmentHelper.isEnchantmentCompatible(existing, enchantment);
 
         boolean flag = force || (acceptable && compatible);
 
         boolean input = this.input == null || this.input.test(stack);
 
-        boolean upgrade = EnchantmentHelper.getEnchantments(stack).getLevel(enchantment) < level;
+        boolean upgrade = EnchantmentHelper.getEnchantmentsForCrafting(stack).getLevel(enchantment) < level;
 
         return flag && input && upgrade;
     }
 
     @Override
-    public ItemStack getResult(RegistryWrapper.WrapperLookup registryManager)
+    public ItemStack getResultItem(HolderLookup.Provider registryManager)
     {
-        return EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, level));
+        return EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, level));
     }
 
     @Override

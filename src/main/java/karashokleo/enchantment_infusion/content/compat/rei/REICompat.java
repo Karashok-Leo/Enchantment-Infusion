@@ -9,6 +9,7 @@ import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 
+@me.shedaniel.rei.forge.REIPluginClient
 public class REICompat implements REIClientPlugin
 {
     public static final CategoryIdentifier<AbstractREIInfusionDisplay> EI = CategoryIdentifier.of(EIRecipes.INFUSION_ID);
@@ -27,6 +28,6 @@ public class REICompat implements REIClientPlugin
     @Override
     public void registerDisplays(DisplayRegistry registry)
     {
-        registry.getRecipeManager().listAllOfType(EIRecipes.INFUSION_RECIPE_TYPE).forEach(recipe -> registry.add(new REIEIDisplay(recipe.value())));
+        registry.getRecipeManager().getAllRecipesFor(EIRecipes.INFUSION_RECIPE_TYPE).forEach(recipe -> registry.add(new REIEIDisplay(recipe.value())));
     }
 }

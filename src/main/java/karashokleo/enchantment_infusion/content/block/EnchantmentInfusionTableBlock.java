@@ -3,88 +3,88 @@ package karashokleo.enchantment_infusion.content.block;
 import karashokleo.enchantment_infusion.api.block.AbstractInfusionBlock;
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionTableTile;
 import karashokleo.enchantment_infusion.init.EIBlocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.NoteBlockInstrument;
-import net.minecraft.state.StateManager;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
 public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
 {
-    protected static final VoxelShape SHAPE = VoxelShapes.union(
+    protected static final VoxelShape SHAPE = Shapes.or(
         // top
-        Block.createCuboidShape(1.0, 4.0, 1.0, 15.0, 13.0, 15.0),
+        Block.box(1.0, 4.0, 1.0, 15.0, 13.0, 15.0),
         // bottom
-        Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
+        Block.box(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
         // corner
-        Block.createCuboidShape(0.05, 12.0, 0.05, 3.05, 14.0, 3.05),
-        Block.createCuboidShape(0.05, 12.0, 12.95, 3.0, 14.0, 15.95),
-        Block.createCuboidShape(12.95, 12.0, 12.95, 15.95, 14.0, 15.95),
-        Block.createCuboidShape(12.95, 12.0, 0.0, 15.95, 14.0, 3.0)
+        Block.box(0.05, 12.0, 0.05, 3.05, 14.0, 3.05),
+        Block.box(0.05, 12.0, 12.95, 3.0, 14.0, 15.95),
+        Block.box(12.95, 12.0, 12.95, 15.95, 14.0, 15.95),
+        Block.box(12.95, 12.0, 0.0, 15.95, 14.0, 3.0)
     );
 
-    public static final MapCodec<EnchantmentInfusionTableBlock> CODEC = createCodec(EnchantmentInfusionTableBlock::new);
+    public static final MapCodec<EnchantmentInfusionTableBlock> CODEC = simpleCodec(EnchantmentInfusionTableBlock::new);
 
     public EnchantmentInfusionTableBlock()
     {
         this(
-            Settings.create()
-                .mapColor(MapColor.BLACK)
+            Properties.of()
+                .mapColor(MapColor.COLOR_BLACK)
                 .instrument(NoteBlockInstrument.BASEDRUM)
                 .strength(5.0f, 1200.0f)
-                .requiresTool()
-                .nonOpaque()
-                .luminance(state -> state.get(EIBlocks.INFUSING) ? 12 : 0)
+                .requiresCorrectToolForDrops()
+                .noOcclusion()
+                .lightLevel(state -> state.getValue(EIBlocks.INFUSING) ? 12 : 0)
         );
     }
 
-    public EnchantmentInfusionTableBlock(Settings settings)
+    public EnchantmentInfusionTableBlock(Properties settings)
     {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(EIBlocks.INFUSING, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(EIBlocks.INFUSING, false));
     }
 
     @Override
-    protected MapCodec<EnchantmentInfusionTableBlock> getCodec()
+    protected MapCodec<EnchantmentInfusionTableBlock> codec()
     {
         return CODEC;
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
         builder.add(EIBlocks.INFUSING);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context)
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context)
     {
         return SHAPE;
     }
 
     @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state)
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
         return new EnchantmentInfusionTableTile(pos, state);
     }
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type)
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type)
     {
-        return world.isClient ? null : validateTicker(type, EIBlocks.INFUSION_TABLE_TILE, EnchantmentInfusionTableTile::serverTick);
+        return world.isClientSide ? null : createTickerHelper(type, EIBlocks.INFUSION_TABLE_TILE, EnchantmentInfusionTableTile::serverTick);
     }
 }

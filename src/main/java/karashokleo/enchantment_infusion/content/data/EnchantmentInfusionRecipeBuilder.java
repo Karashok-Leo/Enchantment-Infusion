@@ -2,21 +2,21 @@ package karashokleo.enchantment_infusion.content.data;
 
 import karashokleo.enchantment_infusion.api.recipe.EnchantmentIngredient;
 import karashokleo.enchantment_infusion.content.recipe.EnchantmentInfusionRecipe;
-import net.minecraft.data.server.recipe.RecipeExporter;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.core.Holder;
+import net.minecraft.core.NonNullList;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.ItemLike;
 
 public class EnchantmentInfusionRecipeBuilder
 {
     private EnchantmentIngredient input = null;
-    private final DefaultedList<Ingredient> ingredients = DefaultedList.of();
+    private final NonNullList<Ingredient> ingredients = NonNullList.create();
     private boolean force = false;
 
-    public EnchantmentInfusionRecipeBuilder withTableIngredient(RegistryEntry<Enchantment> enchantment, int min_level)
+    public EnchantmentInfusionRecipeBuilder withTableIngredient(Holder<Enchantment> enchantment, int min_level)
     {
         return this.withTableIngredient(new EnchantmentIngredient(enchantment, min_level));
     }
@@ -27,9 +27,9 @@ public class EnchantmentInfusionRecipeBuilder
         return this;
     }
 
-    public EnchantmentInfusionRecipeBuilder withPedestalItem(int count, ItemConvertible item)
+    public EnchantmentInfusionRecipeBuilder withPedestalItem(int count, ItemLike item)
     {
-        return withPedestalItem(count, Ingredient.ofItems(item));
+        return withPedestalItem(count, Ingredient.of(item));
     }
 
     public EnchantmentInfusionRecipeBuilder withPedestalItem(int count, Ingredient ingredient)
@@ -56,7 +56,7 @@ public class EnchantmentInfusionRecipeBuilder
         return this;
     }
 
-    public void offerTo(RecipeExporter exporter, Identifier recipeId, RegistryEntry<Enchantment> enchantment, int level)
+    public void offerTo(RecipeOutput exporter, ResourceLocation recipeId, Holder<Enchantment> enchantment, int level)
     {
         if (ingredients.isEmpty())
         {

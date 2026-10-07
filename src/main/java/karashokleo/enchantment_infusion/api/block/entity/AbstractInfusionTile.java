@@ -1,12 +1,12 @@
 package karashokleo.enchantment_infusion.api.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class AbstractInfusionTile extends NameableSingleStackTile
 {
@@ -15,16 +15,16 @@ public abstract class AbstractInfusionTile extends NameableSingleStackTile
         super(type, pos, state);
     }
 
-    public void onUse(ServerWorld world, BlockPos pos, PlayerEntity player)
+    public void onUse(ServerLevel world, BlockPos pos, Player player)
     {
         swapStack(player.getInventory());
     }
 
-    private void swapStack(PlayerInventory playerInv)
+    private void swapStack(Inventory playerInv)
     {
-        ItemStack player2tile = playerInv.removeStack(playerInv.selectedSlot, 1);
-        ItemStack tile2player = this.emptyStack();
-        this.setStack(player2tile);
-        playerInv.offerOrDrop(tile2player);
+        ItemStack player2tile = playerInv.removeItem(playerInv.selected, 1);
+        ItemStack tile2player = this.removeTheItem();
+        this.setTheItem(player2tile);
+        playerInv.placeItemBackInInventory(tile2player);
     }
 }

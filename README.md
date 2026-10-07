@@ -1,6 +1,6 @@
 # Enchantment Infusion
 
-This version targets Fabric for Minecraft **1.21.1** and requires **Java 21**. See the [1.21.1 migration notes](docs/MIGRATION_1.21.1.md) for changes and verification status.
+This branch targets **NeoForge 21.1.252+** for Minecraft **1.21.1** and requires **Java 21**. See the [NeoForge migration notes](docs/MIGRATION_NEOFORGE_1.21.1.md) for changes from the original Fabric 1.20.1 master and verification status.
 
 ## 🪄Introduction
 

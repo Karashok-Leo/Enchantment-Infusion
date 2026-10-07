@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="LGPL-2.1"
+
+[[mods]]
+modId="enchantment_infusion"
+version="${version}"
+displayName="Enchantment Infusion"
+authors="Karashok Leo"
+description='''Enchantment Infusion'''
+logoFile="assets/enchantment_infusion/icon.png"
+displayURL="https://github.com/Karashok-Leo/Enchantment-Infusion"
+
+[[dependencies.enchantment_infusion]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.252,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.enchantment_infusion]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1]"
+ordering="NONE"
+side="BOTH"

@@ -1,21 +1,20 @@
 package karashokleo.enchantment_infusion.api.recipe;
 
 import karashokleo.enchantment_infusion.api.block.entity.InfusionInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeMatcher;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
-
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.Level;
 import java.util.List;
 
 public interface InfusionRecipe extends Recipe<InfusionInventory>
 {
     Ingredient getTableIngredient();
 
-    DefaultedList<Ingredient> getPedestalIngredient();
+    NonNullList<Ingredient> getPedestalIngredient();
 
     ItemStack infuse(ItemStack tableStack);
 
@@ -26,7 +25,7 @@ public interface InfusionRecipe extends Recipe<InfusionInventory>
 
     default boolean matchPedestalStacks(List<ItemStack> stacks)
     {
-        RecipeMatcher recipeMatcher = new RecipeMatcher();
+        StackedContents recipeMatcher = new StackedContents();
         int i = 0;
         for (ItemStack itemStack : stacks)
         {
@@ -35,38 +34,38 @@ public interface InfusionRecipe extends Recipe<InfusionInventory>
                 continue;
             }
             ++i;
-            recipeMatcher.addInput(itemStack, 1);
+            recipeMatcher.accountStack(itemStack, 1);
         }
-        return i == getIngredients().size() && recipeMatcher.match(this, null);
+        return i == getIngredients().size() && recipeMatcher.canCraft(this, null);
     }
 
     @Override
-    default boolean matches(InfusionInventory inventory, World world)
+    default boolean matches(InfusionInventory inventory, Level world)
     {
         return this.matchTableStack(inventory.getTableStack()) &&
             this.matchPedestalStacks(inventory.getPedestalStacks());
     }
 
     @Override
-    default ItemStack craft(InfusionInventory inventory, RegistryWrapper.WrapperLookup registryManager)
+    default ItemStack assemble(InfusionInventory inventory, HolderLookup.Provider registryManager)
     {
         return infuse(inventory.getTableStack().copy());
     }
 
     @Override
-    default DefaultedList<Ingredient> getIngredients()
+    default NonNullList<Ingredient> getIngredients()
     {
         return getPedestalIngredient();
     }
 
     @Override
-    default boolean fits(int width, int height)
+    default boolean canCraftInDimensions(int width, int height)
     {
         return false;
     }
 
     @Override
-    default boolean isIgnoredInRecipeBook()
+    default boolean isSpecial()
     {
         return true;
     }

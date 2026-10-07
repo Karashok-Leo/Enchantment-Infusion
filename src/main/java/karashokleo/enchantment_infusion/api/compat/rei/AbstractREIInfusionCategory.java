@@ -6,8 +6,7 @@ import me.shedaniel.rei.api.client.gui.widgets.Widget;
 import me.shedaniel.rei.api.client.gui.widgets.Widgets;
 import me.shedaniel.rei.api.client.registry.display.DisplayCategory;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
-import net.minecraft.util.math.MathHelper;
-
+import net.minecraft.util.Mth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +41,9 @@ public abstract class AbstractREIInfusionCategory implements DisplayCategory<Abs
         int size = ingredients.size();
         for (int i = 0; i < size; i++)
         {
-            float rad = i * 1.0F / size * 2 * MathHelper.PI;
-            int x = Math.round(centerX + INPUT_OFFSET - radius * MathHelper.sin(rad));
-            int y = Math.round(centerY - radius * MathHelper.cos(rad));
+            float rad = i * 1.0F / size * 2 * Mth.PI;
+            int x = Math.round(centerX + INPUT_OFFSET - radius * Mth.sin(rad));
+            int y = Math.round(centerY - radius * Mth.cos(rad));
             widgets.add(Widgets.createSlot(new Point(x - 9, y - 9)).entries(ingredients.get(i)).markInput());
         }
         widgets.add(Widgets.createSlot(new Point(centerX + INPUT_OFFSET - 9, centerY - 9)).entries(display.getTableIngredient()).markInput());

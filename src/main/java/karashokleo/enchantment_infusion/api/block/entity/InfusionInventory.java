@@ -1,21 +1,20 @@
 package karashokleo.enchantment_infusion.api.block.entity;
 
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.recipe.input.RecipeInput;
-import net.minecraft.inventory.SingleStackInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.collection.DefaultedList;
-
 import java.util.List;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.ticks.ContainerSingleItem;
 
 public class InfusionInventory implements RecipeInput
 {
     private static final int SIZE = 8;
     private final AbstractInfusionTile tableInventory;
-    private final DefaultedList<AbstractInfusionTile> pedestalInventory;
+    private final NonNullList<AbstractInfusionTile> pedestalInventory;
 
-    public InfusionInventory(AbstractInfusionTile tableInventory, DefaultedList<AbstractInfusionTile> pedestalInventory)
+    public InfusionInventory(AbstractInfusionTile tableInventory, NonNullList<AbstractInfusionTile> pedestalInventory)
     {
         this.tableInventory = tableInventory;
         this.pedestalInventory = pedestalInventory;
@@ -23,15 +22,15 @@ public class InfusionInventory implements RecipeInput
 
     public ItemStack getTableStack()
     {
-        return tableInventory.getStack();
+        return tableInventory.getTheItem();
     }
 
     public List<ItemStack> getPedestalStacks()
     {
-        return pedestalInventory.stream().map(SingleStackInventory::getStack).toList();
+        return pedestalInventory.stream().map(ContainerSingleItem::getTheItem).toList();
     }
 
-    public void setRemainder(DefaultedList<ItemStack> remainder)
+    public void setRemainder(NonNullList<ItemStack> remainder)
     {
         for (int i = 0; i < SIZE; i++)
         {
@@ -40,17 +39,12 @@ public class InfusionInventory implements RecipeInput
     }
 
     @Override
-    public ItemStack getStackInSlot(int slot)
+    public ItemStack getItem(int slot)
     {
         return getStack(slot);
     }
 
     @Override
-    public int getSize()
-    {
-        return size();
-    }
-
     public int size()
     {
         return SIZE;
@@ -71,37 +65,37 @@ public class InfusionInventory implements RecipeInput
 
     public ItemStack getStack(int slot)
     {
-        return pedestalInventory.get(slot).getStack();
+        return pedestalInventory.get(slot).getTheItem();
     }
 
     public ItemStack removeStack(int slot, int amount)
     {
-        return pedestalInventory.get(slot).decreaseStack(amount);
+        return pedestalInventory.get(slot).splitTheItem(amount);
     }
 
     public ItemStack removeStack(int slot)
     {
-        return pedestalInventory.get(slot).emptyStack();
+        return pedestalInventory.get(slot).removeTheItem();
     }
 
     public void setStack(int slot, ItemStack stack)
     {
-        pedestalInventory.get(slot).setStack(stack);
+        pedestalInventory.get(slot).setTheItem(stack);
     }
 
     public void markDirty()
     {
-        tableInventory.markDirty();
-        pedestalInventory.forEach(BlockEntity::markDirty);
+        tableInventory.setChanged();
+        pedestalInventory.forEach(BlockEntity::setChanged);
     }
 
-    public boolean canPlayerUse(PlayerEntity player)
+    public boolean canPlayerUse(Player player)
     {
         return false;
     }
 
     public void clear()
     {
-        pedestalInventory.forEach(SingleStackInventory::clear);
+        pedestalInventory.forEach(ContainerSingleItem::clearContent);
     }
 }

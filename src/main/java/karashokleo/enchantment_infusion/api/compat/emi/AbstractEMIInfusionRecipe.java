@@ -6,12 +6,12 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import karashokleo.enchantment_infusion.api.recipe.InfusionRecipe;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -25,24 +25,24 @@ public abstract class AbstractEMIInfusionRecipe implements EmiRecipe
     private static final int RADIUS_OFFSET = -13;
     private static final int ARROW_OFFSET = 21;
 
-    protected final Identifier id;
+    protected final ResourceLocation id;
     protected final EmiIngredient tableIngredient;
     protected final List<EmiIngredient> pedestalIngredients;
     protected final List<EmiIngredient> input;
     protected final List<EmiStack> output;
 
     @SuppressWarnings("all")
-    public AbstractEMIInfusionRecipe(RecipeEntry<? extends InfusionRecipe> recipe)
+    public AbstractEMIInfusionRecipe(RecipeHolder<? extends InfusionRecipe> recipe)
     {
         this(
             recipe.id(),
             recipe.value().getTableIngredient(),
             recipe.value().getPedestalIngredient(),
-            recipe.value().getResult(MinecraftClient.getInstance().world.getRegistryManager())
+            recipe.value().getResultItem(Minecraft.getInstance().level.registryAccess())
         );
     }
 
-    public AbstractEMIInfusionRecipe(Identifier id, Ingredient tableIngredient, List<Ingredient> pedestalIngredients, ItemStack output)
+    public AbstractEMIInfusionRecipe(ResourceLocation id, Ingredient tableIngredient, List<Ingredient> pedestalIngredients, ItemStack output)
     {
         this(
             id,
@@ -52,7 +52,7 @@ public abstract class AbstractEMIInfusionRecipe implements EmiRecipe
         );
     }
 
-    public AbstractEMIInfusionRecipe(Identifier id, EmiIngredient tableIngredient, List<EmiIngredient> pedestalIngredients, List<EmiStack> output)
+    public AbstractEMIInfusionRecipe(ResourceLocation id, EmiIngredient tableIngredient, List<EmiIngredient> pedestalIngredients, List<EmiStack> output)
     {
         this.id = id;
         this.tableIngredient = tableIngredient;
@@ -63,7 +63,7 @@ public abstract class AbstractEMIInfusionRecipe implements EmiRecipe
     }
 
     @Override
-    public @Nullable Identifier getId()
+    public @Nullable ResourceLocation getId()
     {
         return id;
     }
@@ -100,9 +100,9 @@ public abstract class AbstractEMIInfusionRecipe implements EmiRecipe
         int radius = Math.min(centerX, centerY) + RADIUS_OFFSET;
         for (int i = 0; i < pedestalIngredients.size(); i++)
         {
-            float rad = i * 1.0F / pedestalIngredients.size() * 2 * MathHelper.PI;
-            int x = Math.round(centerX + INPUT_OFFSET - radius * MathHelper.sin(rad));
-            int y = Math.round(centerY - radius * MathHelper.cos(rad));
+            float rad = i * 1.0F / pedestalIngredients.size() * 2 * Mth.PI;
+            int x = Math.round(centerX + INPUT_OFFSET - radius * Mth.sin(rad));
+            int y = Math.round(centerY - radius * Mth.cos(rad));
             widgets.addSlot(pedestalIngredients.get(i), x - 9, y - 9);
         }
         widgets.addSlot(tableIngredient, centerX - 9 + INPUT_OFFSET, centerY - 9);

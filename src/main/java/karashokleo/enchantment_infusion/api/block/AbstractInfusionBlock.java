@@ -1,103 +1,102 @@
 package karashokleo.enchantment_infusion.api.block;
 
 import karashokleo.enchantment_infusion.api.block.entity.AbstractInfusionTile;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.SingleStackInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.util.ItemActionResult;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.ticks.ContainerSingleItem;
 
 @SuppressWarnings("deprecation")
-public abstract class AbstractInfusionBlock extends BlockWithEntity
+public abstract class AbstractInfusionBlock extends BaseEntityBlock
 {
-    protected AbstractInfusionBlock(Settings settings)
+    protected AbstractInfusionBlock(Properties settings)
     {
         super(settings);
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state)
+    public RenderShape getRenderShape(BlockState state)
     {
-        return BlockRenderType.MODEL;
+        return RenderShape.MODEL;
     }
 
     @Override
-    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit)
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
     {
-        if (hand == Hand.OFF_HAND)
+        if (hand == InteractionHand.OFF_HAND)
         {
-            return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+            return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
-        if (world instanceof ServerWorld serverWorld && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
-        {
-            tile.onUse(serverWorld, pos, player);
-        }
-        return ItemActionResult.SUCCESS;
-    }
-
-    @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit)
-    {
-        if (world instanceof ServerWorld serverWorld && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
+        if (world instanceof ServerLevel serverWorld && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
         {
             tile.onUse(serverWorld, pos, player);
         }
-        return ActionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override
-    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack)
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit)
     {
-        if (itemStack.contains(DataComponentTypes.CUSTOM_NAME) && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
+        if (world instanceof ServerLevel serverWorld && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
         {
-            tile.setCustomName(itemStack.getName());
+            tile.onUse(serverWorld, pos, player);
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack)
+    {
+        if (itemStack.has(DataComponents.CUSTOM_NAME) && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
+        {
+            tile.setCustomName(itemStack.getHoverName());
         }
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved)
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved)
     {
-        if (state.isOf(newState.getBlock()))
+        if (state.is(newState.getBlock()))
         {
             return;
         }
         if (world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
         {
-            if (world instanceof ServerWorld)
+            if (world instanceof ServerLevel)
             {
-                ItemScatterer.spawn(world, pos, tile);
+                Containers.dropContents(world, pos, tile);
             }
-            world.updateComparators(pos, this);
+            world.updateNeighbourForOutputSignal(pos, this);
         }
-        super.onStateReplaced(state, world, pos, newState, moved);
+        super.onRemove(state, world, pos, newState, moved);
     }
 
     @Override
-    public boolean hasComparatorOutput(BlockState state)
+    public boolean hasAnalogOutputSignal(BlockState state)
     {
         return true;
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos)
+    public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos)
     {
-        return (world.getBlockEntity(pos) instanceof SingleStackInventory inventory && !inventory.getStack().isEmpty()) ? 15 : 0;
+        return (world.getBlockEntity(pos) instanceof ContainerSingleItem inventory && !inventory.getTheItem().isEmpty()) ? 15 : 0;
     }
 
-    public boolean canPathfindThrough(BlockState state, NavigationType type)
+    public boolean isPathfindable(BlockState state, PathComputationType type)
     {
         return false;
     }

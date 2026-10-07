@@ -3,44 +3,42 @@ package karashokleo.enchantment_infusion.api.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import karashokleo.enchantment_infusion.fabric.EnchantmentInfusion;
 import karashokleo.enchantment_infusion.init.EIRecipes;
-import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
-import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.EnchantmentLevelEntry;
-import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
-
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import java.util.stream.Stream;
+import net.minecraft.core.Holder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import java.util.ArrayList;
 import java.util.List;
 
 public record EnchantmentIngredient(
-    RegistryEntry<Enchantment> enchantment,
+    Holder<Enchantment> enchantment,
     int min_level
-) implements CustomIngredient
+) implements ICustomIngredient
 {
     public static final MapCodec<EnchantmentIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-        Enchantment.ENTRY_CODEC.fieldOf("enchantment").forGetter(EnchantmentIngredient::enchantment),
+        Enchantment.CODEC.fieldOf("enchantment").forGetter(EnchantmentIngredient::enchantment),
         Codec.INT.fieldOf("min_level").forGetter(EnchantmentIngredient::min_level)
     ).apply(instance, EnchantmentIngredient::new));
 
-    public static final PacketCodec<RegistryByteBuf, EnchantmentIngredient> PACKET_CODEC = PacketCodec.tuple(
-        Enchantment.ENTRY_PACKET_CODEC, EnchantmentIngredient::enchantment,
-        PacketCodecs.INTEGER, EnchantmentIngredient::min_level,
+    public static final StreamCodec<RegistryFriendlyByteBuf, EnchantmentIngredient> PACKET_CODEC = StreamCodec.composite(
+        Enchantment.STREAM_CODEC, EnchantmentIngredient::enchantment,
+        ByteBufCodecs.INT, EnchantmentIngredient::min_level,
         EnchantmentIngredient::new
     );
 
     @SuppressWarnings("unused")
-    public static Ingredient of(RegistryEntry<Enchantment> enchantment, int min_level)
+    public static Ingredient of(Holder<Enchantment> enchantment, int min_level)
     {
         return new EnchantmentIngredient(enchantment, min_level).toVanilla();
     }
@@ -48,15 +46,15 @@ public record EnchantmentIngredient(
     @Override
     public boolean test(ItemStack stack)
     {
-        return EnchantmentHelper.getEnchantments(stack).getLevel(this.enchantment) >= this.min_level;
+        return EnchantmentHelper.getEnchantmentsForCrafting(stack).getLevel(this.enchantment) >= this.min_level;
     }
 
     @Override
-    public List<ItemStack> getMatchingStacks()
+    public Stream<ItemStack> getItems()
     {
         return min_level > 0 ?
-            this.getBookStacks() :
-            List.of(Items.BOOK.getDefaultStack());
+            this.getBookStacks().stream() :
+            Stream.of(Items.BOOK.getDefaultInstance());
     }
 
     private List<ItemStack> getBookStacks()
@@ -64,43 +62,20 @@ public record EnchantmentIngredient(
         List<ItemStack> stacks = new ArrayList<>();
         for (int i = min_level; i <= enchantment.value().getMaxLevel(); i++)
         {
-            stacks.add(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, i)));
+            stacks.add(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, i)));
         }
         return stacks;
     }
 
     @Override
-    public boolean requiresTesting()
+    public boolean isSimple()
     {
-        return true;
+        return false;
     }
 
     @Override
-    public CustomIngredientSerializer<?> getSerializer()
+    public IngredientType<?> getType()
     {
         return EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER;
-    }
-
-    public static class Serializer implements CustomIngredientSerializer<EnchantmentIngredient>
-    {
-        private final Identifier id = EnchantmentInfusion.id("enchantment");
-
-        @Override
-        public Identifier getIdentifier()
-        {
-            return id;
-        }
-
-        @Override
-        public MapCodec<EnchantmentIngredient> getCodec(boolean allowEmpty)
-        {
-            return CODEC;
-        }
-
-        @Override
-        public PacketCodec<RegistryByteBuf, EnchantmentIngredient> getPacketCodec()
-        {
-            return PACKET_CODEC;
-        }
     }
 }

@@ -6,27 +6,26 @@ import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
-
 import java.util.List;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.enchantment.Enchantment;
 
 public class SerialUtil
 {
-    public static final Codec<DefaultedList<Ingredient>> INGREDIENTS_CODEC = Ingredient.DISALLOW_EMPTY_CODEC.listOf()
+    public static final Codec<NonNullList<Ingredient>> INGREDIENTS_CODEC = Ingredient.CODEC_NONEMPTY.listOf()
         .comapFlatMap(SerialUtil::validateIngredients, ingredients -> ingredients);
 
-    private static DataResult<DefaultedList<Ingredient>> validateIngredients(List<Ingredient> values)
+    private static DataResult<NonNullList<Ingredient>> validateIngredients(List<Ingredient> values)
     {
-        DefaultedList<Ingredient> ingredients = DefaultedList.of();
+        NonNullList<Ingredient> ingredients = NonNullList.create();
         for (Ingredient ingredient : values)
         {
             if (!ingredient.isEmpty())
@@ -45,58 +44,58 @@ public class SerialUtil
         return DataResult.success(ingredients);
     }
 
-    public static String enchantmentToString(RegistryEntry<Enchantment> enchantment)
+    public static String enchantmentToString(Holder<Enchantment> enchantment)
     {
-        return enchantment.getKey()
+        return enchantment.unwrapKey()
             .orElseThrow(() -> new IllegalArgumentException("Enchantment " + enchantment + " is not registered"))
-            .getValue().toString();
+            .location().toString();
     }
 
-    public static RegistryEntry<Enchantment> enchantmentFromString(String id, RegistryWrapper.WrapperLookup lookup)
+    public static Holder<Enchantment> enchantmentFromString(String id, HolderLookup.Provider lookup)
     {
-        return lookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT)
-            .getOrThrow(RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.of(id)));
+        return lookup.lookupOrThrow(Registries.ENCHANTMENT)
+            .getOrThrow(ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.parse(id)));
     }
 
-    public static ItemStack itemStackFromJson(JsonElement json, RegistryWrapper.WrapperLookup lookup)
+    public static ItemStack itemStackFromJson(JsonElement json, HolderLookup.Provider lookup)
     {
-        return ItemStack.CODEC.parse(lookup.getOps(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
+        return ItemStack.CODEC.parse(lookup.createSerializationContext(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
     }
 
-    public static JsonElement itemStackToJson(ItemStack stack, RegistryWrapper.WrapperLookup lookup)
+    public static JsonElement itemStackToJson(ItemStack stack, HolderLookup.Provider lookup)
     {
-        return ItemStack.CODEC.encodeStart(lookup.getOps(JsonOps.INSTANCE), stack).getOrThrow(JsonParseException::new);
+        return ItemStack.CODEC.encodeStart(lookup.createSerializationContext(JsonOps.INSTANCE), stack).getOrThrow(JsonParseException::new);
     }
 
-    public static JsonArray ingredientsToJsonArray(List<Ingredient> ingredients, RegistryWrapper.WrapperLookup lookup)
+    public static JsonArray ingredientsToJsonArray(List<Ingredient> ingredients, HolderLookup.Provider lookup)
     {
-        return Ingredient.DISALLOW_EMPTY_CODEC.listOf()
-            .encodeStart(lookup.getOps(JsonOps.INSTANCE), ingredients).getOrThrow(JsonParseException::new).getAsJsonArray();
+        return Ingredient.CODEC_NONEMPTY.listOf()
+            .encodeStart(lookup.createSerializationContext(JsonOps.INSTANCE), ingredients).getOrThrow(JsonParseException::new).getAsJsonArray();
     }
 
-    public static DefaultedList<Ingredient> ingredientsFromJsonArray(JsonArray json, RegistryWrapper.WrapperLookup lookup)
+    public static NonNullList<Ingredient> ingredientsFromJsonArray(JsonArray json, HolderLookup.Provider lookup)
     {
-        return INGREDIENTS_CODEC.parse(lookup.getOps(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
+        return INGREDIENTS_CODEC.parse(lookup.createSerializationContext(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
     }
 
-    public static void ingredientsToPacket(RegistryByteBuf buf, DefaultedList<Ingredient> ingredients)
+    public static void ingredientsToPacket(RegistryFriendlyByteBuf buf, NonNullList<Ingredient> ingredients)
     {
         buf.writeVarInt(ingredients.size());
         for (Ingredient ingredient : ingredients)
         {
-            Ingredient.PACKET_CODEC.encode(buf, ingredient);
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buf, ingredient);
         }
     }
 
-    public static DefaultedList<Ingredient> ingredientsFromPacket(RegistryByteBuf buf)
+    public static NonNullList<Ingredient> ingredientsFromPacket(RegistryFriendlyByteBuf buf)
     {
         int size = buf.readVarInt();
         if (size < 1 || size > 8)
         {
             throw new IllegalArgumentException("Infusion recipes must have between 1 and 8 ingredients");
         }
-        DefaultedList<Ingredient> ingredients = DefaultedList.ofSize(size, Ingredient.EMPTY);
-        ingredients.replaceAll(ingredient -> Ingredient.PACKET_CODEC.decode(buf));
+        NonNullList<Ingredient> ingredients = NonNullList.withSize(size, Ingredient.EMPTY);
+        ingredients.replaceAll(ingredient -> Ingredient.CONTENTS_STREAM_CODEC.decode(buf));
         return ingredients;
     }
 }

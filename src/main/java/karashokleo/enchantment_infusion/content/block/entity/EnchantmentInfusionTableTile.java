@@ -7,24 +7,23 @@ import karashokleo.enchantment_infusion.api.recipe.InfusionRecipe;
 import karashokleo.enchantment_infusion.init.EIBlocks;
 import karashokleo.enchantment_infusion.init.EIRecipes;
 import karashokleo.enchantment_infusion.init.EITexts;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.RecipeManager;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,37 +31,37 @@ import java.util.Optional;
 public class EnchantmentInfusionTableTile extends AbstractInfusionTile
 {
     private static final int TOTAL_CRAFT_TICKS = 100;
-    private final RecipeManager.MatchGetter<InfusionInventory, InfusionRecipe> matchGetter;
+    private final RecipeManager.CachedCheck<InfusionInventory, InfusionRecipe> matchGetter;
     private int ticks;
 
     public EnchantmentInfusionTableTile(BlockPos pos, BlockState state)
     {
         super(EIBlocks.INFUSION_TABLE_TILE, pos, state);
-        this.matchGetter = RecipeManager.createCachedMatchGetter(EIRecipes.INFUSION_RECIPE_TYPE);
+        this.matchGetter = RecipeManager.createCheck(EIRecipes.INFUSION_RECIPE_TYPE);
     }
 
-    protected void onInfusingStateChanged(ServerWorld world, BlockPos pos, boolean infusing)
+    protected void onInfusingStateChanged(ServerLevel world, BlockPos pos, boolean infusing)
     {
         BlockState state = world.getBlockState(pos);
-        if (state.isOf(EIBlocks.INFUSION_TABLE) &&
-            state.get(EIBlocks.INFUSING) != infusing)
+        if (state.is(EIBlocks.INFUSION_TABLE) &&
+            state.getValue(EIBlocks.INFUSING) != infusing)
         {
-            world.setBlockState(pos, state.with(EIBlocks.INFUSING, infusing));
+            world.setBlockAndUpdate(pos, state.setValue(EIBlocks.INFUSING, infusing));
         }
         List<BlockPos> pedestalPoses = getPedestalPoses();
         for (BlockPos pedestalPos : pedestalPoses)
         {
             BlockState pedestalState = world.getBlockState(pedestalPos);
-            if (pedestalState.isOf(EIBlocks.INFUSION_PEDESTAL) &&
-                state.get(EIBlocks.INFUSING) != infusing)
+            if (pedestalState.is(EIBlocks.INFUSION_PEDESTAL) &&
+                state.getValue(EIBlocks.INFUSING) != infusing)
             {
-                world.setBlockState(pedestalPos, pedestalState.with(EIBlocks.INFUSING, infusing));
+                world.setBlockAndUpdate(pedestalPos, pedestalState.setValue(EIBlocks.INFUSING, infusing));
             }
         }
     }
 
     @Override
-    public void onUse(ServerWorld world, BlockPos pos, PlayerEntity player)
+    public void onUse(ServerLevel world, BlockPos pos, Player player)
     {
         if (ticks != 0)
         {
@@ -73,26 +72,26 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         {
             return;
         }
-        DefaultedList<AbstractInfusionTile> pedestalInventory = getPedestalTiles(world);
+        NonNullList<AbstractInfusionTile> pedestalInventory = getPedestalTiles(world);
         if (pedestalInventory.size() < 8)
         {
-            player.sendMessage(EITexts.PNF.get(), true);
+            player.displayClientMessage(EITexts.PNF.get(), true);
             return;
         }
         InfusionInventory inventory = new InfusionInventory(this, pedestalInventory);
-        Optional<RecipeEntry<InfusionRecipe>> match = matchGetter.getFirstMatch(inventory, world);
+        Optional<RecipeHolder<InfusionRecipe>> match = matchGetter.getRecipeFor(inventory, world);
         if (match.isPresent())
         {
             ticks = TOTAL_CRAFT_TICKS;
             onInfusingStateChanged(world, pos, true);
         } else
         {
-            player.sendMessage(EITexts.RNF.get(), true);
-            player.getInventory().offerOrDrop(this.emptyStack());
+            player.displayClientMessage(EITexts.RNF.get(), true);
+            player.getInventory().placeItemBackInInventory(this.removeTheItem());
         }
     }
 
-    public static void spawnParticles(ServerWorld world, Vec3d pos, int ticks)
+    public static void spawnParticles(ServerLevel world, Vec3 pos, int ticks)
     {
         if (ticks == 90)
         {
@@ -119,13 +118,13 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         }
     }
 
-    public static void spawnEnchantParticles(ServerWorld world, Vec3d pos, double yOffset, int count, double deltaX, double deltaY, double deltaZ, double speed)
+    public static void spawnEnchantParticles(ServerLevel world, Vec3 pos, double yOffset, int count, double deltaX, double deltaY, double deltaZ, double speed)
     {
-        world.spawnParticles(
+        world.sendParticles(
             ParticleTypes.ENCHANT,
-            pos.getX(),
-            pos.getY() + yOffset,
-            pos.getZ(),
+            pos.x(),
+            pos.y() + yOffset,
+            pos.z(),
             count, deltaX,
             deltaY,
             deltaZ,
@@ -133,16 +132,16 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         );
     }
 
-    public static void spawnScrapeParticles(ServerWorld world, Vec3d pos, int count, double radius)
+    public static void spawnScrapeParticles(ServerLevel world, Vec3 pos, int count, double radius)
     {
         for (int i = 0; i < count; i++)
         {
             double angle = 2 * Math.PI * i / count;
-            world.spawnParticles(
+            world.sendParticles(
                 ParticleTypes.SCRAPE,
-                pos.getX() + radius * Math.cos(angle),
-                pos.getY() + 1.5,
-                pos.getZ() + radius * Math.sin(angle),
+                pos.x() + radius * Math.cos(angle),
+                pos.y() + 1.5,
+                pos.z() + radius * Math.sin(angle),
                 1,
                 0.02,
                 0.01,
@@ -152,13 +151,13 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         }
     }
 
-    public static void spawnEndRodParticles(ServerWorld world, Vec3d pos)
+    public static void spawnEndRodParticles(ServerLevel world, Vec3 pos)
     {
-        world.spawnParticles(
+        world.sendParticles(
             ParticleTypes.END_ROD,
-            pos.getX(),
-            pos.getY() + 1.3,
-            pos.getZ(),
+            pos.x(),
+            pos.y() + 1.3,
+            pos.z(),
             16,
             0.01,
             0.01,
@@ -167,27 +166,27 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         );
     }
 
-    public static void playProcessSound(ServerWorld world, Vec3d pos, float pitch)
+    public static void playProcessSound(ServerLevel world, Vec3 pos, float pitch)
     {
-        world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.BLOCKS, 0.6f, pitch);
+        world.playSound(null, pos.x(), pos.y(), pos.z(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.6f, pitch);
     }
 
-    public static void playCompleteSound(ServerWorld world, Vec3d pos)
+    public static void playCompleteSound(ServerLevel world, Vec3 pos)
     {
-        world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        world.playSound(null, pos.x(), pos.y(), pos.z(), SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 1.0f, 1.0f);
     }
 
-    public static void spawnLightning(World world, Vec3d pos)
+    public static void spawnLightning(Level world, Vec3 pos)
     {
-        LightningEntity lightningEntity = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
-        lightningEntity.refreshPositionAfterTeleport(pos);
-        lightningEntity.setCosmetic(true);
-        world.spawnEntity(lightningEntity);
+        LightningBolt lightningEntity = new LightningBolt(EntityType.LIGHTNING_BOLT, world);
+        lightningEntity.moveTo(pos);
+        lightningEntity.setVisualOnly(true);
+        world.addFreshEntity(lightningEntity);
     }
 
-    public static void serverTick(World world, BlockPos pos, BlockState state, EnchantmentInfusionTableTile entity)
+    public static void serverTick(Level world, BlockPos pos, BlockState state, EnchantmentInfusionTableTile entity)
     {
-        if (!(world instanceof ServerWorld serverWorld))
+        if (!(world instanceof ServerLevel serverWorld))
         {
             return;
         }
@@ -196,18 +195,18 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
             return;
         }
         entity.ticks--;
-        Vec3d center = Vec3d.ofBottomCenter(pos);
+        Vec3 center = Vec3.atBottomCenterOf(pos);
         spawnParticles(serverWorld, center, entity.ticks);
         if (entity.ticks % 10 == 0)
         {
-            DefaultedList<AbstractInfusionTile> pedestalInventory = entity.getPedestalTiles(serverWorld);
+            NonNullList<AbstractInfusionTile> pedestalInventory = entity.getPedestalTiles(serverWorld);
             if (pedestalInventory.size() < 8)
             {
                 entity.interrupt(serverWorld);
                 return;
             }
             InfusionInventory inventory = new InfusionInventory(entity, pedestalInventory);
-            Optional<RecipeEntry<InfusionRecipe>> match = entity.matchGetter.getFirstMatch(inventory, serverWorld);
+            Optional<RecipeHolder<InfusionRecipe>> match = entity.matchGetter.getRecipeFor(inventory, serverWorld);
             if (match.isEmpty())
             {
                 entity.interrupt(serverWorld);
@@ -221,31 +220,31 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         }
     }
 
-    public void craft(ServerWorld world, InfusionRecipe recipe, InfusionInventory inventory)
+    public void craft(ServerLevel world, InfusionRecipe recipe, InfusionInventory inventory)
     {
-        ItemStack crafted = recipe.craft(inventory, world.getRegistryManager());
-        this.setStack(crafted);
-        inventory.setRemainder(recipe.getRemainder(inventory));
-        InfusionCompleteCallback.EVENT.invoker().onInfusionComplete(world, pos, crafted, inventory, recipe);
+        ItemStack crafted = recipe.assemble(inventory, world.registryAccess());
+        this.setTheItem(crafted);
+        inventory.setRemainder(recipe.getRemainingItems(inventory));
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new InfusionCompleteCallback(world, worldPosition, crafted, inventory, recipe));
     }
 
-    public void interrupt(ServerWorld world)
+    public void interrupt(ServerLevel world)
     {
         this.ticks = 0;
-        Vec3d center = Vec3d.ofBottomCenter(getPos());
+        Vec3 center = Vec3.atBottomCenterOf(getBlockPos());
         spawnLightning(world, center);
-        onInfusingStateChanged(world, getPos(), false);
-        PlayerEntity player = world.getClosestPlayer(center.getX(), center.getY(), center.getZ(), 8, false);
+        onInfusingStateChanged(world, getBlockPos(), false);
+        Player player = world.getNearestPlayer(center.x(), center.y(), center.z(), 8, false);
         if (player != null)
         {
-            player.sendMessage(EITexts.EII.get(), true);
+            player.displayClientMessage(EITexts.EII.get(), true);
         }
     }
 
     public List<BlockPos> getPedestalPoses()
     {
         List<BlockPos> pedestals = new ArrayList<>();
-        BlockPos pos = getPos();
+        BlockPos pos = getBlockPos();
         pedestals.add(pos.north(3));
         pedestals.add(pos.north(2).east(2));
         pedestals.add(pos.east(3));
@@ -257,9 +256,9 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         return pedestals;
     }
 
-    public DefaultedList<AbstractInfusionTile> getPedestalTiles(World world)
+    public NonNullList<AbstractInfusionTile> getPedestalTiles(Level world)
     {
-        DefaultedList<AbstractInfusionTile> tiles = DefaultedList.of();
+        NonNullList<AbstractInfusionTile> tiles = NonNullList.create();
         for (BlockPos pos : getPedestalPoses())
         {
             if (world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
@@ -271,16 +270,16 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries)
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries)
     {
-        super.writeNbt(nbt, registries);
+        super.saveAdditional(nbt, registries);
         nbt.putInt("Ticks", ticks);
     }
 
     @Override
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries)
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries)
     {
-        super.readNbt(nbt, registries);
+        super.loadAdditional(nbt, registries);
         this.ticks = nbt.getInt("Ticks");
     }
 }

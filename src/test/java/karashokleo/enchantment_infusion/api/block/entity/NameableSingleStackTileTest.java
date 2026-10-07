@@ -1,19 +1,19 @@
 package karashokleo.enchantment_infusion.api.block.entity;
 
-import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.Bootstrap;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -21,65 +21,65 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class NameableSingleStackTileTest
 {
-    private static DynamicRegistryManager registryManager;
+    private static RegistryAccess registryManager;
 
     @BeforeAll
     static void bootstrap()
     {
-        SharedConstants.createGameVersion();
-        Bootstrap.initialize();
-        registryManager = DynamicRegistryManager.of(Registries.REGISTRIES);
+        SharedConstants.tryDetectVersion();
+        Bootstrap.bootStrap();
+        registryManager = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
     }
 
     @Test
     void customNameSurvivesComponentsToBlockToDropRoundTrip()
     {
         TrackingTile placed = new TrackingTile();
-        ItemStack namedBlock = Items.CHEST.getDefaultStack();
-        Text customName = Text.literal("Named infusion block");
-        namedBlock.set(DataComponentTypes.CUSTOM_NAME, customName);
-        placed.readComponents(namedBlock);
+        ItemStack namedBlock = Items.CHEST.getDefaultInstance();
+        Component customName = Component.literal("Named infusion block");
+        namedBlock.set(DataComponents.CUSTOM_NAME, customName);
+        placed.applyComponentsFromItemStack(namedBlock);
         assertEquals(customName, placed.getCustomName());
         assertEquals(customName, placed.getName());
 
-        ComponentMap dropComponents = placed.createComponentMap();
-        assertEquals(customName, dropComponents.get(DataComponentTypes.CUSTOM_NAME));
-        ItemStack droppedBlock = Items.CHEST.getDefaultStack();
-        droppedBlock.applyComponentsFrom(dropComponents);
+        DataComponentMap dropComponents = placed.collectComponents();
+        assertEquals(customName, dropComponents.get(DataComponents.CUSTOM_NAME));
+        ItemStack droppedBlock = Items.CHEST.getDefaultInstance();
+        droppedBlock.applyComponents(dropComponents);
         TrackingTile replaced = new TrackingTile();
-        replaced.readComponents(droppedBlock);
+        replaced.applyComponentsFromItemStack(droppedBlock);
         assertEquals(customName, replaced.getCustomName());
 
-        placed.readComponents(Items.CHEST.getDefaultStack());
+        placed.applyComponentsFromItemStack(Items.CHEST.getDefaultInstance());
         assertNull(placed.getCustomName());
-        assertNull(placed.createComponentMap().get(DataComponentTypes.CUSTOM_NAME));
+        assertNull(placed.collectComponents().get(DataComponents.CUSTOM_NAME));
     }
 
     @Test
     void customNameAndStoredItemSurviveSaveAndChunkSync()
     {
         TrackingTile original = new TrackingTile();
-        original.setCustomName(Text.literal("Saved name"));
-        ItemStack stored = Items.DIAMOND_SWORD.getDefaultStack();
-        stored.setDamage(12);
-        stored.set(DataComponentTypes.CUSTOM_NAME, Text.literal("Stored item name"));
-        original.setStack(stored);
+        original.setCustomName(Component.literal("Saved name"));
+        ItemStack stored = Items.DIAMOND_SWORD.getDefaultInstance();
+        stored.setDamageValue(12);
+        stored.set(DataComponents.CUSTOM_NAME, Component.literal("Stored item name"));
+        original.setTheItem(stored);
 
-        NbtCompound saved = original.createNbt(registryManager);
+        CompoundTag saved = original.saveWithoutMetadata(registryManager);
         TrackingTile restored = new TrackingTile();
-        restored.read(saved, registryManager);
+        restored.loadWithComponents(saved, registryManager);
         assertEquals(original.getCustomName(), restored.getCustomName());
-        assertTrue(ItemStack.areEqual(stored, restored.getStack()));
+        assertTrue(ItemStack.matches(stored, restored.getTheItem()));
 
         TrackingTile clientCopy = new TrackingTile();
-        clientCopy.read(original.toInitialChunkDataNbt(registryManager), registryManager);
+        clientCopy.loadWithComponents(original.getUpdateTag(registryManager), registryManager);
         assertEquals(original.getCustomName(), clientCopy.getCustomName());
-        assertTrue(ItemStack.areEqual(stored, clientCopy.getStack()));
+        assertTrue(ItemStack.matches(stored, clientCopy.getTheItem()));
 
-        original.removeFromCopiedStackNbt(saved);
+        original.removeComponentsFromTag(saved);
         assertFalse(saved.contains("CustomName"));
         assertTrue(saved.contains("Item"));
-        assertEquals(original.getCustomName(), original.createComponentMap().get(DataComponentTypes.CUSTOM_NAME));
+        assertEquals(original.getCustomName(), original.collectComponents().get(DataComponents.CUSTOM_NAME));
     }
 
     @Test
@@ -87,31 +87,31 @@ class NameableSingleStackTileTest
     {
         TrackingTile original = new TrackingTile();
         TrackingTile restored = new TrackingTile();
-        restored.read(original.createNbt(registryManager), registryManager);
-        assertTrue(restored.getStack().isEmpty());
+        restored.loadWithComponents(original.saveWithoutMetadata(registryManager), registryManager);
+        assertTrue(restored.getTheItem().isEmpty());
         assertNull(restored.getCustomName());
-        assertNull(restored.createComponentMap().get(DataComponentTypes.CUSTOM_NAME));
+        assertNull(restored.collectComponents().get(DataComponents.CUSTOM_NAME));
     }
 
     @Test
     void allSingleStackRemovalRoutesUpdateTheTile()
     {
         TrackingTile tile = new TrackingTile();
-        tile.setStack(Items.DIAMOND.getDefaultStack());
+        tile.setTheItem(Items.DIAMOND.getDefaultInstance());
         int updates = tile.updates;
-        assertTrue(tile.decreaseStack(1).isOf(Items.DIAMOND));
+        assertTrue(tile.splitTheItem(1).is(Items.DIAMOND));
         assertTrue(tile.isEmpty());
         assertEquals(updates + 1, tile.updates);
 
-        tile.setStack(Items.DIAMOND.getDefaultStack());
+        tile.setTheItem(Items.DIAMOND.getDefaultInstance());
         updates = tile.updates;
-        assertTrue(tile.emptyStack().isOf(Items.DIAMOND));
+        assertTrue(tile.removeTheItem().is(Items.DIAMOND));
         assertTrue(tile.isEmpty());
         assertEquals(updates + 1, tile.updates);
 
-        tile.setStack(Items.DIAMOND.getDefaultStack());
+        tile.setTheItem(Items.DIAMOND.getDefaultInstance());
         updates = tile.updates;
-        tile.clear();
+        tile.clearContent();
         assertTrue(tile.isEmpty());
         assertEquals(updates + 1, tile.updates);
     }
@@ -120,21 +120,21 @@ class NameableSingleStackTileTest
     void recipeInputKeepsCentralStackSeparateAndAppliesAllRemainders()
     {
         TrackingTile table = new TrackingTile();
-        table.setStack(Items.BOOK.getDefaultStack());
-        DefaultedList<AbstractInfusionTile> pedestals = DefaultedList.of();
+        table.setTheItem(Items.BOOK.getDefaultInstance());
+        NonNullList<AbstractInfusionTile> pedestals = NonNullList.create();
         for (int i = 0; i < 8; i++) pedestals.add(new TrackingTile());
-        pedestals.get(0).setStack(Items.WATER_BUCKET.getDefaultStack());
+        pedestals.get(0).setTheItem(Items.WATER_BUCKET.getDefaultInstance());
         InfusionInventory inventory = new InfusionInventory(table, pedestals);
-        assertEquals(8, inventory.getSize());
-        assertTrue(inventory.getStackInSlot(0).isOf(Items.WATER_BUCKET));
-        assertTrue(inventory.getTableStack().isOf(Items.BOOK));
+        assertEquals(8, inventory.size());
+        assertTrue(inventory.getItem(0).is(Items.WATER_BUCKET));
+        assertTrue(inventory.getTableStack().is(Items.BOOK));
 
-        DefaultedList<ItemStack> remainder = DefaultedList.ofSize(8, ItemStack.EMPTY);
-        remainder.set(0, Items.BUCKET.getDefaultStack());
+        NonNullList<ItemStack> remainder = NonNullList.withSize(8, ItemStack.EMPTY);
+        remainder.set(0, Items.BUCKET.getDefaultInstance());
         inventory.setRemainder(remainder);
-        assertTrue(pedestals.get(0).getStack().isOf(Items.BUCKET));
-        assertTrue(table.getStack().isOf(Items.BOOK));
-        assertTrue(inventory.removeStack(0).isOf(Items.BUCKET));
+        assertTrue(pedestals.get(0).getTheItem().is(Items.BUCKET));
+        assertTrue(table.getTheItem().is(Items.BOOK));
+        assertTrue(inventory.removeStack(0).is(Items.BUCKET));
         assertTrue(pedestals.get(0).isEmpty());
     }
 
@@ -145,7 +145,7 @@ class NameableSingleStackTileTest
 
         TrackingTile()
         {
-            super(BlockEntityType.CHEST, BlockPos.ORIGIN, Blocks.CHEST.getDefaultState());
+            super(BlockEntityType.CHEST, BlockPos.ZERO, Blocks.CHEST.defaultBlockState());
         }
 
         @Override

@@ -1,23 +1,31 @@
 package karashokleo.enchantment_infusion.content.data;
 
 import karashokleo.enchantment_infusion.init.EIBlocks;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.level.block.Block;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
+import java.util.Set;
 
-public class BlockLootTableProvider extends FabricBlockLootTableProvider
+public class BlockLootTableProvider extends BlockLootSubProvider
 {
-    public BlockLootTableProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture)
+    public BlockLootTableProvider(HolderLookup.Provider registries)
     {
-        super(dataOutput, registriesFuture);
+        super(Set.of(), FeatureFlags.REGISTRY.allFlags(), registries);
     }
 
     @Override
-    public void generate()
+    protected void generate()
     {
-        addDrop(EIBlocks.INFUSION_TABLE, this::nameableContainerDrops);
-        addDrop(EIBlocks.INFUSION_PEDESTAL, this::nameableContainerDrops);
+        add(EIBlocks.INFUSION_TABLE, this::createNameableBlockEntityTable);
+        add(EIBlocks.INFUSION_PEDESTAL, this::createNameableBlockEntityTable);
+    }
+
+    @Override
+    protected Iterable<Block> getKnownBlocks()
+    {
+        return List.of(EIBlocks.INFUSION_TABLE, EIBlocks.INFUSION_PEDESTAL);
     }
 }

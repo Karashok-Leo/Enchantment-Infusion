@@ -25,5 +25,6 @@
       ],
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "enchantment_infusion:blocks/enchantment_infusion_table"
 }

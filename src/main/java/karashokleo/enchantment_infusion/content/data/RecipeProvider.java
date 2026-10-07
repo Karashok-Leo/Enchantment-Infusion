@@ -1,26 +1,24 @@
 package karashokleo.enchantment_infusion.content.data;
 
 import karashokleo.enchantment_infusion.api.util.EIRecipeUtil;
-import karashokleo.enchantment_infusion.fabric.EnchantmentInfusion;
+import karashokleo.enchantment_infusion.neoforge.EnchantmentInfusion;
 import karashokleo.enchantment_infusion.init.EIBlocks;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.data.server.recipe.RecipeExporter;
-import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.ItemTags;
-
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public class RecipeProvider extends FabricRecipeProvider
+public class RecipeProvider extends net.minecraft.data.recipes.RecipeProvider
 {
     /*
      * SOURCE_GEM            ---->   AMETHYST_SHARD
@@ -33,55 +31,55 @@ public class RecipeProvider extends FabricRecipeProvider
      * WILDEN_SPIKE          ---->   SWEET_BERRIES
      * */
 
-    private final CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture;
+    private final CompletableFuture<HolderLookup.Provider> registriesFuture;
 
-    public RecipeProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture)
+    public RecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture)
     {
         super(output, registriesFuture);
         this.registriesFuture = registriesFuture;
     }
 
-    private void add(Consumer<EnchantmentInfusionRecipeBuilder> consumer, RegistryKey<Enchantment> enchantment, int level, RecipeExporter exporter)
+    private void add(Consumer<EnchantmentInfusionRecipeBuilder> consumer, ResourceKey<Enchantment> enchantment, int level, RecipeOutput exporter)
     {
         EIRecipeUtil.add(
             consumer,
-            registriesFuture.join().getWrapperOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(enchantment),
+            registriesFuture.join().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(enchantment),
             level,
             exporter,
-            EnchantmentInfusion.id((enchantment.equals(Enchantments.SWEEPING_EDGE) ? "sweeping" : enchantment.getValue().getPath()) + "/" + level)
+            EnchantmentInfusion.id((enchantment.equals(Enchantments.SWEEPING_EDGE) ? "sweeping" : enchantment.location().getPath()) + "/" + level)
         );
     }
 
     @Override
-    public void generate(RecipeExporter exporter)
+    public void buildRecipes(RecipeOutput exporter)
     {
-        ShapedRecipeJsonBuilder
-            .create(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_TABLE)
+        ShapedRecipeBuilder
+            .shaped(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_TABLE)
             .pattern("DRD")
             .pattern(" P ")
             .pattern("OOO")
-            .input('D', Items.DIAMOND)
-            .input('R', Items.REDSTONE_BLOCK)
-            .input('P', EIBlocks.INFUSION_PEDESTAL)
-            .input('O', Items.OBSIDIAN)
-            .criterion(FabricRecipeProvider.hasItem(EIBlocks.INFUSION_PEDESTAL), FabricRecipeProvider.conditionsFromItem(EIBlocks.INFUSION_PEDESTAL))
-            .offerTo(exporter);
+            .define('D', Items.DIAMOND)
+            .define('R', Items.REDSTONE_BLOCK)
+            .define('P', EIBlocks.INFUSION_PEDESTAL)
+            .define('O', Items.OBSIDIAN)
+            .unlockedBy(getHasName(EIBlocks.INFUSION_PEDESTAL), has(EIBlocks.INFUSION_PEDESTAL))
+            .save(exporter);
 
-        ShapedRecipeJsonBuilder
-            .create(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_PEDESTAL, 3)
+        ShapedRecipeBuilder
+            .shaped(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_PEDESTAL, 3)
             .pattern("DRD")
             .pattern(" C ")
             .pattern("OOO")
-            .input('D', Items.DIAMOND)
-            .input('R', Items.REDSTONE_BLOCK)
-            .input('C', Items.CRYING_OBSIDIAN)
-            .input('O', Items.OBSIDIAN)
-            .criterion(FabricRecipeProvider.hasItem(Items.OBSIDIAN), FabricRecipeProvider.conditionsFromItem(Items.OBSIDIAN))
-            .offerTo(exporter);
+            .define('D', Items.DIAMOND)
+            .define('R', Items.REDSTONE_BLOCK)
+            .define('C', Items.CRYING_OBSIDIAN)
+            .define('O', Items.OBSIDIAN)
+            .unlockedBy(getHasName(Items.OBSIDIAN), has(Items.OBSIDIAN))
+            .save(exporter);
 
         add(
             builder -> builder
-                .withPedestalItem(4, Ingredient.fromTag(ItemTags.FISHES))
+                .withPedestalItem(4, Ingredient.of(ItemTags.FISHES))
                 .withPedestalItem(2, Items.AMETHYST_SHARD)
                 .withPedestalItem(2, Items.LAPIS_BLOCK),
             Enchantments.AQUA_AFFINITY, 1, exporter
@@ -330,7 +328,7 @@ public class RecipeProvider extends FabricRecipeProvider
 
         add(
             builder -> builder
-                .withPedestalItem(1, Ingredient.fromTag(ItemTags.LEAVES))
+                .withPedestalItem(1, Ingredient.of(ItemTags.LEAVES))
                 .withPedestalItem(1, Items.DIAMOND)
                 .withPedestalItem(6, Items.AMETHYST_SHARD),
             Enchantments.FORTUNE, 1, exporter
@@ -338,7 +336,7 @@ public class RecipeProvider extends FabricRecipeProvider
 
         add(
             builder -> builder
-                .withPedestalItem(2, Ingredient.fromTag(ItemTags.LEAVES))
+                .withPedestalItem(2, Ingredient.of(ItemTags.LEAVES))
                 .withPedestalItem(4, Items.DIAMOND)
                 .withPedestalItem(2, Items.AMETHYST_SHARD),
             Enchantments.FORTUNE, 2, exporter
@@ -346,7 +344,7 @@ public class RecipeProvider extends FabricRecipeProvider
 
         add(
             builder -> builder
-                .withPedestalItem(3, Ingredient.fromTag(ItemTags.LEAVES))
+                .withPedestalItem(3, Ingredient.of(ItemTags.LEAVES))
                 .withPedestalItem(1, Items.DIAMOND_BLOCK)
                 .withPedestalItem(2, Items.LAPIS_BLOCK)
                 .withPedestalItem(2, Items.AMETHYST_SHARD),
@@ -378,7 +376,7 @@ public class RecipeProvider extends FabricRecipeProvider
 
         add(
             builder -> builder
-                .withPedestalItem(1, Ingredient.fromTag(ItemTags.LEAVES))
+                .withPedestalItem(1, Ingredient.of(ItemTags.LEAVES))
                 .withPedestalItem(1, Items.EMERALD)
                 .withPedestalItem(6, Items.AMETHYST_SHARD),
             Enchantments.LOOTING, 1, exporter
@@ -386,7 +384,7 @@ public class RecipeProvider extends FabricRecipeProvider
 
         add(
             builder -> builder
-                .withPedestalItem(2, Ingredient.fromTag(ItemTags.LEAVES))
+                .withPedestalItem(2, Ingredient.of(ItemTags.LEAVES))
                 .withPedestalItem(4, Items.EMERALD)
                 .withPedestalItem(2, Items.AMETHYST_SHARD),
             Enchantments.LOOTING, 2, exporter
@@ -394,7 +392,7 @@ public class RecipeProvider extends FabricRecipeProvider
 
         add(
             builder -> builder
-                .withPedestalItem(3, Ingredient.fromTag(ItemTags.LEAVES))
+                .withPedestalItem(3, Ingredient.of(ItemTags.LEAVES))
                 .withPedestalItem(1, Items.EMERALD_BLOCK)
                 .withPedestalItem(2, Items.LAPIS_BLOCK)
                 .withPedestalItem(2, Items.AMETHYST_SHARD),

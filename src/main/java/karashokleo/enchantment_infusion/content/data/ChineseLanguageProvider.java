@@ -2,27 +2,25 @@ package karashokleo.enchantment_infusion.content.data;
 
 import karashokleo.enchantment_infusion.init.EIBlocks;
 import karashokleo.enchantment_infusion.init.EITexts;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
-import net.minecraft.registry.RegistryWrapper;
+import karashokleo.enchantment_infusion.neoforge.EnchantmentInfusion;
+import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.common.data.LanguageProvider;
 
-import java.util.concurrent.CompletableFuture;
-
-public class ChineseLanguageProvider extends FabricLanguageProvider
+public class ChineseLanguageProvider extends LanguageProvider
 {
-    public ChineseLanguageProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture)
+    public ChineseLanguageProvider(PackOutput output)
     {
-        super(dataOutput, "zh_cn", registriesFuture);
+        super(output, EnchantmentInfusion.MOD_ID, "zh_cn");
     }
 
     @Override
-    public void generateTranslations(RegistryWrapper.WrapperLookup registryLookup, TranslationBuilder translationBuilder)
+    protected void addTranslations()
     {
-        translationBuilder.add(EIBlocks.INFUSION_TABLE, "魔咒灌注台");
-        translationBuilder.add(EIBlocks.INFUSION_PEDESTAL, "魔咒灌注基座");
-        translationBuilder.add(EITexts.PNF.key, "未找到基座！");
-        translationBuilder.add(EITexts.RNF.key, "未找到配方！");
-        translationBuilder.add(EITexts.EII.key, "灌注中断！");
-        translationBuilder.add(EITexts.CATEGORY.key, "魔咒灌注");
+        add(EIBlocks.INFUSION_TABLE, "魔咒灌注台");
+        add(EIBlocks.INFUSION_PEDESTAL, "魔咒灌注基座");
+        add(EITexts.PNF.key, "未找到基座！");
+        add(EITexts.RNF.key, "未找到配方！");
+        add(EITexts.EII.key, "灌注中断！");
+        add(EITexts.CATEGORY.key, "魔咒灌注");
     }
 }

@@ -2,27 +2,25 @@ package karashokleo.enchantment_infusion.content.data;
 
 import karashokleo.enchantment_infusion.init.EIBlocks;
 import karashokleo.enchantment_infusion.init.EITexts;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
-import net.minecraft.registry.RegistryWrapper;
+import karashokleo.enchantment_infusion.neoforge.EnchantmentInfusion;
+import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.common.data.LanguageProvider;
 
-import java.util.concurrent.CompletableFuture;
-
-public class EnglishLanguageProvider extends FabricLanguageProvider
+public class EnglishLanguageProvider extends LanguageProvider
 {
-    public EnglishLanguageProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture)
+    public EnglishLanguageProvider(PackOutput output)
     {
-        super(dataOutput, "en_us", registriesFuture);
+        super(output, EnchantmentInfusion.MOD_ID, "en_us");
     }
 
     @Override
-    public void generateTranslations(RegistryWrapper.WrapperLookup registryLookup, TranslationBuilder translationBuilder)
+    protected void addTranslations()
     {
-        translationBuilder.add(EIBlocks.INFUSION_TABLE, "Enchantment Infusion Table");
-        translationBuilder.add(EIBlocks.INFUSION_PEDESTAL, "Enchantment Infusion Pedestal");
-        translationBuilder.add(EITexts.PNF.key, "Pedestal not found!");
-        translationBuilder.add(EITexts.RNF.key, "Recipe not found!");
-        translationBuilder.add(EITexts.EII.key, "Enchantment infusion interrupted!");
-        translationBuilder.add(EITexts.CATEGORY.key, "Enchantment Infusion");
+        add(EIBlocks.INFUSION_TABLE, "Enchantment Infusion Table");
+        add(EIBlocks.INFUSION_PEDESTAL, "Enchantment Infusion Pedestal");
+        add(EITexts.PNF.key, "Pedestal not found!");
+        add(EITexts.RNF.key, "Recipe not found!");
+        add(EITexts.EII.key, "Enchantment infusion interrupted!");
+        add(EITexts.CATEGORY.key, "Enchantment Infusion");
     }
 }

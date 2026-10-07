@@ -1,29 +1,29 @@
 package karashokleo.enchantment_infusion.api.block.entity;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.inventory.SingleStackInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.text.Text;
-import net.minecraft.util.Nameable;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.Nameable;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.ticks.ContainerSingleItem;
 import org.jetbrains.annotations.Nullable;
 
-public class NameableSingleStackTile extends BlockEntity implements SingleStackInventory, Nameable
+public class NameableSingleStackTile extends BlockEntity implements ContainerSingleItem, Nameable
 {
     protected ItemStack item = ItemStack.EMPTY;
-    protected Text customName;
+    protected Component customName;
 
     public NameableSingleStackTile(BlockEntityType<?> type, BlockPos pos, BlockState state)
     {
@@ -31,136 +31,136 @@ public class NameableSingleStackTile extends BlockEntity implements SingleStackI
     }
 
     @Override
-    public ItemStack getStack()
+    public ItemStack getTheItem()
     {
         return item;
     }
 
     @Override
-    public ItemStack decreaseStack(int amount)
+    public ItemStack splitTheItem(int amount)
     {
-        return removeStack(0, amount);
+        return removeItem(0, amount);
     }
 
     @Override
-    public ItemStack removeStack(int slot, int amount)
+    public ItemStack removeItem(int slot, int amount)
     {
         ItemStack removed = item.copy();
         amount = Math.min(amount, item.getCount());
         removed.setCount(amount);
-        item.decrement(amount);
+        item.shrink(amount);
         update();
         return removed;
     }
 
     @Override
-    public void setStack(ItemStack stack)
+    public void setTheItem(ItemStack stack)
     {
         item = stack;
         update();
     }
 
     @Override
-    public boolean canPlayerUse(PlayerEntity player)
+    public boolean stillValid(Player player)
     {
         return false;
     }
 
     @Override
-    public int getMaxCountPerStack()
+    public int getMaxStackSize()
     {
         return 1;
     }
 
     @Override
-    public boolean isValid(int slot, ItemStack stack)
+    public boolean canPlaceItem(int slot, ItemStack stack)
     {
         return this.item.isEmpty();
     }
 
     public void update()
     {
-        this.markDirty();
-        if (world == null || world.isClient())
+        this.setChanged();
+        if (level == null || level.isClientSide())
         {
             return;
         }
-        world.updateListeners(pos, getCachedState(), getCachedState(), Block.NOTIFY_ALL);
+        level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
     }
 
     @Override
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries)
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries)
     {
-        super.readNbt(nbt, registries);
-        this.item = ItemStack.fromNbtOrEmpty(registries, nbt.getCompound("Item"));
-        if (nbt.contains("CustomName", NbtElement.STRING_TYPE))
+        super.loadAdditional(nbt, registries);
+        this.item = ItemStack.parseOptional(registries, nbt.getCompound("Item"));
+        if (nbt.contains("CustomName", Tag.TAG_STRING))
         {
-            this.customName = Text.Serialization.fromJson(nbt.getString("CustomName"), registries);
+            this.customName = Component.Serializer.fromJson(nbt.getString("CustomName"), registries);
         }
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries)
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries)
     {
-        super.writeNbt(nbt, registries);
-        nbt.put("Item", this.item.encodeAllowEmpty(registries));
+        super.saveAdditional(nbt, registries);
+        nbt.put("Item", this.item.saveOptional(registries));
         if (this.hasCustomName())
         {
-            nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registries));
+            nbt.putString("CustomName", Component.Serializer.toJson(this.customName, registries));
         }
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries)
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries)
     {
-        return createNbt(registries);
+        return saveWithoutMetadata(registries);
     }
 
     @Nullable
     @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket()
+    public Packet<ClientGamePacketListener> getUpdatePacket()
     {
-        return BlockEntityUpdateS2CPacket.create(this);
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    protected void readComponents(ComponentsAccess components)
+    protected void applyImplicitComponents(DataComponentInput components)
     {
-        super.readComponents(components);
-        this.customName = components.get(DataComponentTypes.CUSTOM_NAME);
+        super.applyImplicitComponents(components);
+        this.customName = components.get(DataComponents.CUSTOM_NAME);
     }
 
     @Override
-    protected void addComponents(ComponentMap.Builder builder)
+    protected void collectImplicitComponents(DataComponentMap.Builder builder)
     {
-        super.addComponents(builder);
-        builder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
+        super.collectImplicitComponents(builder);
+        builder.set(DataComponents.CUSTOM_NAME, this.customName);
     }
 
     @Override
-    public void removeFromCopiedStackNbt(NbtCompound nbt)
+    public void removeComponentsFromTag(CompoundTag nbt)
     {
         nbt.remove("CustomName");
     }
 
     @Override
-    public Text getName()
+    public Component getName()
     {
         if (this.customName != null)
         {
             return this.customName;
         }
-        return this.getCachedState().getBlock().getName();
+        return this.getBlockState().getBlock().getName();
     }
 
-    public void setCustomName(@Nullable Text customName)
+    public void setCustomName(@Nullable Component customName)
     {
         this.customName = customName;
     }
 
     @Override
     @Nullable
-    public Text getCustomName()
+    public Component getCustomName()
     {
         return this.customName;
     }

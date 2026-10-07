@@ -1,83 +1,71 @@
 plugins {
-	id 'fabric-loom' version '1.14-SNAPSHOT'
-	id 'maven-publish'
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.148'
 }
 
 version = project.mod_version
 group = project.maven_group
-
-base {
-	archivesName = project.archives_base_name
-}
-
-repositories {
-	maven { url = "https://maven.shedaniel.me/" }
-	maven { url = "https://maven.terraformersmc.com/" }
-}
-
-fabricApi {
-	configureDataGeneration()
-}
-
-dependencies {
-	testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
-	testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	modCompileOnly "dev.emi:emi-fabric:${project.emi_version}:api"
-	modLocalRuntime "dev.emi:emi-fabric:${project.emi_version}"
-
-	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
-//    modLocalRuntime "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
-}
-
-processResources {
-	inputs.property "version", project.version
-
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
-}
-
-tasks.withType(JavaCompile).configureEach {
-	it.options.release = 21
-}
-
+base { archivesName = project.archives_base_name }
 java {
-	withSourcesJar()
-
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+    withSourcesJar()
 }
-
+sourceSets.main.resources {
+    srcDir 'src/main/generated'
+    exclude '**/.cache/**'
+}
+repositories {
+    maven { url = 'https://maven.shedaniel.me/' }
+    maven { url = 'https://maven.architectury.dev/' }
+    maven { url = 'https://maven.terraformersmc.com/' }
+    mavenCentral()
+}
+neoForge {
+    version = project.neo_version
+    runs {
+        client { client() }
+        server {
+            server()
+            programArgument '--nogui'
+        }
+        data {
+            data()
+            programArguments.addAll '--mod', 'enchantment_infusion', '--all', '--output', file('src/main/generated').absolutePath, '--existing', file('src/main/resources').absolutePath
+        }
+    }
+    mods {
+        enchantment_infusion { sourceSet sourceSets.main }
+    }
+    unitTest {
+        enable()
+        testedMod = mods.enchantment_infusion
+    }
+}
+configurations { runtimeClasspath.extendsFrom localRuntime }
+dependencies {
+    compileOnly "dev.emi:emi-neoforge:${project.emi_version}:api"
+    localRuntime "dev.emi:emi-neoforge:${project.emi_version}"
+    compileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:${project.rei_version}"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('META-INF/neoforge.mods.toml') { expand version: project.version }
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+test { useJUnitPlatform() }
 jar {
-	from("LICENSE") {
-		rename { "${it}_${project.base.archivesName.get()}"}
-	}
+    from('LICENSE') { rename { "${it}_${project.base.archivesName.get()}" } }
 }
-
 publishing {
-	publications {
-		create("mavenJava", MavenPublication) {
-			artifactId = project.archives_base_name
-			from components.java
-		}
-	}
-
-	repositories {
-		mavenLocal()
-	}
+    publications {
+        create('mavenJava', MavenPublication) {
+            artifactId = project.archives_base_name
+            from components.java
+        }
+    }
+    repositories { mavenLocal() }
 }
-
-test {
-	useJUnitPlatform()
-}
-
-// Generated resources are checked in; order sources after explicitly requested datagen.
-tasks.named('sourcesJar') {
-	mustRunAfter tasks.named('runDatagen')
-}
+tasks.named('sourcesJar') { mustRunAfter tasks.named('runData') }
