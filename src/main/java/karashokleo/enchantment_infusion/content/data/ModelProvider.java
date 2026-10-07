@@ -1,46 +1,38 @@
 package karashokleo.enchantment_infusion.content.data;
 
+import karashokleo.enchantment_infusion.forge.EnchantmentInfusion;
 import karashokleo.enchantment_infusion.init.EIBlocks;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.block.Block;
-import net.minecraft.data.client.BlockStateModelGenerator;
-import net.minecraft.data.client.ItemModelGenerator;
+import net.minecraft.data.DataOutput;
 import net.minecraft.data.client.ModelIds;
-import net.minecraft.data.client.VariantsBlockStateSupplier;
-import net.minecraft.util.Identifier;
+import net.minecraftforge.client.model.generators.BlockStateProvider;
+import net.minecraftforge.client.model.generators.ModelFile;
+import net.minecraftforge.common.data.ExistingFileHelper;
 
-public class ModelProvider extends FabricModelProvider
+public class ModelProvider extends BlockStateProvider
 {
-    public ModelProvider(FabricDataOutput output)
+    public ModelProvider(DataOutput output, ExistingFileHelper existingFileHelper)
     {
-        super(output);
+        super(output, EnchantmentInfusion.MOD_ID, existingFileHelper);
     }
 
     @Override
-    public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator)
+    protected void registerStatesAndModels()
     {
-        registerStateWithBooleanProperty(blockStateModelGenerator, EIBlocks.INFUSION_TABLE);
-        registerStateWithBooleanProperty(blockStateModelGenerator, EIBlocks.INFUSION_PEDESTAL);
-//        blockStateModelGenerator.registerSimpleState(EIBlocks.INFUSION_TABLE);
-//        blockStateModelGenerator.registerSimpleState(EIBlocks.INFUSION_PEDESTAL);
+        registerStateWithBooleanProperty(EIBlocks.INFUSION_TABLE);
+        registerStateWithBooleanProperty(EIBlocks.INFUSION_PEDESTAL);
     }
 
-    @Override
-    public void generateItemModels(ItemModelGenerator itemModelGenerator)
+    private void registerStateWithBooleanProperty(Block block)
     {
-    }
+        ModelFile trueModel = models().getExistingFile(ModelIds.getBlockSubModelId(block, "_infusing"));
+        ModelFile falseModel = models().getExistingFile(ModelIds.getBlockModelId(block));
 
-    private static void registerStateWithBooleanProperty(BlockStateModelGenerator generator, Block block)
-    {
-        Identifier trueModel = ModelIds.getBlockSubModelId(block, "_infusing");
-        Identifier falseModel = ModelIds.getBlockModelId(block);
-
-        generator.blockStateCollector.accept(
-            VariantsBlockStateSupplier.create(block)
-                .coordinate(
-                    BlockStateModelGenerator.createBooleanModelMap(EIBlocks.INFUSING, trueModel, falseModel)
-                )
-        );
+        getVariantBuilder(block)
+            .partialState().with(EIBlocks.INFUSING, true)
+                .modelForState().modelFile(trueModel).addModel()
+            .partialState().with(EIBlocks.INFUSING, false)
+                .modelForState().modelFile(falseModel).addModel();
+        simpleBlockItem(block, falseModel);
     }
 }

@@ -4,11 +4,10 @@ import karashokleo.enchantment_infusion.content.block.EnchantmentInfusionPedesta
 import karashokleo.enchantment_infusion.content.block.EnchantmentInfusionTableBlock;
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionPedestalTile;
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionTableTile;
-import karashokleo.enchantment_infusion.fabric.EnchantmentInfusion;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import karashokleo.enchantment_infusion.forge.EnchantmentInfusion;
+import net.minecraftforge.registries.RegisterEvent;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.state.property.BooleanProperty;
 
 public class EIBlocks
@@ -19,27 +18,25 @@ public class EIBlocks
     public static BlockEntityType<EnchantmentInfusionTableTile> INFUSION_TABLE_TILE;
     public static BlockEntityType<EnchantmentInfusionPedestalTile> INFUSION_PEDESTAL_TILE;
 
-    public static void register()
+    public static void register(RegisterEvent event)
     {
-        INFUSION_TABLE = Registry.register(
-            Registries.BLOCK,
-            EnchantmentInfusion.id("enchantment_infusion_table"),
-            new EnchantmentInfusionTableBlock()
-        );
-        INFUSION_PEDESTAL = Registry.register(
-            Registries.BLOCK,
-            EnchantmentInfusion.id("enchantment_infusion_pedestal"),
-            new EnchantmentInfusionPedestalBlock()
-        );
-        INFUSION_TABLE_TILE = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE,
-            EnchantmentInfusion.id("enchantment_infusion_table"),
-            FabricBlockEntityTypeBuilder.create(EnchantmentInfusionTableTile::new, INFUSION_TABLE).build()
-        );
-        INFUSION_PEDESTAL_TILE = Registry.register(
-            Registries.BLOCK_ENTITY_TYPE,
-            EnchantmentInfusion.id("enchantment_infusion_pedestal"),
-            FabricBlockEntityTypeBuilder.create(EnchantmentInfusionPedestalTile::new, INFUSION_PEDESTAL).build()
-        );
+        if (event.getRegistryKey().equals(RegistryKeys.BLOCK))
+        {
+            INFUSION_TABLE = new EnchantmentInfusionTableBlock();
+            INFUSION_PEDESTAL = new EnchantmentInfusionPedestalBlock();
+            event.register(RegistryKeys.BLOCK, helper -> {
+                helper.register(EnchantmentInfusion.id("enchantment_infusion_table"), INFUSION_TABLE);
+                helper.register(EnchantmentInfusion.id("enchantment_infusion_pedestal"), INFUSION_PEDESTAL);
+            });
+        }
+        if (event.getRegistryKey().equals(RegistryKeys.BLOCK_ENTITY_TYPE))
+        {
+            INFUSION_TABLE_TILE = BlockEntityType.Builder.create(EnchantmentInfusionTableTile::new, INFUSION_TABLE).build(null);
+            INFUSION_PEDESTAL_TILE = BlockEntityType.Builder.create(EnchantmentInfusionPedestalTile::new, INFUSION_PEDESTAL).build(null);
+            event.register(RegistryKeys.BLOCK_ENTITY_TYPE, helper -> {
+                helper.register(EnchantmentInfusion.id("enchantment_infusion_table"), INFUSION_TABLE_TILE);
+                helper.register(EnchantmentInfusion.id("enchantment_infusion_pedestal"), INFUSION_PEDESTAL_TILE);
+            });
+        }
     }
 }

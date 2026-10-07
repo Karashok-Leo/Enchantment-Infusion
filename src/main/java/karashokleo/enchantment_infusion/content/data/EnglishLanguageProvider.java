@@ -1,25 +1,26 @@
 package karashokleo.enchantment_infusion.content.data;
 
+import karashokleo.enchantment_infusion.forge.EnchantmentInfusion;
 import karashokleo.enchantment_infusion.init.EIBlocks;
 import karashokleo.enchantment_infusion.init.EITexts;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
+import net.minecraft.data.DataOutput;
+import net.minecraftforge.common.data.LanguageProvider;
 
-public class EnglishLanguageProvider extends FabricLanguageProvider
+public class EnglishLanguageProvider extends LanguageProvider
 {
-    public EnglishLanguageProvider(FabricDataOutput dataOutput)
+    public EnglishLanguageProvider(DataOutput dataOutput)
     {
-        super(dataOutput, "en_us");
+        super(dataOutput, EnchantmentInfusion.MOD_ID, "en_us");
     }
 
     @Override
-    public void generateTranslations(TranslationBuilder translationBuilder)
+    protected void addTranslations()
     {
-        translationBuilder.add(EIBlocks.INFUSION_TABLE, "Enchantment Infusion Table");
-        translationBuilder.add(EIBlocks.INFUSION_PEDESTAL, "Enchantment Infusion Pedestal");
-        translationBuilder.add(EITexts.PNF.key, "Pedestal not found!");
-        translationBuilder.add(EITexts.RNF.key, "Recipe not found!");
-        translationBuilder.add(EITexts.EII.key, "Enchantment infusion interrupted!");
-        translationBuilder.add(EITexts.CATEGORY.key, "Enchantment Infusion");
+        add(EIBlocks.INFUSION_TABLE, "Enchantment Infusion Table");
+        add(EIBlocks.INFUSION_PEDESTAL, "Enchantment Infusion Pedestal");
+        add(EITexts.PNF.key, "Pedestal not found!");
+        add(EITexts.RNF.key, "Recipe not found!");
+        add(EITexts.EII.key, "Enchantment infusion interrupted!");
+        add(EITexts.CATEGORY.key, "Enchantment Infusion");
     }
 }

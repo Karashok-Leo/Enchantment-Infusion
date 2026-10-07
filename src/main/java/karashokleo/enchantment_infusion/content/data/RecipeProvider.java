@@ -1,10 +1,9 @@
 package karashokleo.enchantment_infusion.content.data;
 
 import karashokleo.enchantment_infusion.api.util.EIRecipeUtil;
-import karashokleo.enchantment_infusion.fabric.EnchantmentInfusion;
+import karashokleo.enchantment_infusion.forge.EnchantmentInfusion;
 import karashokleo.enchantment_infusion.init.EIBlocks;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.minecraft.data.DataOutput;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.enchantment.Enchantment;
@@ -18,7 +17,7 @@ import net.minecraft.registry.tag.ItemTags;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class RecipeProvider extends FabricRecipeProvider
+public class RecipeProvider extends net.minecraft.data.server.recipe.RecipeProvider
 {
     /*
      * SOURCE_GEM            ---->   AMETHYST_SHARD
@@ -31,7 +30,7 @@ public class RecipeProvider extends FabricRecipeProvider
      * WILDEN_SPIKE          ---->   SWEET_BERRIES
      * */
 
-    public RecipeProvider(FabricDataOutput output)
+    public RecipeProvider(DataOutput output)
     {
         super(output);
     }
@@ -59,7 +58,7 @@ public class RecipeProvider extends FabricRecipeProvider
             .input('R', Items.REDSTONE_BLOCK)
             .input('P', EIBlocks.INFUSION_PEDESTAL)
             .input('O', Items.OBSIDIAN)
-            .criterion(FabricRecipeProvider.hasItem(EIBlocks.INFUSION_PEDESTAL), FabricRecipeProvider.conditionsFromItem(EIBlocks.INFUSION_PEDESTAL))
+            .criterion(hasItem(EIBlocks.INFUSION_PEDESTAL), conditionsFromItem(EIBlocks.INFUSION_PEDESTAL))
             .offerTo(exporter);
 
         ShapedRecipeJsonBuilder
@@ -71,7 +70,7 @@ public class RecipeProvider extends FabricRecipeProvider
             .input('R', Items.REDSTONE_BLOCK)
             .input('C', Items.CRYING_OBSIDIAN)
             .input('O', Items.OBSIDIAN)
-            .criterion(FabricRecipeProvider.hasItem(Items.OBSIDIAN), FabricRecipeProvider.conditionsFromItem(Items.OBSIDIAN))
+            .criterion(hasItem(Items.OBSIDIAN), conditionsFromItem(Items.OBSIDIAN))
             .offerTo(exporter);
 
         add(

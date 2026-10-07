@@ -3,7 +3,6 @@ package karashokleo.enchantment_infusion.content.block;
 import karashokleo.enchantment_infusion.api.block.AbstractInfusionBlock;
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionTableTile;
 import karashokleo.enchantment_infusion.init.EIBlocks;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.MapColor;
@@ -38,7 +37,7 @@ public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
     public EnchantmentInfusionTableBlock()
     {
         super(
-            FabricBlockSettings.create()
+            Settings.create()
                 .mapColor(MapColor.BLACK)
                 .instrument(Instrument.BASEDRUM)
                 .strength(5.0f, 1200.0f)

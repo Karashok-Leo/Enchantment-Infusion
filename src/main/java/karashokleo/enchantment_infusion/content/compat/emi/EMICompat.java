@@ -9,6 +9,7 @@ import karashokleo.enchantment_infusion.init.EIRecipes;
 import karashokleo.enchantment_infusion.init.EITexts;
 import net.minecraft.text.Text;
 
+@dev.emi.emi.api.EmiEntrypoint
 public class EMICompat implements EmiPlugin
 {
     public static final EmiRecipeCategory EI_CATEGORY = new EmiRecipeCategory(EIRecipes.INFUSION_ID, EmiStack.of(EIBlocks.INFUSION_TABLE))

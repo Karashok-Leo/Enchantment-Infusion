@@ -1,37 +1,39 @@
-# Automatically build the project and run any configured tests for every push
-# and submitted pull request. This can help catch issues that only occur on
-# certain platforms or Java versions, and provides a first line of defence
-# against bad commits.
-
 name: build
 on: [pull_request, push]
 
 jobs:
   build:
-    strategy:
-      matrix:
-        # Use these Java versions
-        java: [
-          21,    # Current Java LTS
-        ]
     runs-on: ubuntu-22.04
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: validate gradle wrapper
         uses: gradle/wrapper-validation-action@v2
-      - name: setup jdk ${{ matrix.java }}
+      - name: setup Java 17 compilation toolchain
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java }}
+          java-version: '17'
+          distribution: 'microsoft'
+      - name: retain Java 17 toolchain location
+        run: echo "JAVA_HOME_17_X64=$JAVA_HOME" >> "$GITHUB_ENV"
+      - name: setup Java 21 for Gradle
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
           distribution: 'microsoft'
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-      - name: build
-        run: ./gradlew build
+      - name: build and regenerate data
+        run: |
+          ./gradlew -Porg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64,JAVA_HOME runData
+          ./gradlew -Porg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64,JAVA_HOME build
+      - name: verify original assets and recipes
+        # Pin the original Fabric master so this also works in a Forge-only fork.
+        run: python3 tools/verify_master_data.py --baseline 2cec737573188c7ed28fab0c60bc43bfa1d959bc
       - name: capture build artifacts
-        if: ${{ matrix.java == '21' }} # Only upload artifacts built from latest java
         uses: actions/upload-artifact@v4
         with:
           name: Artifacts
-          path: build/libs/
+          path: build/libs/*

@@ -1,5 +1,9 @@
 # Enchantment Infusion
 
+This branch targets **Minecraft 1.20.1 / Forge 47.4.x / Java 17**. EMI and REI remain optional.
+
+See [Forge migration notes and verification](docs/MIGRATION_FORGE_1.20.1.md) for changes relative to the original Fabric master.
+
 ## 🪄Introduction
 
 This mod adds a directional enchanting method, inspired by the Enchanting Apparatus recipes from [Ars Nouveau](https://www.curseforge.com/minecraft/mc-mods/ars-nouveau).

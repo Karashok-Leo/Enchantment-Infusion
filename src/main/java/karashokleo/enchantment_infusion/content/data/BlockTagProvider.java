@@ -1,18 +1,20 @@
 package karashokleo.enchantment_infusion.content.data;
 
+import karashokleo.enchantment_infusion.forge.EnchantmentInfusion;
 import karashokleo.enchantment_infusion.init.EIBlocks;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.minecraft.data.DataOutput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraftforge.common.data.BlockTagsProvider;
+import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
-public class BlockTagProvider extends FabricTagProvider.BlockTagProvider
+public class BlockTagProvider extends BlockTagsProvider
 {
-    public BlockTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture)
+    public BlockTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture, ExistingFileHelper existingFileHelper)
     {
-        super(output, registriesFuture);
+        super(output, registriesFuture, EnchantmentInfusion.MOD_ID, existingFileHelper);
     }
 
     @Override

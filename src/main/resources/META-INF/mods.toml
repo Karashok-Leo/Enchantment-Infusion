@@ -1,0 +1,22 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="LGPLv2.1"
+[[mods]]
+modId="enchantment_infusion"
+version="${version}"
+displayName="Enchantment Infusion"
+authors="Karashok Leo"
+description='''Enchantment Infusion'''
+logoFile="assets/enchantment_infusion/icon.png"
+[[dependencies.enchantment_infusion]]
+modId="forge"
+mandatory=true
+versionRange="[47.4,48)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.enchantment_infusion]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.20.2)"
+ordering="NONE"
+side="BOTH"
