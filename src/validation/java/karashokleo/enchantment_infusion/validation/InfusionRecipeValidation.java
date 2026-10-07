@@ -28,8 +28,11 @@ import java.util.Map;
 public class InfusionRecipeValidation
 {
     @SubscribeEvent
-    public static void validate(GatherDataEvent event) throws java.io.IOException
+    public static void validate(GatherDataEvent event) throws Exception
     {
+        if (Boolean.getBoolean("enchantment_infusion.validation.jei"))
+            Class.forName("karashokleo.enchantment_infusion.content.compat.jei.JEILayoutValidation")
+                .getMethod("validate").invoke(null);
         InfusionRecipeValidation tests = new InfusionRecipeValidation();
         tests.booksAndApplicableEquipmentMatch();
         tests.upgradesRequirePrerequisiteAndHigherLevel();

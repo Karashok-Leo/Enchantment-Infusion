@@ -1,6 +1,8 @@
 # Enchantment Infusion
 
-This branch targets **Minecraft 1.20.1 / Forge 47.4.x / Java 17**. EMI and REI remain optional.
+This branch targets **Minecraft 1.20.1 / Forge 47.4.x / Java 17**. EMI, REI, and JEI remain optional.
+
+JEI uses the existing Enchantment Infusion category, recipes, table and pedestal catalysts, and native enchanted-book tooltips. See [JEI setup and validation](docs/JEI.md).
 
 See [Forge migration notes and verification](docs/MIGRATION_FORGE_1.20.1.md) for changes relative to the original Fabric master.
 

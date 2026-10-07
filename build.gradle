@@ -11,6 +11,7 @@ base {
 }
 
 repositories {
+    maven { url = "https://maven.blamejared.com/" }
 	maven { url = "https://maven.shedaniel.me/" }
 	maven { url = "https://maven.terraformersmc.com/" }
 }
@@ -40,6 +41,11 @@ loom.mods {
 }
 
 
+def recipeViewer = providers.gradleProperty("recipeViewer").getOrElse("emi")
+if (!(recipeViewer in ["emi", "jei", "none", "coexist", "rei"])) {
+    throw new GradleException("Unknown recipeViewer: ${recipeViewer}. Use emi, jei, none, coexist, or rei.")
+}
+
 dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter:5.11.4"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
@@ -48,10 +54,21 @@ dependencies {
 	forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 
 	modCompileOnly "dev.emi:emi-forge:${project.emi_version}:api"
-	modLocalRuntime "dev.emi:emi-forge:${project.emi_version}"
+    if (recipeViewer in ["emi", "coexist"]) {
+        modLocalRuntime "dev.emi:emi-forge:${project.emi_version}"
+    }
+
+    // The split JEI API is Mojmap; Loom Forge expects SRG dependencies. Compile against
+    // the SRG release jar's API without putting the viewer on the runtime classpath.
+    modCompileOnly("mezz.jei:jei-${project.minecraft_version}-forge:${project.jei_version}") { transitive = false }
+    if (recipeViewer in ["jei", "coexist"]) {
+        modLocalRuntime("mezz.jei:jei-${project.minecraft_version}-forge:${project.jei_version}") { transitive = false }
+    }
 
 	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-forge:${project.rei_version}"
-//    modLocalRuntime "me.shedaniel:RoughlyEnoughItems-forge:${project.rei_version}"
+    if (recipeViewer == "rei") {
+        modLocalRuntime "me.shedaniel:RoughlyEnoughItems-forge:${project.rei_version}"
+    }
 }
 
 processResources {
@@ -103,6 +120,7 @@ tasks.named('sourcesJar') { mustRunAfter tasks.named('runData') }
 // Forge's data launch validates assetsDir, including on a clean checkout.
 tasks.named('runData') {
     dependsOn tasks.named('downloadAssets'), tasks.named('validationClasses')
+    systemProperty 'enchantment_infusion.validation.jei', recipeViewer == 'jei'
     def validationReport = layout.buildDirectory.file('reports/forge-validation.json')
     systemProperty 'enchantment_infusion.validation.report', validationReport.get().asFile.absolutePath
     doFirst { delete validationReport }
