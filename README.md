@@ -111,10 +111,27 @@ Since mod version `1.2.0`, a new recipe type (`enchantment_infusion:simple_infus
 
 ## 🧩Compatibility
 
-This mod has built-in REI and EMI compatible plug-ins, which means you can use either to view all recipes in this mod.
+This mod has built-in JEI, REI and EMI compatible plug-ins, which means you can use any of them to view all recipes in this mod.
 
 ## ✉️Feedback
 
 This mod has not been fully tested yet, so it is still in Beta.
 
 If there are any bugs or suggestions, please provide feedback to the issue page.
+
+### Development recipe viewers
+
+JEI is optional, just like EMI and REI. It displays the existing enchantment and simple
+infusion recipes, with the infusion table and pedestal as recipe catalysts. It does
+not add recipe transfer or change infusion rules. Native item stacks retain their
+components, including prerequisite and output enchantment levels.
+
+The default development viewer remains EMI. Select a runtime with
+`./gradlew runClient -PrecipeViewer=jei` (JEI only), `emi`, `none` (no viewer), or
+`coexist` (EMI + JEI). Viewer APIs are compile-only and are not bundled into the mod.
+REI's existing optional plugin is unchanged.
+
+JEI is pinned to `19.21.0.247` from the official
+[Maven repository](https://maven.blamejared.com/mezz/jei/jei-1.21.1-fabric/19.21.0.247/).
+Its Fabric metadata requires Loader >=0.16.3, Fabric API >=0.102.0+1.21 and Java 21;
+the existing project pins satisfy these requirements.
