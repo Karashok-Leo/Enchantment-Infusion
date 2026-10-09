@@ -1,6 +1,6 @@
 # Enchantment Infusion
 
-This branch targets **NeoForge 21.1.252+** for Minecraft **1.21.1** and requires **Java 21**. See the [NeoForge migration notes](docs/MIGRATION_NEOFORGE_1.21.1.md) for changes from the original Fabric 1.20.1 master and verification status.
+This branch targets **NeoForge 21.1.252+** for Minecraft **1.21.1** and requires **Java 21**.
 
 ## 🪄Introduction
 
@@ -112,15 +112,6 @@ Since mod version `1.2.0`, a new recipe type (`enchantment_infusion:simple_infus
 ## 🧩Compatibility
 
 This mod has optional JEI, REI and EMI integrations for viewing both enchantment and simple infusion recipes. JEI uses the same central input, circular pedestal inputs, output preview, and table/pedestal catalysts as the existing viewers. No recipe transfer or new gameplay behavior is added.
-
-Development runtime selection (Java 21):
-
-- `./gradlew runClient -PrecipeViewer=jei`: JEI 19.27.0.340 only
-- `./gradlew runClient -PrecipeViewer=emi`: EMI only (default)
-- `./gradlew runClient -PrecipeViewer=none`: no recipe viewer
-- `./gradlew runClient -PrecipeViewer=coexist`: JEI and EMI
-
-Viewer APIs are compile-only, with no viewer bundled or required by the released JAR. REI remains compile-only. See [JEI verification notes](docs/JEI.md) for the checks and manual coverage.
 
 ## ✉️Feedback
 

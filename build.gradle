@@ -38,10 +38,6 @@ neoForge {
     mods {
         enchantment_infusion { sourceSet sourceSets.main }
     }
-    unitTest {
-        enable()
-        testedMod = mods.enchantment_infusion
-    }
 }
 configurations { runtimeClasspath.extendsFrom localRuntime }
 // Viewer runtimes are local development conveniences, never bundled or required.
@@ -60,15 +56,12 @@ dependencies {
         localRuntime "mezz.jei:jei-${project.minecraft_version}-neoforge:${project.jei_version}"
     }
     compileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:${project.rei_version}"
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 processResources {
     inputs.property 'version', project.version
     filesMatching('META-INF/neoforge.mods.toml') { expand version: project.version }
 }
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
-test { useJUnitPlatform() }
 jar {
     from('LICENSE') { rename { "${it}_${project.base.archivesName.get()}" } }
 }
