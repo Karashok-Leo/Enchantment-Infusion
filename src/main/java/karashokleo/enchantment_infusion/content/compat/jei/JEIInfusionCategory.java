@@ -18,7 +18,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 public class JEIInfusionCategory implements IRecipeCategory<InfusionRecipe>
 {
@@ -92,7 +92,7 @@ public class JEIInfusionCategory implements IRecipeCategory<InfusionRecipe>
         // JEI's vanilla item subtype handling provides level-aware recipe lookup.
         builder.addSlot(RecipeIngredientRole.INPUT, x, y)
             .setBackground(slot, -1, -1)
-            .addItemStacks(Arrays.asList(ingredient.getMatchingStacks()));
+            .addItemStacks(Collections.singletonList(ingredient.getMatchingStacks()));
     }
 
     @Override
