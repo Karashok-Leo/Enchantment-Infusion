@@ -13,12 +13,14 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 @JeiPlugin
 public class JEICompat implements IModPlugin
 {
     public static final RecipeType<InfusionRecipe> INFUSION = new RecipeType<>(EIRecipes.INFUSION_ID, InfusionRecipe.class);
 
+    @NotNull
     @Override
     public Identifier getPluginUid()
     {
