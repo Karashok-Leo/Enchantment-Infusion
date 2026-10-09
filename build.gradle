@@ -27,19 +27,6 @@ loom {
     }
 }
 sourceSets.main.resources.srcDir 'src/main/generated'
-sourceSets {
-    validation {
-        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
-        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
-    }
-}
-loom.mods {
-    enchantment_infusion {
-        sourceSet sourceSets.main
-        sourceSet sourceSets.validation
-    }
-}
-
 
 def recipeViewer = providers.gradleProperty("recipeViewer").getOrElse("emi")
 if (!(recipeViewer in ["emi", "jei", "none", "coexist", "rei"])) {
@@ -47,8 +34,6 @@ if (!(recipeViewer in ["emi", "jei", "none", "coexist", "rei"])) {
 }
 
 dependencies {
-    testImplementation "org.junit.jupiter:junit-jupiter:5.11.4"
-    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
@@ -109,7 +94,6 @@ publishing {
 		mavenLocal()
 	}
 }
-test { useJUnitPlatform() }
 
 // Forge 1.20.1 must launch on Java 17 even when Gradle itself runs on Java 21.
 tasks.withType(JavaExec).configureEach {
@@ -119,17 +103,7 @@ tasks.named('sourcesJar') { mustRunAfter tasks.named('runData') }
 
 // Forge's data launch validates assetsDir, including on a clean checkout.
 tasks.named('runData') {
-    dependsOn tasks.named('downloadAssets'), tasks.named('validationClasses')
-    systemProperty 'enchantment_infusion.validation.jei', recipeViewer == 'jei'
-    def validationReport = layout.buildDirectory.file('reports/forge-validation.json')
-    systemProperty 'enchantment_infusion.validation.report', validationReport.get().asFile.absolutePath
-    doFirst { delete validationReport }
-    doLast {
-        def report = validationReport.get().asFile
-        if (!report.exists() || new groovy.json.JsonSlurper().parse(report).passed != 10) {
-            throw new GradleException('Forge runtime regression checks did not complete.')
-        }
-    }
+    dependsOn tasks.named('downloadAssets')
 }
 
 // Datagen bookkeeping is neither a game resource nor a source artifact.

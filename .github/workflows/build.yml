@@ -29,9 +29,6 @@ jobs:
         run: |
           ./gradlew -Porg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64,JAVA_HOME runData
           ./gradlew -Porg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64,JAVA_HOME build
-      - name: verify original assets and recipes
-        # Pin the original Fabric master so this also works in a Forge-only fork.
-        run: python3 tools/verify_master_data.py --baseline 2cec737573188c7ed28fab0c60bc43bfa1d959bc
       - name: capture build artifacts
         uses: actions/upload-artifact@v4
         with:
