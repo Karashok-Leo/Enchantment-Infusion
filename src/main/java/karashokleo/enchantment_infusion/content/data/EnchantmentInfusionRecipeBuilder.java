@@ -108,7 +108,7 @@ public class EnchantmentInfusionRecipeBuilder
         @Override
         public RecipeSerializer<?> getSerializer()
         {
-            return EIRecipes.EI_SERIALIZER;
+            return EIRecipes.EI_SERIALIZER.get();
         }
 
         @Nullable

@@ -16,10 +16,10 @@ public class EnchantmentInfusion
     public EnchantmentInfusion()
     {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        bus.addListener(EIBlocks::register);
-        bus.addListener(EIItems::register);
+        EIBlocks.register(bus);
+        EIItems.register(bus);
         bus.addListener(EIItems::addCreativeEntries);
-        bus.addListener(EIRecipes::register);
+        EIRecipes.register(bus);
     }
 
     public static Identifier id(String path)

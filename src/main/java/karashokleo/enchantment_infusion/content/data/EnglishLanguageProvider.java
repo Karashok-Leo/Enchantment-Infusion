@@ -16,8 +16,8 @@ public class EnglishLanguageProvider extends LanguageProvider
     @Override
     protected void addTranslations()
     {
-        add(EIBlocks.INFUSION_TABLE, "Enchantment Infusion Table");
-        add(EIBlocks.INFUSION_PEDESTAL, "Enchantment Infusion Pedestal");
+        add(EIBlocks.INFUSION_TABLE.get(), "Enchantment Infusion Table");
+        add(EIBlocks.INFUSION_PEDESTAL.get(), "Enchantment Infusion Pedestal");
         add(EITexts.PNF.key, "Pedestal not found!");
         add(EITexts.RNF.key, "Recipe not found!");
         add(EITexts.EII.key, "Enchantment infusion interrupted!");

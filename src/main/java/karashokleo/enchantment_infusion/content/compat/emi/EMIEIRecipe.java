@@ -14,6 +14,6 @@ public class EMIEIRecipe extends AbstractEMIInfusionRecipe
     @Override
     public EmiRecipeCategory getCategory()
     {
-        return EMICompat.EI_CATEGORY;
+        return EMICompat.getCategory();
     }
 }

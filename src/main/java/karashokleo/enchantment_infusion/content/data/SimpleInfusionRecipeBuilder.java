@@ -90,7 +90,7 @@ public class SimpleInfusionRecipeBuilder
         @Override
         public RecipeSerializer<?> getSerializer()
         {
-            return EIRecipes.SI_SERIALIZER;
+            return EIRecipes.SI_SERIALIZER.get();
         }
 
         @Nullable

@@ -19,8 +19,8 @@ public class ModelProvider extends BlockStateProvider
     @Override
     protected void registerStatesAndModels()
     {
-        registerStateWithBooleanProperty(EIBlocks.INFUSION_TABLE);
-        registerStateWithBooleanProperty(EIBlocks.INFUSION_PEDESTAL);
+        registerStateWithBooleanProperty(EIBlocks.INFUSION_TABLE.get());
+        registerStateWithBooleanProperty(EIBlocks.INFUSION_PEDESTAL.get());
     }
 
     private void registerStateWithBooleanProperty(Block block)

@@ -16,8 +16,8 @@ public class ChineseLanguageProvider extends LanguageProvider
     @Override
     protected void addTranslations()
     {
-        add(EIBlocks.INFUSION_TABLE, "魔咒灌注台");
-        add(EIBlocks.INFUSION_PEDESTAL, "魔咒灌注基座");
+        add(EIBlocks.INFUSION_TABLE.get(), "魔咒灌注台");
+        add(EIBlocks.INFUSION_PEDESTAL.get(), "魔咒灌注基座");
         add(EITexts.PNF.key, "未找到基座！");
         add(EITexts.RNF.key, "未找到配方！");
         add(EITexts.EII.key, "灌注中断！");

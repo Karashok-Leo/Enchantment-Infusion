@@ -56,12 +56,12 @@ public record SimpleInfusionRecipe(
     @Override
     public RecipeSerializer<?> getSerializer()
     {
-        return EIRecipes.SI_SERIALIZER;
+        return EIRecipes.SI_SERIALIZER.get();
     }
 
     @Override
     public RecipeType<?> getType()
     {
-        return EIRecipes.INFUSION_RECIPE_TYPE;
+        return EIRecipes.INFUSION_RECIPE_TYPE.get();
     }
 }

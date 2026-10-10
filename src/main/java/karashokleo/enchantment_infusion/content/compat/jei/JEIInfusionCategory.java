@@ -26,7 +26,7 @@ public class JEIInfusionCategory implements IRecipeCategory<InfusionRecipe>
 
     public JEIInfusionCategory(IGuiHelper guiHelper)
     {
-        icon = guiHelper.createDrawableItemStack(new ItemStack(EIBlocks.INFUSION_TABLE));
+        icon = guiHelper.createDrawableItemStack(new ItemStack(EIBlocks.INFUSION_TABLE.get()));
         arrow = guiHelper.getRecipeArrow();
     }
 

@@ -8,6 +8,10 @@ import karashokleo.enchantment_infusion.content.recipe.SimpleInfusionRecipe;
 import karashokleo.enchantment_infusion.content.recipe.SimpleInfusionRecipeSerializer;
 import karashokleo.enchantment_infusion.forge.EnchantmentInfusion;
 import net.minecraftforge.registries.RegisterEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
@@ -17,29 +21,34 @@ public class EIRecipes
 {
     public static final Identifier INFUSION_ID = EnchantmentInfusion.id("infusion");
 
-    public static final RecipeType<InfusionRecipe> INFUSION_RECIPE_TYPE = new RecipeType<>()
+    private static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(RegistryKeys.RECIPE_TYPE, EnchantmentInfusion.MOD_ID);
+    private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(RegistryKeys.RECIPE_SERIALIZER, EnchantmentInfusion.MOD_ID);
+
+    public static final RegistryObject<RecipeType<InfusionRecipe>> INFUSION_RECIPE_TYPE = RECIPE_TYPES.register(INFUSION_ID.getPath(), () -> new RecipeType<InfusionRecipe>()
     {
         @Override
         public String toString()
         {
             return INFUSION_ID.getPath();
         }
-    };
+    });
 
-    public static final RecipeSerializer<EnchantmentInfusionRecipe> EI_SERIALIZER = new EnchantmentInfusionRecipeSerializer();
-    public static final RecipeSerializer<SimpleInfusionRecipe> SI_SERIALIZER = new SimpleInfusionRecipeSerializer();
+    public static final RegistryObject<RecipeSerializer<EnchantmentInfusionRecipe>> EI_SERIALIZER = RECIPE_SERIALIZERS.register(EnchantmentInfusion.MOD_ID, EnchantmentInfusionRecipeSerializer::new);
+    public static final RegistryObject<RecipeSerializer<SimpleInfusionRecipe>> SI_SERIALIZER = RECIPE_SERIALIZERS.register("simple_infusion", SimpleInfusionRecipeSerializer::new);
 
     public static final EnchantmentIngredient.Serializer ENCHANTMENT_INGREDIENT_SERIALIZER = new EnchantmentIngredient.Serializer();
 
-    public static void register(RegisterEvent event)
+    public static void register(IEventBus bus)
     {
-        if (event.getRegistryKey().equals(net.minecraft.registry.RegistryKeys.RECIPE_TYPE))
-            event.register(net.minecraft.registry.RegistryKeys.RECIPE_TYPE, INFUSION_ID, () -> INFUSION_RECIPE_TYPE);
-        if (!event.getRegistryKey().equals(net.minecraft.registry.RegistryKeys.RECIPE_SERIALIZER)) return;
+        RECIPE_TYPES.register(bus);
+        RECIPE_SERIALIZERS.register(bus);
+        bus.addListener(EIRecipes::registerIngredientSerializer);
+    }
 
-        event.register(net.minecraft.registry.RegistryKeys.RECIPE_SERIALIZER, EnchantmentInfusion.id(EnchantmentInfusion.MOD_ID), () -> EI_SERIALIZER);
-        event.register(net.minecraft.registry.RegistryKeys.RECIPE_SERIALIZER, EnchantmentInfusion.id("simple_infusion"), () -> SI_SERIALIZER);
-
-        CraftingHelper.register(EnchantmentInfusion.id("enchantment"), ENCHANTMENT_INGREDIENT_SERIALIZER);
+    private static void registerIngredientSerializer(RegisterEvent event)
+    {
+        // Forge 1.20.1 ingredient serializers use CraftingHelper, not a registry.
+        if (event.getRegistryKey().equals(RegistryKeys.RECIPE_SERIALIZER))
+            CraftingHelper.register(EnchantmentInfusion.id("enchantment"), ENCHANTMENT_INGREDIENT_SERIALIZER);
     }
 }

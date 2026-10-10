@@ -21,6 +21,6 @@ public class BlockTagProvider extends BlockTagsProvider
     protected void configure(RegistryWrapper.WrapperLookup arg)
     {
         getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE)
-            .add(EIBlocks.INFUSION_TABLE, EIBlocks.INFUSION_PEDESTAL);
+            .add(EIBlocks.INFUSION_TABLE.get(), EIBlocks.INFUSION_PEDESTAL.get());
     }
 }

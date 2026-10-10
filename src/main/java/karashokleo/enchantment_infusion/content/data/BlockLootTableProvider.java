@@ -48,13 +48,13 @@ public class BlockLootTableProvider extends BlockLootTableGenerator implements D
     @Override
     protected Iterable<Block> getKnownBlocks()
     {
-        return List.of(EIBlocks.INFUSION_TABLE, EIBlocks.INFUSION_PEDESTAL);
+        return List.of(EIBlocks.INFUSION_TABLE.get(), EIBlocks.INFUSION_PEDESTAL.get());
     }
 
     @Override
     public void generate()
     {
-        addDrop(EIBlocks.INFUSION_TABLE, this::nameableContainerDrops);
-        addDrop(EIBlocks.INFUSION_PEDESTAL, this::nameableContainerDrops);
+        addDrop(EIBlocks.INFUSION_TABLE.get(), this::nameableContainerDrops);
+        addDrop(EIBlocks.INFUSION_PEDESTAL.get(), this::nameableContainerDrops);
     }
 }

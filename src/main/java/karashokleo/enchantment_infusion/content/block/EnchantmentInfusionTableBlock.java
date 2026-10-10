@@ -71,6 +71,6 @@ public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type)
     {
-        return world.isClient ? null : checkType(type, EIBlocks.INFUSION_TABLE_TILE, EnchantmentInfusionTableTile::serverTick);
+        return world.isClient ? null : checkType(type, EIBlocks.INFUSION_TABLE_TILE.get(), EnchantmentInfusionTableTile::serverTick);
     }
 }

@@ -50,19 +50,19 @@ public class RecipeProvider extends net.minecraft.data.server.recipe.RecipeProvi
     public void generate(Consumer<RecipeJsonProvider> exporter)
     {
         ShapedRecipeJsonBuilder
-            .create(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_TABLE)
+            .create(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_TABLE.get())
             .pattern("DRD")
             .pattern(" P ")
             .pattern("OOO")
             .input('D', Items.DIAMOND)
             .input('R', Items.REDSTONE_BLOCK)
-            .input('P', EIBlocks.INFUSION_PEDESTAL)
+            .input('P', EIBlocks.INFUSION_PEDESTAL.get())
             .input('O', Items.OBSIDIAN)
-            .criterion(hasItem(EIBlocks.INFUSION_PEDESTAL), conditionsFromItem(EIBlocks.INFUSION_PEDESTAL))
+            .criterion(hasItem(EIBlocks.INFUSION_PEDESTAL.get()), conditionsFromItem(EIBlocks.INFUSION_PEDESTAL.get()))
             .offerTo(exporter);
 
         ShapedRecipeJsonBuilder
-            .create(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_PEDESTAL, 3)
+            .create(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_PEDESTAL.get(), 3)
             .pattern("DRD")
             .pattern(" C ")
             .pattern("OOO")
