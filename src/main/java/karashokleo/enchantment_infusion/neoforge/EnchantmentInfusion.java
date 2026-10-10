@@ -14,10 +14,10 @@ public class EnchantmentInfusion
 
     public EnchantmentInfusion(IEventBus modBus)
     {
-        modBus.addListener(EIBlocks::register);
-        modBus.addListener(EIItems::register);
+        EIBlocks.register(modBus);
+        EIItems.register(modBus);
         modBus.addListener(EIItems::addCreativeItems);
-        modBus.addListener(EIRecipes::register);
+        EIRecipes.register(modBus);
         modBus.addListener(EnchantmentInfusionDataGenerator::gatherData);
     }
 

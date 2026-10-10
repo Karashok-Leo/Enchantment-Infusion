@@ -99,12 +99,12 @@ public record EnchantmentInfusionRecipe(
     @Override
     public RecipeSerializer<?> getSerializer()
     {
-        return EIRecipes.EI_SERIALIZER;
+        return EIRecipes.EI_SERIALIZER.get();
     }
 
     @Override
     public RecipeType<?> getType()
     {
-        return EIRecipes.INFUSION_RECIPE_TYPE;
+        return EIRecipes.INFUSION_RECIPE_TYPE.get();
     }
 }

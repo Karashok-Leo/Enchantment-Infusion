@@ -54,19 +54,19 @@ public class RecipeProvider extends net.minecraft.data.recipes.RecipeProvider
     public void buildRecipes(RecipeOutput exporter)
     {
         ShapedRecipeBuilder
-            .shaped(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_TABLE)
+            .shaped(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_TABLE.get())
             .pattern("DRD")
             .pattern(" P ")
             .pattern("OOO")
             .define('D', Items.DIAMOND)
             .define('R', Items.REDSTONE_BLOCK)
-            .define('P', EIBlocks.INFUSION_PEDESTAL)
+            .define('P', EIBlocks.INFUSION_PEDESTAL.get())
             .define('O', Items.OBSIDIAN)
-            .unlockedBy(getHasName(EIBlocks.INFUSION_PEDESTAL), has(EIBlocks.INFUSION_PEDESTAL))
+            .unlockedBy(getHasName(EIBlocks.INFUSION_PEDESTAL.get()), has(EIBlocks.INFUSION_PEDESTAL.get()))
             .save(exporter);
 
         ShapedRecipeBuilder
-            .shaped(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_PEDESTAL, 3)
+            .shaped(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_PEDESTAL.get(), 3)
             .pattern("DRD")
             .pattern(" C ")
             .pattern("OOO")

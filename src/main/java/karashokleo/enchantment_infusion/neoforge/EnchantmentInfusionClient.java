@@ -17,15 +17,15 @@ public class EnchantmentInfusionClient
     public static void setup(FMLClientSetupEvent event)
     {
         event.enqueueWork(() -> {
-            ItemBlockRenderTypes.setRenderLayer(EIBlocks.INFUSION_TABLE, RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(EIBlocks.INFUSION_PEDESTAL, RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(EIBlocks.INFUSION_TABLE.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(EIBlocks.INFUSION_PEDESTAL.get(), RenderType.cutout());
         });
     }
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event)
     {
-        event.registerBlockEntityRenderer(EIBlocks.INFUSION_TABLE_TILE, ctx -> new InfusionTableTileRenderer<>(1.3F, ctx));
-        event.registerBlockEntityRenderer(EIBlocks.INFUSION_PEDESTAL_TILE, ctx -> new InfusionTableTileRenderer<>(0.85F, ctx));
+        event.registerBlockEntityRenderer(EIBlocks.INFUSION_TABLE_TILE.get(), ctx -> new InfusionTableTileRenderer<>(1.3F, ctx));
+        event.registerBlockEntityRenderer(EIBlocks.INFUSION_PEDESTAL_TILE.get(), ctx -> new InfusionTableTileRenderer<>(0.85F, ctx));
     }
 }

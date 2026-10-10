@@ -38,14 +38,14 @@ public class JEICompat implements IModPlugin
         var level = Minecraft.getInstance().level;
         if (level != null)
         {
-            registration.addRecipes(EI, level.getRecipeManager().getAllRecipesFor(EIRecipes.INFUSION_RECIPE_TYPE));
+            registration.addRecipes(EI, level.getRecipeManager().getAllRecipesFor(EIRecipes.INFUSION_RECIPE_TYPE.get()));
         }
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration)
     {
-        registration.addRecipeCatalyst(new ItemStack(EIBlocks.INFUSION_TABLE), EI);
-        registration.addRecipeCatalyst(new ItemStack(EIBlocks.INFUSION_PEDESTAL), EI);
+        registration.addRecipeCatalyst(new ItemStack(EIBlocks.INFUSION_TABLE.get()), EI);
+        registration.addRecipeCatalyst(new ItemStack(EIBlocks.INFUSION_PEDESTAL.get()), EI);
     }
 }

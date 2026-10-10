@@ -85,6 +85,6 @@ public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type)
     {
-        return world.isClientSide ? null : createTickerHelper(type, EIBlocks.INFUSION_TABLE_TILE, EnchantmentInfusionTableTile::serverTick);
+        return world.isClientSide ? null : createTickerHelper(type, EIBlocks.INFUSION_TABLE_TILE.get(), EnchantmentInfusionTableTile::serverTick);
     }
 }

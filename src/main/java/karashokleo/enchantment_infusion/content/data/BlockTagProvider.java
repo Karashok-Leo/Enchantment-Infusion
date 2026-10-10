@@ -21,6 +21,6 @@ public class BlockTagProvider extends BlockTagsProvider
     protected void addTags(HolderLookup.Provider registries)
     {
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
-            .add(EIBlocks.INFUSION_TABLE, EIBlocks.INFUSION_PEDESTAL);
+            .add(EIBlocks.INFUSION_TABLE.get(), EIBlocks.INFUSION_PEDESTAL.get());
     }
 }

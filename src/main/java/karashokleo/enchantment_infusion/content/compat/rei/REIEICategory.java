@@ -26,6 +26,6 @@ public class REIEICategory extends AbstractREIInfusionCategory
     @Override
     public Renderer getIcon()
     {
-        return EntryStacks.of(EIBlocks.INFUSION_TABLE);
+        return EntryStacks.of(EIBlocks.INFUSION_TABLE.get());
     }
 }

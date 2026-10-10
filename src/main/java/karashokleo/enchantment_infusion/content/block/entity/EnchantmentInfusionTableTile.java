@@ -36,14 +36,14 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
 
     public EnchantmentInfusionTableTile(BlockPos pos, BlockState state)
     {
-        super(EIBlocks.INFUSION_TABLE_TILE, pos, state);
-        this.matchGetter = RecipeManager.createCheck(EIRecipes.INFUSION_RECIPE_TYPE);
+        super(EIBlocks.INFUSION_TABLE_TILE.get(), pos, state);
+        this.matchGetter = RecipeManager.createCheck(EIRecipes.INFUSION_RECIPE_TYPE.get());
     }
 
     protected void onInfusingStateChanged(ServerLevel world, BlockPos pos, boolean infusing)
     {
         BlockState state = world.getBlockState(pos);
-        if (state.is(EIBlocks.INFUSION_TABLE) &&
+        if (state.is(EIBlocks.INFUSION_TABLE.get()) &&
             state.getValue(EIBlocks.INFUSING) != infusing)
         {
             world.setBlockAndUpdate(pos, state.setValue(EIBlocks.INFUSING, infusing));
@@ -52,7 +52,7 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         for (BlockPos pedestalPos : pedestalPoses)
         {
             BlockState pedestalState = world.getBlockState(pedestalPos);
-            if (pedestalState.is(EIBlocks.INFUSION_PEDESTAL) &&
+            if (pedestalState.is(EIBlocks.INFUSION_PEDESTAL.get()) &&
                 state.getValue(EIBlocks.INFUSING) != infusing)
             {
                 world.setBlockAndUpdate(pedestalPos, pedestalState.setValue(EIBlocks.INFUSING, infusing));

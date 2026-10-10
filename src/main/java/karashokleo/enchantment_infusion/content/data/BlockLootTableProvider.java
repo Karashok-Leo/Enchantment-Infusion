@@ -19,13 +19,13 @@ public class BlockLootTableProvider extends BlockLootSubProvider
     @Override
     protected void generate()
     {
-        add(EIBlocks.INFUSION_TABLE, this::createNameableBlockEntityTable);
-        add(EIBlocks.INFUSION_PEDESTAL, this::createNameableBlockEntityTable);
+        add(EIBlocks.INFUSION_TABLE.get(), this::createNameableBlockEntityTable);
+        add(EIBlocks.INFUSION_PEDESTAL.get(), this::createNameableBlockEntityTable);
     }
 
     @Override
     protected Iterable<Block> getKnownBlocks()
     {
-        return List.of(EIBlocks.INFUSION_TABLE, EIBlocks.INFUSION_PEDESTAL);
+        return List.of(EIBlocks.INFUSION_TABLE.get(), EIBlocks.INFUSION_PEDESTAL.get());
     }
 }

@@ -12,21 +12,29 @@ import net.minecraft.network.chat.Component;
 @dev.emi.emi.api.EmiEntrypoint
 public class EMICompat implements EmiPlugin
 {
-    public static final EmiRecipeCategory EI_CATEGORY = new EmiRecipeCategory(EIRecipes.INFUSION_ID, EmiStack.of(EIBlocks.INFUSION_TABLE))
+    public static EmiRecipeCategory getCategory()
     {
-        @Override
-        public Component getName()
+        return CategoryHolder.EI_CATEGORY;
+    }
+
+    private static class CategoryHolder
+    {
+        private static final EmiRecipeCategory EI_CATEGORY = new EmiRecipeCategory(EIRecipes.INFUSION_ID, EmiStack.of(EIBlocks.INFUSION_TABLE.get()))
         {
-            return EITexts.CATEGORY.get();
-        }
-    };
+            @Override
+            public Component getName()
+            {
+                return EITexts.CATEGORY.get();
+            }
+        };
+    }
 
     @Override
     public void register(EmiRegistry registry)
     {
-        registry.addCategory(EI_CATEGORY);
-        registry.addWorkstation(EI_CATEGORY, EmiStack.of(EIBlocks.INFUSION_TABLE));
-        registry.addWorkstation(EI_CATEGORY, EmiStack.of(EIBlocks.INFUSION_PEDESTAL));
-        registry.getRecipeManager().getAllRecipesFor(EIRecipes.INFUSION_RECIPE_TYPE).forEach(recipe -> registry.addRecipe(new EMIEIRecipe(recipe)));
+        registry.addCategory(getCategory());
+        registry.addWorkstation(getCategory(), EmiStack.of(EIBlocks.INFUSION_TABLE.get()));
+        registry.addWorkstation(getCategory(), EmiStack.of(EIBlocks.INFUSION_PEDESTAL.get()));
+        registry.getRecipeManager().getAllRecipesFor(EIRecipes.INFUSION_RECIPE_TYPE.get()).forEach(recipe -> registry.addRecipe(new EMIEIRecipe(recipe)));
     }
 }

@@ -76,6 +76,6 @@ public record EnchantmentIngredient(
     @Override
     public IngredientType<?> getType()
     {
-        return EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER;
+        return EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER.get();
     }
 }

@@ -20,14 +20,14 @@ public class REICompat implements REIClientPlugin
         registry.add(new REIEICategory());
         registry.addWorkstations(
             EI,
-            EntryStacks.of(EIBlocks.INFUSION_TABLE),
-            EntryStacks.of(EIBlocks.INFUSION_PEDESTAL)
+            EntryStacks.of(EIBlocks.INFUSION_TABLE.get()),
+            EntryStacks.of(EIBlocks.INFUSION_PEDESTAL.get())
         );
     }
 
     @Override
     public void registerDisplays(DisplayRegistry registry)
     {
-        registry.getRecipeManager().getAllRecipesFor(EIRecipes.INFUSION_RECIPE_TYPE).forEach(recipe -> registry.add(new REIEIDisplay(recipe.value())));
+        registry.getRecipeManager().getAllRecipesFor(EIRecipes.INFUSION_RECIPE_TYPE.get()).forEach(recipe -> registry.add(new REIEIDisplay(recipe.value())));
     }
 }

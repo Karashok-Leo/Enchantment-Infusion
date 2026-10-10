@@ -9,6 +9,6 @@ public class EnchantmentInfusionPedestalTile extends AbstractInfusionTile
 {
     public EnchantmentInfusionPedestalTile(BlockPos pos, BlockState state)
     {
-        super(EIBlocks.INFUSION_PEDESTAL_TILE, pos, state);
+        super(EIBlocks.INFUSION_PEDESTAL_TILE.get(), pos, state);
     }
 }
