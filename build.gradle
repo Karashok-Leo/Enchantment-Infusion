@@ -1,4 +1,7 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 plugins {
+    id 'net.darkhax.curseforgegradle' version '1.3.33'
 	id 'dev.architectury.loom' version '1.10.455'
 	id 'maven-publish'
 }
@@ -108,3 +111,79 @@ tasks.named('runData') {
 
 // Datagen bookkeeping is neither a game resource nor a source artifact.
 tasks.withType(Jar).configureEach { exclude '.cache/**' }
+
+// CurseForge publishing, matching Spell Dimension Mod (requires Gradle to run on Java 25).
+def tokenFile = rootProject.file('curseforge-token')
+def changelogFile = rootProject.file('CHANGELOG.md')
+def changelog = providers.provider {
+    changelogFile.isFile() ? changelogFile.getText('UTF-8')
+            : "Enchantment Infusion ${project.version} for Minecraft ${project.minecraft_version} (Forge)."
+}
+def releaseType = providers.gradleProperty('curseforge_release_type')
+def cfProjectId = providers.gradleProperty('curseforge_project_id')
+def releaseJar = tasks.named('remapJar').flatMap { it.archiveFile }
+def cfGameVersions = [project.minecraft_version, 'Forge', 'Client', 'Server']
+def cfRequirements = []
+
+def validateRelease = {
+    if (!(releaseType.get() in ['alpha', 'beta', 'release'])) {
+        throw new GradleException('curseforge_release_type must be alpha, beta or release.')
+    }
+    if (changelog.get().trim().isEmpty()) {
+        throw new GradleException("Write the release notes in ${changelogFile.name} before publishing or previewing.")
+    }
+}
+def readToken = {
+    if (!tokenFile.isFile()) {
+        throw new GradleException('Create curseforge-token in the repository root and put your CurseForge upload token on one line.')
+    }
+    def token = tokenFile.getText('UTF-8').replaceFirst('^\uFEFF', '').trim()
+    if (token.isEmpty() || token.contains('\n') || token.contains('\r')) {
+        throw new GradleException('curseforge-token must contain one non-empty CurseForge upload token, without quotes or a property name.')
+    }
+    return token
+}
+
+tasks.register('publishCurseForge', TaskPublishCurseForge) {
+    group = 'publishing'
+    description = 'Builds and publishes the release JAR to CurseForge.'
+    dependsOn tasks.named('build')
+    notCompatibleWithConfigurationCache('CurseForgeGradle uses project state during publication.')
+    apiToken = readToken
+    disableVersionDetection()
+
+    def artifact = upload(cfProjectId.get(), releaseJar)
+    artifact.releaseType = releaseType
+    artifact.changelog = changelog
+    artifact.changelogType = 'markdown'
+    cfGameVersions.each { artifact.addGameVersion(it) }
+    cfRequirements.each { artifact.addRequirement(it) }
+    doFirst {
+        validateRelease()
+        readToken()
+    }
+}
+
+// Preview stays entirely local, using the same release inputs as publication.
+tasks.register('previewCurseForge') {
+    group = 'publishing'
+    description = 'Builds the release JAR and previews CurseForge metadata without network calls or reading the token.'
+    dependsOn tasks.named('build'), releaseJar
+    notCompatibleWithConfigurationCache('Release metadata reads project state during execution.')
+    doLast {
+        validateRelease()
+        def jarFile = releaseJar.get().asFile
+        if (!jarFile.isFile()) {
+            throw new GradleException("The release JAR does not exist: ${jarFile}")
+        }
+        logger.lifecycle("CurseForge project: ${cfProjectId.get()}")
+        logger.lifecycle("Release JAR: ${jarFile}")
+        logger.lifecycle(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson([
+                changelog: changelog.get(),
+                changelogType: 'markdown',
+                releaseType: releaseType.get(),
+                gameVersions: cfGameVersions,
+                relations: [projects: cfRequirements.collect { [slug: it, type: 'requiredDependency'] }]
+        ])))
+    }
+}
