@@ -1,5 +1,3 @@
-import me.modmuss50.mpp.ReleaseType
-
 plugins {
     id 'me.modmuss50.mod-publish-plugin' version '2.2.1'
     id 'fabric-loom' version '1.14-SNAPSHOT'
@@ -76,25 +74,8 @@ publishing {
     }
 }
 
-// Publish with publishMods, publishCurseforge or publishModrinth.
-// Add -Ppublish_dry_run=true to preview without reading tokens or uploading.
-def publishingDryRun = publishMods.dryRun
-publishingDryRun.set(providers.gradleProperty('publish_dry_run').map { value ->
-    if (!(value in ['true', 'false'])) {
-        throw new GradleException('publish_dry_run must be true or false.')
-    }
-    value.toBoolean()
-}.orElse(false))
-
-def releaseType = providers.gradleProperty('release_type').map { value ->
-    def types = [alpha: ReleaseType.ALPHA, beta: ReleaseType.BETA, release: ReleaseType.STABLE]
-    if (!types.containsKey(value)) {
-        throw new GradleException('release_type must be alpha, beta or release.')
-    }
-    types[value]
-}
-def changelogFile = rootProject.file('CHANGELOG.md')
-def releaseNotes = providers.provider {
+def changelogText = providers.provider {
+    def changelogFile = rootProject.file('CHANGELOG.md')
     if (!changelogFile.isFile() || changelogFile.getText('UTF-8').trim().isEmpty()) {
         throw new GradleException("Write the release notes in ${changelogFile.name} before publishing or previewing.")
     }
@@ -104,10 +85,6 @@ def releaseNotes = providers.provider {
 def localToken = { String filename ->
     def tokenFile = rootProject.file(filename)
     providers.provider {
-        // Tokens are task inputs, so bypass file access even during dry-run input validation.
-        if (publishingDryRun.get()) {
-            return 'dry-run-no-token-required'
-        }
         if (!tokenFile.isFile()) {
             throw new GradleException("Create ${filename} in the repository root and put the upload token on one line.")
         }
@@ -119,26 +96,38 @@ def localToken = { String filename ->
     }
 }
 
+def publishDryRun = gradle.startParameter.taskNames.any {
+    it.tokenize(':').last() == 'publishModsDryRun'
+}
+
 publishMods {
-    file = tasks.named('remapJar').flatMap { it.archiveFile }
+    file = remapJar.archiveFile
     displayName = file.map { it.asFile.name }
-    changelog = releaseNotes
-    type = releaseType
+    changelog = changelogText
+    type = STABLE
     modLoaders.add('fabric')
+    dryRun = publishDryRun
 
     curseforge {
         projectId = providers.gradleProperty('curseforge_project_id')
         accessToken = localToken('curseforge-token')
         minecraftVersions.add(project.minecraft_version)
+        requires('fabric-api')
         javaVersions.add(JavaVersion.VERSION_17)
         client = true
         server = true
-        requires('fabric-api')
     }
     modrinth {
         projectId = providers.gradleProperty('modrinth_project_id')
         accessToken = localToken('modrinth-token')
         minecraftVersions.add(project.minecraft_version)
         requires('fabric-api')
+        environment = CLIENT_AND_SERVER
     }
+}
+
+tasks.register('publishModsDryRun') {
+    group = 'publishing'
+    description = 'Preview mod publishing without uploading.'
+    dependsOn tasks.named('publishMods')
 }
