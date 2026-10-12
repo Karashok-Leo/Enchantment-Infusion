@@ -8,10 +8,10 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,16 +21,14 @@ public class SerialUtil
     public static String enchantmentToString(Enchantment enchantment)
     {
         return Optional
-            .ofNullable(Registries.ENCHANTMENT.getId(enchantment))
+            .ofNullable(ForgeRegistries.ENCHANTMENTS.getKey(enchantment))
             .orElseThrow(() -> new IllegalArgumentException("Enchantment " + enchantment + " is not registered"))
             .toString();
     }
 
     public static Enchantment enchantmentFromString(String id)
     {
-        return Registries.ENCHANTMENT
-            .getOrEmpty(new Identifier(id))
-            .orElseThrow(() -> new IllegalArgumentException("Unknown enchantment '" + id + "'"));
+        return ForgeRegistries.ENCHANTMENTS.getValue(Identifier.parse(id));
     }
 
     public static ItemStack itemStackFromJson(JsonElement json)

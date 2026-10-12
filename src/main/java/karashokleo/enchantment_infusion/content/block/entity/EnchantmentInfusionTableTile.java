@@ -2,7 +2,7 @@ package karashokleo.enchantment_infusion.content.block.entity;
 
 import karashokleo.enchantment_infusion.api.block.entity.AbstractInfusionTile;
 import karashokleo.enchantment_infusion.api.block.entity.InfusionInventory;
-import karashokleo.enchantment_infusion.api.event.InfusionCompleteCallback;
+import karashokleo.enchantment_infusion.api.event.InfusionCompleteEvent;
 import karashokleo.enchantment_infusion.api.recipe.InfusionRecipe;
 import karashokleo.enchantment_infusion.init.EIBlocks;
 import karashokleo.enchantment_infusion.init.EIRecipes;
@@ -22,6 +22,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -224,7 +225,7 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         ItemStack crafted = recipe.craft(inventory, world.getRegistryManager());
         this.setStack(crafted);
         inventory.setRemainder(recipe.getRemainder(inventory));
-        InfusionCompleteCallback.EVENT.invoker().onInfusionComplete(world, pos, crafted, inventory, recipe);
+        MinecraftForge.EVENT_BUS.post(new InfusionCompleteEvent(world, pos, crafted, inventory, recipe));
     }
 
     public void interrupt(ServerWorld world)

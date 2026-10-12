@@ -13,9 +13,9 @@ public class EnchantmentInfusion
 {
     public static final String MOD_ID = "enchantment_infusion";
 
-    public EnchantmentInfusion()
+    public EnchantmentInfusion(FMLJavaModLoadingContext context)
     {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus bus = context.getModEventBus();
         EIBlocks.register(bus);
         EIItems.register(bus);
         bus.addListener(EIItems::addCreativeEntries);
@@ -24,6 +24,6 @@ public class EnchantmentInfusion
 
     public static Identifier id(String path)
     {
-        return new Identifier(MOD_ID, path);
+        return Identifier.of(MOD_ID, path);
     }
 }

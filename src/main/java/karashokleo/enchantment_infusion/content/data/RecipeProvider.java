@@ -11,8 +11,8 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -42,7 +42,7 @@ public class RecipeProvider extends net.minecraft.data.server.recipe.RecipeProvi
             enchantment,
             level,
             exporter,
-            EnchantmentInfusion.id(Objects.requireNonNull(Registries.ENCHANTMENT.getId(enchantment)).getPath() + "/" + level)
+            EnchantmentInfusion.id(Objects.requireNonNull(ForgeRegistries.ENCHANTMENTS.getKey(enchantment)).getPath() + "/" + level)
         );
     }
 
