@@ -15,10 +15,8 @@ public class EIItems
 {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(EnchantmentInfusion.MOD_ID);
 
-    public static final DeferredItem<BlockItem> INFUSION_TABLE_ITEM = ITEMS.register("enchantment_infusion_table",
-        () -> new BlockItem(EIBlocks.INFUSION_TABLE.get(), new Item.Properties()));
-    public static final DeferredItem<BlockItem> INFUSION_PEDESTAL_ITEM = ITEMS.register("enchantment_infusion_pedestal",
-        () -> new BlockItem(EIBlocks.INFUSION_PEDESTAL.get(), new Item.Properties()));
+    public static final DeferredItem<BlockItem> INFUSION_TABLE_ITEM = ITEMS.register("enchantment_infusion_table", () -> new BlockItem(EIBlocks.INFUSION_TABLE.get(), new Item.Properties()));
+    public static final DeferredItem<BlockItem> INFUSION_PEDESTAL_ITEM = ITEMS.register("enchantment_infusion_pedestal", () -> new BlockItem(EIBlocks.INFUSION_PEDESTAL.get(), new Item.Properties()));
 
     public static void register(IEventBus bus)
     {

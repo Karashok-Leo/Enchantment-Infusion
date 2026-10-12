@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import org.jetbrains.annotations.NotNull;
 
 /** The same central input, pedestal ring, and output as the EMI/REI views. */
 public class JEIInfusionCategory implements IRecipeCategory<RecipeHolder<InfusionRecipe>>
@@ -35,6 +36,7 @@ public class JEIInfusionCategory implements IRecipeCategory<RecipeHolder<Infusio
     @Override
     public RecipeType<RecipeHolder<InfusionRecipe>> getRecipeType() { return JEICompat.EI; }
 
+    @NotNull
     @Override
     public Component getTitle() { return EITexts.CATEGORY.get(); }
 

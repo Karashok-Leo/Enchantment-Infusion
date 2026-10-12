@@ -3,6 +3,7 @@ package karashokleo.enchantment_infusion.content.compat.jei;
 import karashokleo.enchantment_infusion.api.recipe.InfusionRecipe;
 import karashokleo.enchantment_infusion.init.EIBlocks;
 import karashokleo.enchantment_infusion.init.EIRecipes;
+import karashokleo.enchantment_infusion.neoforge.EnchantmentInfusion;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.recipe.RecipeType;
@@ -13,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import org.jetbrains.annotations.NotNull;
 
 /** Discovered by JEI only; common mod initialization never references this class. */
 @JeiPlugin
@@ -20,10 +22,11 @@ public class JEICompat implements IModPlugin
 {
     public static final RecipeType<RecipeHolder<InfusionRecipe>> EI = RecipeType.createRecipeHolderType(EIRecipes.INFUSION_ID);
 
+    @NotNull
     @Override
     public ResourceLocation getPluginUid()
     {
-        return ResourceLocation.fromNamespaceAndPath("enchantment_infusion", "jei");
+        return EnchantmentInfusion.id("jei");
     }
 
     @Override
@@ -33,7 +36,7 @@ public class JEICompat implements IModPlugin
     }
 
     @Override
-    public void registerRecipes(IRecipeRegistration registration)
+    public void registerRecipes(@NotNull IRecipeRegistration registration)
     {
         var level = Minecraft.getInstance().level;
         if (level != null)

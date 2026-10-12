@@ -37,8 +37,7 @@ public class EIRecipes
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<EnchantmentInfusionRecipe>> EI_SERIALIZER = RECIPE_SERIALIZERS.register(EnchantmentInfusion.MOD_ID, EnchantmentInfusionRecipeSerializer::new);
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<SimpleInfusionRecipe>> SI_SERIALIZER = RECIPE_SERIALIZERS.register("simple_infusion", SimpleInfusionRecipeSerializer::new);
 
-    public static final DeferredHolder<IngredientType<?>, IngredientType<EnchantmentIngredient>> ENCHANTMENT_INGREDIENT_SERIALIZER = INGREDIENT_TYPES.register("enchantment",
-        () -> new IngredientType<>(EnchantmentIngredient.CODEC, EnchantmentIngredient.PACKET_CODEC));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<EnchantmentIngredient>> ENCHANTMENT_INGREDIENT_SERIALIZER = INGREDIENT_TYPES.register("enchantment", () -> new IngredientType<>(EnchantmentIngredient.CODEC, EnchantmentIngredient.PACKET_CODEC));
 
     public static void register(IEventBus bus)
     {

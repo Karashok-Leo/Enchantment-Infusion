@@ -21,10 +21,8 @@ public class EIBlocks
 
     public static final DeferredBlock<EnchantmentInfusionTableBlock> INFUSION_TABLE = BLOCKS.register("enchantment_infusion_table", () -> new EnchantmentInfusionTableBlock());
     public static final DeferredBlock<EnchantmentInfusionPedestalBlock> INFUSION_PEDESTAL = BLOCKS.register("enchantment_infusion_pedestal", () -> new EnchantmentInfusionPedestalBlock());
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnchantmentInfusionTableTile>> INFUSION_TABLE_TILE = BLOCK_ENTITIES.register("enchantment_infusion_table",
-        () -> BlockEntityType.Builder.of(EnchantmentInfusionTableTile::new, INFUSION_TABLE.get()).build(null));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnchantmentInfusionPedestalTile>> INFUSION_PEDESTAL_TILE = BLOCK_ENTITIES.register("enchantment_infusion_pedestal",
-        () -> BlockEntityType.Builder.of(EnchantmentInfusionPedestalTile::new, INFUSION_PEDESTAL.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnchantmentInfusionTableTile>> INFUSION_TABLE_TILE = BLOCK_ENTITIES.register("enchantment_infusion_table", () -> BlockEntityType.Builder.of(EnchantmentInfusionTableTile::new, INFUSION_TABLE.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnchantmentInfusionPedestalTile>> INFUSION_PEDESTAL_TILE = BLOCK_ENTITIES.register("enchantment_infusion_pedestal", () -> BlockEntityType.Builder.of(EnchantmentInfusionPedestalTile::new, INFUSION_PEDESTAL.get()).build(null));
 
     public static void register(IEventBus bus)
     {
