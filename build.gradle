@@ -1,91 +1,139 @@
 plugins {
-	id 'fabric-loom' version '1.14-SNAPSHOT'
-	id 'maven-publish'
+    id 'me.modmuss50.mod-publish-plugin' version '2.2.1'
+    id 'fabric-loom' version '1.14-SNAPSHOT'
+    id 'maven-publish'
 }
 
 version = project.mod_version
 group = project.maven_group
 
 base {
-	archivesName = project.archives_base_name
+    archivesName = project.archives_base_name
 }
 
 repositories {
-	maven { url = "https://maven.blamejared.com/" }
-	maven { url = "https://maven.shedaniel.me/" }
-	maven { url = "https://maven.terraformersmc.com/" }
+    maven { url = "https://maven.blamejared.com/" }
+    maven { url = "https://maven.shedaniel.me/" }
+    maven { url = "https://maven.terraformersmc.com/" }
 }
 
 fabricApi {
-	configureDataGeneration()
-}
-
-// Optional viewers remain compile-only; this property controls development runs only.
-def recipeViewer = providers.gradleProperty('recipeViewer').getOrElse('emi')
-if (!(recipeViewer in ['emi', 'jei', 'none', 'coexist'])) {
-	throw new GradleException("recipeViewer must be emi, jei, none, or coexist")
+    configureDataGeneration()
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modCompileOnly "dev.emi:emi-fabric:${project.emi_version}:api"
-	if (recipeViewer in ['emi', 'coexist']) {
-		modLocalRuntime "dev.emi:emi-fabric:${project.emi_version}"
-	}
-	modCompileOnly "mezz.jei:jei-${project.minecraft_version}-common-api-intermediary:${project.jei_version}"
-	modCompileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:${project.jei_version}"
-	if (recipeViewer in ['jei', 'coexist']) {
-		// The published Fabric JAR includes its modules; its POM also lists Mojmap artifacts.
-		modLocalRuntime("mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}") { transitive = false }
-	}
+    modCompileOnly "dev.emi:emi-fabric:${project.emi_version}:api"
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
+    modCompileOnly "mezz.jei:jei-${project.minecraft_version}-common-api-intermediary:${project.jei_version}"
+    modCompileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:${project.jei_version}"
 
-	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
+    modLocalRuntime("mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}") { transitive = false }
+//	modLocalRuntime "dev.emi:emi-fabric:${project.emi_version}"
 //    modLocalRuntime "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
 }
 
 processResources {
-	inputs.property "version", project.version
+    inputs.property "version", project.version
 
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 21
+    it.options.release = 21
 }
 
 java {
-	withSourcesJar()
+    withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
-	from("LICENSE") {
-		rename { "${it}_${project.base.archivesName.get()}"}
-	}
+    from("LICENSE") {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
 }
 
 publishing {
-	publications {
-		create("mavenJava", MavenPublication) {
-			artifactId = project.archives_base_name
-			from components.java
-		}
-	}
+    publications {
+        create("mavenJava", MavenPublication) {
+            artifactId = project.archives_base_name
+            from components.java
+        }
+    }
 
-	repositories {
-		mavenLocal()
-	}
+    repositories {
+        mavenLocal()
+    }
 }
 
 // Generated resources are checked in; order sources after explicitly requested datagen.
 tasks.named('sourcesJar') {
-	mustRunAfter tasks.named('runDatagen')
+    mustRunAfter tasks.named('runDatagen')
+}
+
+def changelogText = providers.provider {
+    def changelogFile = rootProject.file('CHANGELOG.md')
+    if (!changelogFile.isFile() || changelogFile.getText('UTF-8').trim().isEmpty()) {
+        throw new GradleException("Write the release notes in ${changelogFile.name} before publishing or previewing.")
+    }
+    changelogFile.getText('UTF-8')
+}
+
+def localToken = { String filename ->
+    def tokenFile = rootProject.file(filename)
+    providers.provider {
+        if (!tokenFile.isFile()) {
+            throw new GradleException("Create ${filename} in the repository root and put the upload token on one line.")
+        }
+        def token = tokenFile.getText('UTF-8').replaceFirst('^\uFEFF', '').trim()
+        if (token.isEmpty() || token.contains('\n') || token.contains('\r')) {
+            throw new GradleException("${filename} must contain one non-empty upload token, without quotes or a property name.")
+        }
+        token
+    }
+}
+
+def publishDryRun = gradle.startParameter.taskNames.any {
+    it.tokenize(':').last() == 'publishModsDryRun'
+}
+
+publishMods {
+    file = remapJar.archiveFile
+    displayName = file.map { it.asFile.name }
+    changelog = changelogText
+    type = STABLE
+    modLoaders.add('fabric')
+    dryRun = publishDryRun
+
+    curseforge {
+        projectId = providers.gradleProperty('curseforge_project_id')
+        accessToken = localToken('curseforge-token')
+        minecraftVersions.add(project.minecraft_version)
+        requires('fabric-api')
+        javaVersions.add(JavaVersion.VERSION_17)
+        client = true
+        server = true
+    }
+    modrinth {
+        projectId = providers.gradleProperty('modrinth_project_id')
+        accessToken = localToken('modrinth-token')
+        minecraftVersions.add(project.minecraft_version)
+        requires('fabric-api')
+        environment = CLIENT_AND_SERVER
+    }
+}
+
+tasks.register('publishModsDryRun') {
+    group = 'publishing'
+    description = 'Preview mod publishing without uploading.'
+    dependsOn tasks.named('publishMods')
 }
