@@ -39,5 +39,6 @@ replay_*.log
 *.hprof
 *.jfr
 
-# Local CurseForge publishing token
+# Local publishing tokens
 /curseforge-token
+/modrinth-token
