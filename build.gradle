@@ -122,18 +122,17 @@ def publishDryRun = gradle.startParameter.taskNames.any {
 }
 
 publishMods {
-    file = jar.archiveFile
+    file = remapJar.archiveFile
     displayName = file.map { it.asFile.name }
     changelog = changelogText
     type = STABLE
-    modLoaders.add('fabric')
+    modLoaders.add('forge')
     dryRun = publishDryRun
 
     curseforge {
         projectId = providers.gradleProperty('curseforge_project_id')
         accessToken = localToken('curseforge-token')
         minecraftVersions.add(project.minecraft_version)
-        requires('fabric-api')
         javaVersions.add(JavaVersion.VERSION_17)
         client = true
         server = true
@@ -142,7 +141,6 @@ publishMods {
         projectId = providers.gradleProperty('modrinth_project_id')
         accessToken = localToken('modrinth-token')
         minecraftVersions.add(project.minecraft_version)
-        requires('fabric-api')
         environment = CLIENT_AND_SERVER
     }
 }
