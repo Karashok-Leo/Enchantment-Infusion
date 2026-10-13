@@ -1,8 +1,8 @@
 package karashokleo.enchantment_infusion.api.block.entity;
 
-import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.List;

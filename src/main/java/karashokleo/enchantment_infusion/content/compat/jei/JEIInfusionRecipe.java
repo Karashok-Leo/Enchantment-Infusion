@@ -10,7 +10,6 @@ import net.minecraft.util.Identifier;
 import java.util.Arrays;
 import java.util.List;
 
-/** Native stacks retain enchantment components for JEI's normal subtype matching. */
 public record JEIInfusionRecipe(Identifier id, List<ItemStack> table, List<List<ItemStack>> pedestals, ItemStack output)
 {
     public JEIInfusionRecipe(RecipeEntry<? extends InfusionRecipe> recipe, RegistryWrapper.WrapperLookup registries)

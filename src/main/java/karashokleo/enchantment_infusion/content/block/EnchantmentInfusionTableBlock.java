@@ -1,9 +1,9 @@
 package karashokleo.enchantment_infusion.content.block;
 
+import com.mojang.serialization.MapCodec;
 import karashokleo.enchantment_infusion.api.block.AbstractInfusionBlock;
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionTableTile;
 import karashokleo.enchantment_infusion.init.EIBlocks;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.MapColor;

@@ -1,9 +1,9 @@
 package karashokleo.enchantment_infusion.init;
 
 import karashokleo.enchantment_infusion.fabric.EnchantmentInfusion;
-import net.minecraft.item.Item;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;

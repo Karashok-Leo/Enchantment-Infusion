@@ -30,23 +30,41 @@ public class JEIInfusionCategory implements IRecipeCategory<JEIInfusionRecipe>
 
     @NotNull
     @Override
-    public RecipeType<JEIInfusionRecipe> getRecipeType() { return JEICompat.INFUSION; }
+    public RecipeType<JEIInfusionRecipe> getRecipeType()
+    {
+        return JEICompat.INFUSION;
+    }
 
     @NotNull
     @Override
-    public Text getTitle() { return EITexts.CATEGORY.get(); }
+    public Text getTitle()
+    {
+        return EITexts.CATEGORY.get();
+    }
 
     @Override
-    public IDrawable getIcon() { return icon; }
+    public IDrawable getIcon()
+    {
+        return icon;
+    }
 
     @Override
-    public int getWidth() { return 138; }
+    public int getWidth()
+    {
+        return 138;
+    }
 
     @Override
-    public int getHeight() { return 84; }
+    public int getHeight()
+    {
+        return 84;
+    }
 
     @Override
-    public Identifier getRegistryName(JEIInfusionRecipe recipe) { return recipe.id(); }
+    public Identifier getRegistryName(JEIInfusionRecipe recipe)
+    {
+        return recipe.id();
+    }
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, JEIInfusionRecipe recipe, IFocusGroup focuses)

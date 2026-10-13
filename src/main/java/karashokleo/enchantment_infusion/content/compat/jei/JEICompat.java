@@ -36,7 +36,10 @@ public class JEICompat implements IModPlugin
     public void registerRecipes(IRecipeRegistration registration)
     {
         var world = MinecraftClient.getInstance().world;
-        if (world == null) return;
+        if (world == null)
+        {
+            return;
+        }
         registration.addRecipes(INFUSION, world.getRecipeManager().listAllOfType(EIRecipes.INFUSION_RECIPE_TYPE)
             .stream().map(recipe -> new JEIInfusionRecipe(recipe, world.getRegistryManager())).toList());
     }
