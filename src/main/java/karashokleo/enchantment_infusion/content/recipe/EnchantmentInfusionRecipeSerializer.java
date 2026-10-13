@@ -9,6 +9,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Optional;
 
 public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<EnchantmentInfusionRecipe>
@@ -26,12 +28,14 @@ public class EnchantmentInfusionRecipeSerializer implements RecipeSerializer<Enc
         EnchantmentInfusionRecipeSerializer::write, EnchantmentInfusionRecipeSerializer::read
     );
 
+    @NotNull
     @Override
     public MapCodec<EnchantmentInfusionRecipe> codec()
     {
         return CODEC;
     }
 
+    @NotNull
     @Override
     public StreamCodec<RegistryFriendlyByteBuf, EnchantmentInfusionRecipe> streamCodec()
     {

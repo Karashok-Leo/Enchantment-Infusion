@@ -1,12 +1,12 @@
 package karashokleo.enchantment_infusion.api.block.entity;
 
-import java.util.List;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.ticks.ContainerSingleItem;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class InfusionInventory implements RecipeInput
 {
@@ -38,6 +38,7 @@ public class InfusionInventory implements RecipeInput
         }
     }
 
+    @NotNull
     @Override
     public ItemStack getItem(int slot)
     {
@@ -68,34 +69,8 @@ public class InfusionInventory implements RecipeInput
         return pedestalInventory.get(slot).getTheItem();
     }
 
-    public ItemStack removeStack(int slot, int amount)
-    {
-        return pedestalInventory.get(slot).splitTheItem(amount);
-    }
-
-    public ItemStack removeStack(int slot)
-    {
-        return pedestalInventory.get(slot).removeTheItem();
-    }
-
     public void setStack(int slot, ItemStack stack)
     {
         pedestalInventory.get(slot).setTheItem(stack);
-    }
-
-    public void markDirty()
-    {
-        tableInventory.setChanged();
-        pedestalInventory.forEach(BlockEntity::setChanged);
-    }
-
-    public boolean canPlayerUse(Player player)
-    {
-        return false;
-    }
-
-    public void clear()
-    {
-        pedestalInventory.forEach(ContainerSingleItem::clearContent);
     }
 }

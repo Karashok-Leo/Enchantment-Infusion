@@ -7,6 +7,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -18,7 +19,7 @@ public class BlockTagProvider extends BlockTagsProvider
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider registries)
+    protected void addTags(@NotNull HolderLookup.Provider registries)
     {
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
             .add(EIBlocks.INFUSION_TABLE.get(), EIBlocks.INFUSION_PEDESTAL.get());

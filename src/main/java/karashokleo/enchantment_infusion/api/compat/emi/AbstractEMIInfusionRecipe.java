@@ -107,6 +107,6 @@ public abstract class AbstractEMIInfusionRecipe implements EmiRecipe
         }
         widgets.addSlot(tableIngredient, centerX - 9 + INPUT_OFFSET, centerY - 9);
         widgets.addTexture(EmiTexture.EMPTY_ARROW, centerX - 9 + ARROW_OFFSET, centerY - 8);
-        widgets.addSlot(output.get(0), centerX - 9 + OUTPUT_OFFSET, centerY - 13).large(true).recipeContext(this);
+        widgets.addSlot(output.getFirst(), centerX - 9 + OUTPUT_OFFSET, centerY - 13).large(true).recipeContext(this);
     }
 }

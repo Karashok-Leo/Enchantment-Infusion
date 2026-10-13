@@ -5,13 +5,13 @@ import karashokleo.enchantment_infusion.content.block.EnchantmentInfusionTableBl
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionPedestalTile;
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionTableTile;
 import karashokleo.enchantment_infusion.neoforge.EnchantmentInfusion;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class EIBlocks
 {
@@ -21,7 +21,9 @@ public class EIBlocks
 
     public static final DeferredBlock<EnchantmentInfusionTableBlock> INFUSION_TABLE = BLOCKS.register("enchantment_infusion_table", () -> new EnchantmentInfusionTableBlock());
     public static final DeferredBlock<EnchantmentInfusionPedestalBlock> INFUSION_PEDESTAL = BLOCKS.register("enchantment_infusion_pedestal", () -> new EnchantmentInfusionPedestalBlock());
+    @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnchantmentInfusionTableTile>> INFUSION_TABLE_TILE = BLOCK_ENTITIES.register("enchantment_infusion_table", () -> BlockEntityType.Builder.of(EnchantmentInfusionTableTile::new, INFUSION_TABLE.get()).build(null));
+    @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnchantmentInfusionPedestalTile>> INFUSION_PEDESTAL_TILE = BLOCK_ENTITIES.register("enchantment_infusion_pedestal", () -> BlockEntityType.Builder.of(EnchantmentInfusionPedestalTile::new, INFUSION_PEDESTAL.get()).build(null));
 
     public static void register(IEventBus bus)

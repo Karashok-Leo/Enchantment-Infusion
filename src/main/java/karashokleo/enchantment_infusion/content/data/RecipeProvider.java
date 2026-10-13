@@ -1,8 +1,8 @@
 package karashokleo.enchantment_infusion.content.data;
 
 import karashokleo.enchantment_infusion.api.util.EIRecipeUtil;
-import karashokleo.enchantment_infusion.neoforge.EnchantmentInfusion;
 import karashokleo.enchantment_infusion.init.EIBlocks;
+import karashokleo.enchantment_infusion.neoforge.EnchantmentInfusion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -15,6 +15,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -51,7 +53,7 @@ public class RecipeProvider extends net.minecraft.data.recipes.RecipeProvider
     }
 
     @Override
-    public void buildRecipes(RecipeOutput exporter)
+    public void buildRecipes(@NotNull RecipeOutput exporter)
     {
         ShapedRecipeBuilder
             .shaped(RecipeCategory.DECORATIONS, EIBlocks.INFUSION_TABLE.get())

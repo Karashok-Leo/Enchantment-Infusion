@@ -1,11 +1,6 @@
 package karashokleo.enchantment_infusion.neoforge;
 
-import karashokleo.enchantment_infusion.content.data.BlockLootTableProvider;
-import karashokleo.enchantment_infusion.content.data.BlockTagProvider;
-import karashokleo.enchantment_infusion.content.data.ChineseLanguageProvider;
-import karashokleo.enchantment_infusion.content.data.EnglishLanguageProvider;
-import karashokleo.enchantment_infusion.content.data.ModelProvider;
-import karashokleo.enchantment_infusion.content.data.RecipeProvider;
+import karashokleo.enchantment_infusion.content.data.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;

@@ -2,7 +2,7 @@ package karashokleo.enchantment_infusion.content.block.entity;
 
 import karashokleo.enchantment_infusion.api.block.entity.AbstractInfusionTile;
 import karashokleo.enchantment_infusion.api.block.entity.InfusionInventory;
-import karashokleo.enchantment_infusion.api.event.InfusionCompleteCallback;
+import karashokleo.enchantment_infusion.api.event.InfusionCompleteEvent;
 import karashokleo.enchantment_infusion.api.recipe.InfusionRecipe;
 import karashokleo.enchantment_infusion.init.EIBlocks;
 import karashokleo.enchantment_infusion.init.EIRecipes;
@@ -24,6 +24,9 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -225,7 +228,7 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
         ItemStack crafted = recipe.assemble(inventory, world.registryAccess());
         this.setTheItem(crafted);
         inventory.setRemainder(recipe.getRemainingItems(inventory));
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new InfusionCompleteCallback(world, worldPosition, crafted, inventory, recipe));
+        NeoForge.EVENT_BUS.post(new InfusionCompleteEvent(world, worldPosition, crafted, inventory, recipe));
     }
 
     public void interrupt(ServerLevel world)
@@ -270,14 +273,14 @@ public class EnchantmentInfusionTableTile extends AbstractInfusionTile
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries)
+    protected void saveAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registries)
     {
         super.saveAdditional(nbt, registries);
         nbt.putInt("Ticks", ticks);
     }
 
     @Override
-    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries)
+    public void loadAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registries)
     {
         super.loadAdditional(nbt, registries);
         this.ticks = nbt.getInt("Ticks");

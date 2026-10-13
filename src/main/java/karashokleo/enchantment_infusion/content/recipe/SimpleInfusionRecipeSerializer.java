@@ -9,6 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import org.jetbrains.annotations.NotNull;
 
 public class SimpleInfusionRecipeSerializer implements RecipeSerializer<SimpleInfusionRecipe>
 {
@@ -23,12 +24,14 @@ public class SimpleInfusionRecipeSerializer implements RecipeSerializer<SimpleIn
         SimpleInfusionRecipeSerializer::write, SimpleInfusionRecipeSerializer::read
     );
 
+    @NotNull
     @Override
     public MapCodec<SimpleInfusionRecipe> codec()
     {
         return CODEC;
     }
 
+    @NotNull
     @Override
     public StreamCodec<RegistryFriendlyByteBuf, SimpleInfusionRecipe> streamCodec()
     {

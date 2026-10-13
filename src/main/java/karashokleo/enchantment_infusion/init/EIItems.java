@@ -1,15 +1,11 @@
 package karashokleo.enchantment_infusion.init;
 
 import karashokleo.enchantment_infusion.neoforge.EnchantmentInfusion;
+import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class EIItems
 {

@@ -11,6 +11,7 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import org.jetbrains.annotations.NotNull;
 
 public record SimpleInfusionRecipe(
     Ingredient input,
@@ -52,18 +53,21 @@ public record SimpleInfusionRecipe(
         return output;
     }
 
+    @NotNull
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider registryManager)
+    public ItemStack getResultItem(@NotNull HolderLookup.Provider registryManager)
     {
         return output;
     }
 
+    @NotNull
     @Override
     public RecipeSerializer<?> getSerializer()
     {
         return EIRecipes.SI_SERIALIZER.get();
     }
 
+    @NotNull
     @Override
     public RecipeType<?> getType()
     {

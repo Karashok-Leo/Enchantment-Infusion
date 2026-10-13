@@ -18,7 +18,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.ticks.ContainerSingleItem;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class NameableSingleStackTile extends BlockEntity implements ContainerSingleItem, Nameable
 {
@@ -30,18 +33,21 @@ public class NameableSingleStackTile extends BlockEntity implements ContainerSin
         super(type, pos, state);
     }
 
+    @NotNull
     @Override
     public ItemStack getTheItem()
     {
         return item;
     }
 
+    @NotNull
     @Override
     public ItemStack splitTheItem(int amount)
     {
         return removeItem(0, amount);
     }
 
+    @NotNull
     @Override
     public ItemStack removeItem(int slot, int amount)
     {
@@ -54,14 +60,14 @@ public class NameableSingleStackTile extends BlockEntity implements ContainerSin
     }
 
     @Override
-    public void setTheItem(ItemStack stack)
+    public void setTheItem(@NotNull ItemStack stack)
     {
         item = stack;
         update();
     }
 
     @Override
-    public boolean stillValid(Player player)
+    public boolean stillValid(@NotNull Player player)
     {
         return false;
     }
@@ -73,7 +79,7 @@ public class NameableSingleStackTile extends BlockEntity implements ContainerSin
     }
 
     @Override
-    public boolean canPlaceItem(int slot, ItemStack stack)
+    public boolean canPlaceItem(int slot, @NotNull ItemStack stack)
     {
         return this.item.isEmpty();
     }
@@ -89,7 +95,7 @@ public class NameableSingleStackTile extends BlockEntity implements ContainerSin
     }
 
     @Override
-    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries)
+    public void loadAdditional(@NotNull CompoundTag nbt, @NotNull HolderLookup.Provider registries)
     {
         super.loadAdditional(nbt, registries);
         this.item = ItemStack.parseOptional(registries, nbt.getCompound("Item"));
@@ -100,7 +106,7 @@ public class NameableSingleStackTile extends BlockEntity implements ContainerSin
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries)
+    protected void saveAdditional(@NotNull CompoundTag nbt, @NotNull HolderLookup.Provider registries)
     {
         super.saveAdditional(nbt, registries);
         nbt.put("Item", this.item.saveOptional(registries));
@@ -110,8 +116,9 @@ public class NameableSingleStackTile extends BlockEntity implements ContainerSin
         }
     }
 
+    @NotNull
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries)
+    public CompoundTag getUpdateTag(@NotNull HolderLookup.Provider registries)
     {
         return saveWithoutMetadata(registries);
     }
@@ -124,33 +131,31 @@ public class NameableSingleStackTile extends BlockEntity implements ContainerSin
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput components)
+    protected void applyImplicitComponents(@NotNull DataComponentInput components)
     {
         super.applyImplicitComponents(components);
         this.customName = components.get(DataComponents.CUSTOM_NAME);
     }
 
     @Override
-    protected void collectImplicitComponents(DataComponentMap.Builder builder)
+    protected void collectImplicitComponents(@NotNull DataComponentMap.Builder builder)
     {
         super.collectImplicitComponents(builder);
         builder.set(DataComponents.CUSTOM_NAME, this.customName);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void removeComponentsFromTag(CompoundTag nbt)
     {
         nbt.remove("CustomName");
     }
 
+    @NotNull
     @Override
     public Component getName()
     {
-        if (this.customName != null)
-        {
-            return this.customName;
-        }
-        return this.getBlockState().getBlock().getName();
+        return Objects.requireNonNullElseGet(this.customName, () -> this.getBlockState().getBlock().getName());
     }
 
     public void setCustomName(@Nullable Component customName)

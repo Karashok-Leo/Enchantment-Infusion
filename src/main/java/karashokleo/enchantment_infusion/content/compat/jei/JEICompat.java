@@ -16,7 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
-/** Discovered by JEI only; common mod initialization never references this class. */
 @JeiPlugin
 public class JEICompat implements IModPlugin
 {

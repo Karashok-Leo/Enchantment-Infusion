@@ -5,6 +5,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.enchantment.Enchantment;
+
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")

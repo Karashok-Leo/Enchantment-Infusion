@@ -1,5 +1,6 @@
 package karashokleo.enchantment_infusion.content.compat.emi;
 
+import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
@@ -9,7 +10,7 @@ import karashokleo.enchantment_infusion.init.EIRecipes;
 import karashokleo.enchantment_infusion.init.EITexts;
 import net.minecraft.network.chat.Component;
 
-@dev.emi.emi.api.EmiEntrypoint
+@EmiEntrypoint
 public class EMICompat implements EmiPlugin
 {
     public static EmiRecipeCategory getCategory()

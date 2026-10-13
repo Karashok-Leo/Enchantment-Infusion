@@ -7,15 +7,15 @@ import karashokleo.enchantment_infusion.content.recipe.EnchantmentInfusionRecipe
 import karashokleo.enchantment_infusion.content.recipe.SimpleInfusionRecipe;
 import karashokleo.enchantment_infusion.content.recipe.SimpleInfusionRecipeSerializer;
 import karashokleo.enchantment_infusion.neoforge.EnchantmentInfusion;
-import net.neoforged.neoforge.common.crafting.IngredientType;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class EIRecipes
 {
@@ -25,7 +25,7 @@ public class EIRecipes
     private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, EnchantmentInfusion.MOD_ID);
     private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, EnchantmentInfusion.MOD_ID);
 
-    public static final DeferredHolder<RecipeType<?>, RecipeType<InfusionRecipe>> INFUSION_RECIPE_TYPE = RECIPE_TYPES.register(INFUSION_ID.getPath(), () -> new RecipeType<InfusionRecipe>()
+    public static final DeferredHolder<RecipeType<?>, RecipeType<InfusionRecipe>> INFUSION_RECIPE_TYPE = RECIPE_TYPES.register(INFUSION_ID.getPath(), () -> new RecipeType<>()
     {
         @Override
         public String toString()

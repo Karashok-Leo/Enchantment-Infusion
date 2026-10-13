@@ -1,5 +1,6 @@
 package karashokleo.enchantment_infusion.content.block;
 
+import com.mojang.serialization.MapCodec;
 import karashokleo.enchantment_infusion.api.block.AbstractInfusionBlock;
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionTableTile;
 import karashokleo.enchantment_infusion.init.EIBlocks;
@@ -17,10 +18,9 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import com.mojang.serialization.MapCodec;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("deprecation")
 public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
 {
     protected static final VoxelShape SHAPE = Shapes.or(
@@ -56,6 +56,7 @@ public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
         this.registerDefaultState(this.stateDefinition.any().setValue(EIBlocks.INFUSING, false));
     }
 
+    @NotNull
     @Override
     protected MapCodec<EnchantmentInfusionTableBlock> codec()
     {
@@ -68,22 +69,23 @@ public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
         builder.add(EIBlocks.INFUSING);
     }
 
+    @NotNull
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context)
+    public VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull CollisionContext context)
     {
         return SHAPE;
     }
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state)
     {
         return new EnchantmentInfusionTableTile(pos, state);
     }
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type)
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, @NotNull BlockState state, @NotNull BlockEntityType<T> type)
     {
         return world.isClientSide ? null : createTickerHelper(type, EIBlocks.INFUSION_TABLE_TILE.get(), EnchantmentInfusionTableTile::serverTick);
     }

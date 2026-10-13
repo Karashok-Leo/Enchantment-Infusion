@@ -21,7 +21,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
-/** The same central input, pedestal ring, and output as the EMI/REI views. */
+/**
+ * The same central input, pedestal ring, and output as the EMI/REI views.
+ */
 public class JEIInfusionCategory implements IRecipeCategory<RecipeHolder<InfusionRecipe>>
 {
     private final IDrawable icon;
@@ -33,27 +35,46 @@ public class JEIInfusionCategory implements IRecipeCategory<RecipeHolder<Infusio
         arrow = guiHelper.getRecipeArrow();
     }
 
+    @NotNull
     @Override
-    public RecipeType<RecipeHolder<InfusionRecipe>> getRecipeType() { return JEICompat.EI; }
+    public RecipeType<RecipeHolder<InfusionRecipe>> getRecipeType()
+    {
+        return JEICompat.EI;
+    }
 
     @NotNull
     @Override
-    public Component getTitle() { return EITexts.CATEGORY.get(); }
+    public Component getTitle()
+    {
+        return EITexts.CATEGORY.get();
+    }
 
     @Override
-    public IDrawable getIcon() { return icon; }
+    public IDrawable getIcon()
+    {
+        return icon;
+    }
 
     @Override
-    public int getWidth() { return 138; }
+    public int getWidth()
+    {
+        return 138;
+    }
 
     @Override
-    public int getHeight() { return 84; }
+    public int getHeight()
+    {
+        return 84;
+    }
 
     @Override
-    public ResourceLocation getRegistryName(RecipeHolder<InfusionRecipe> recipe) { return recipe.id(); }
+    public ResourceLocation getRegistryName(RecipeHolder<InfusionRecipe> recipe)
+    {
+        return recipe.id();
+    }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<InfusionRecipe> holder, IFocusGroup focuses)
+    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, RecipeHolder<InfusionRecipe> holder, @NotNull IFocusGroup focuses)
     {
         InfusionRecipe recipe = holder.value();
         var ingredients = recipe.getPedestalIngredient();
@@ -76,7 +97,7 @@ public class JEIInfusionCategory implements IRecipeCategory<RecipeHolder<Infusio
     }
 
     @Override
-    public void draw(RecipeHolder<InfusionRecipe> recipe, IRecipeSlotsView slots, GuiGraphics graphics, double mouseX, double mouseY)
+    public void draw(@NotNull RecipeHolder<InfusionRecipe> recipe, @NotNull IRecipeSlotsView slots, @NotNull GuiGraphics graphics, double mouseX, double mouseY)
     {
         arrow.draw(graphics, 81, 34);
     }

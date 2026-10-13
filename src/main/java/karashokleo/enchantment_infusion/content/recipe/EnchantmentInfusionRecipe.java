@@ -17,6 +17,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -72,7 +73,7 @@ public record EnchantmentInfusionRecipe(
     {
         boolean acceptable = stack.is(Items.BOOK) ||
             stack.is(Items.ENCHANTED_BOOK) ||
-            enchantment.value().canEnchant(stack);
+            stack.supportsEnchantment(enchantment);
 
         Set<Holder<Enchantment>> existing = new HashSet<>(EnchantmentHelper.getEnchantmentsForCrafting(stack).keySet());
         if (this.input != null)
@@ -90,18 +91,21 @@ public record EnchantmentInfusionRecipe(
         return flag && input && upgrade;
     }
 
+    @NotNull
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider registryManager)
+    public ItemStack getResultItem(@NotNull HolderLookup.Provider registryManager)
     {
         return EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, level));
     }
 
+    @NotNull
     @Override
     public RecipeSerializer<?> getSerializer()
     {
         return EIRecipes.EI_SERIALIZER.get();
     }
 
+    @NotNull
     @Override
     public RecipeType<?> getType()
     {

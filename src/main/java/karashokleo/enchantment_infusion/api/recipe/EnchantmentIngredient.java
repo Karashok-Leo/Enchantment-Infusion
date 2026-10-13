@@ -4,9 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import karashokleo.enchantment_infusion.init.EIRecipes;
-import net.neoforged.neoforge.common.crafting.ICustomIngredient;
-import net.neoforged.neoforge.common.crafting.IngredientType;
-import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -18,8 +15,13 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public record EnchantmentIngredient(
     Holder<Enchantment> enchantment,
@@ -44,11 +46,12 @@ public record EnchantmentIngredient(
     }
 
     @Override
-    public boolean test(ItemStack stack)
+    public boolean test(@NotNull ItemStack stack)
     {
         return EnchantmentHelper.getEnchantmentsForCrafting(stack).getLevel(this.enchantment) >= this.min_level;
     }
 
+    @NotNull
     @Override
     public Stream<ItemStack> getItems()
     {
@@ -73,6 +76,7 @@ public record EnchantmentIngredient(
         return false;
     }
 
+    @NotNull
     @Override
     public IngredientType<?> getType()
     {

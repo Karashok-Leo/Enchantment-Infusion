@@ -8,6 +8,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 public interface InfusionRecipe extends Recipe<InfusionInventory>
@@ -40,18 +42,20 @@ public interface InfusionRecipe extends Recipe<InfusionInventory>
     }
 
     @Override
-    default boolean matches(InfusionInventory inventory, Level world)
+    default boolean matches(InfusionInventory inventory, @NotNull Level world)
     {
         return this.matchTableStack(inventory.getTableStack()) &&
             this.matchPedestalStacks(inventory.getPedestalStacks());
     }
 
+    @NotNull
     @Override
-    default ItemStack assemble(InfusionInventory inventory, HolderLookup.Provider registryManager)
+    default ItemStack assemble(InfusionInventory inventory, @NotNull HolderLookup.Provider registryManager)
     {
         return infuse(inventory.getTableStack().copy());
     }
 
+    @NotNull
     @Override
     default NonNullList<Ingredient> getIngredients()
     {

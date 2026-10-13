@@ -18,8 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.ticks.ContainerSingleItem;
+import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("deprecation")
 public abstract class AbstractInfusionBlock extends BaseEntityBlock
 {
     protected AbstractInfusionBlock(Properties settings)
@@ -27,14 +27,16 @@ public abstract class AbstractInfusionBlock extends BaseEntityBlock
         super(settings);
     }
 
+    @NotNull
     @Override
-    public RenderShape getRenderShape(BlockState state)
+    public RenderShape getRenderShape(@NotNull BlockState state)
     {
         return RenderShape.MODEL;
     }
 
+    @NotNull
     @Override
-    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
+    public ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit)
     {
         if (hand == InteractionHand.OFF_HAND)
         {
@@ -47,8 +49,9 @@ public abstract class AbstractInfusionBlock extends BaseEntityBlock
         return ItemInteractionResult.SUCCESS;
     }
 
+    @NotNull
     @Override
-    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit)
+    public InteractionResult useWithoutItem(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hit)
     {
         if (world instanceof ServerLevel serverWorld && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
         {
@@ -58,7 +61,7 @@ public abstract class AbstractInfusionBlock extends BaseEntityBlock
     }
 
     @Override
-    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack)
+    public void setPlacedBy(@NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState state, LivingEntity placer, ItemStack itemStack)
     {
         if (itemStack.has(DataComponents.CUSTOM_NAME) && world.getBlockEntity(pos) instanceof AbstractInfusionTile tile)
         {
@@ -67,7 +70,7 @@ public abstract class AbstractInfusionBlock extends BaseEntityBlock
     }
 
     @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved)
+    public void onRemove(BlockState state, @NotNull Level world, @NotNull BlockPos pos, BlockState newState, boolean moved)
     {
         if (state.is(newState.getBlock()))
         {
@@ -85,18 +88,18 @@ public abstract class AbstractInfusionBlock extends BaseEntityBlock
     }
 
     @Override
-    public boolean hasAnalogOutputSignal(BlockState state)
+    public boolean hasAnalogOutputSignal(@NotNull BlockState state)
     {
         return true;
     }
 
     @Override
-    public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos)
+    public int getAnalogOutputSignal(@NotNull BlockState state, Level world, @NotNull BlockPos pos)
     {
         return (world.getBlockEntity(pos) instanceof ContainerSingleItem inventory && !inventory.getTheItem().isEmpty()) ? 15 : 0;
     }
 
-    public boolean isPathfindable(BlockState state, PathComputationType type)
+    public boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType type)
     {
         return false;
     }

@@ -8,8 +8,9 @@ import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
+import me.shedaniel.rei.forge.REIPluginClient;
 
-@me.shedaniel.rei.forge.REIPluginClient
+@REIPluginClient
 public class REICompat implements REIClientPlugin
 {
     public static final CategoryIdentifier<AbstractREIInfusionDisplay> EI = CategoryIdentifier.of(EIRecipes.INFUSION_ID);
