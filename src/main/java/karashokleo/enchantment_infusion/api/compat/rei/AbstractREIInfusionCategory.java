@@ -50,7 +50,7 @@ public abstract class AbstractREIInfusionCategory implements DisplayCategory<Abs
         widgets.add(Widgets.createSlot(new Point(centerX + INPUT_OFFSET - 9, centerY - 9)).entries(display.getTableIngredient()).markInput());
         widgets.add(Widgets.createArrow(new Point(centerX + ARROW_OFFSET, centerY - 9)));
         widgets.add(Widgets.createResultSlotBackground(new Point(centerX + OUTPUT_OFFSET - 9, centerY - 9)));
-        widgets.add(Widgets.createSlot(new Point(centerX + OUTPUT_OFFSET - 9, centerY - 9)).entries(display.getOutputEntries().get(0)).disableBackground().markOutput());
+        widgets.add(Widgets.createSlot(new Point(centerX + OUTPUT_OFFSET - 9, centerY - 9)).entries(display.getOutputEntries().getFirst()).disableBackground().markOutput());
         return widgets;
     }
 }

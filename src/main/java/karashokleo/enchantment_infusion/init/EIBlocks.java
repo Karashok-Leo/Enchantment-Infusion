@@ -5,7 +5,6 @@ import karashokleo.enchantment_infusion.content.block.EnchantmentInfusionTableBl
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionPedestalTile;
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionTableTile;
 import karashokleo.enchantment_infusion.fabric.EnchantmentInfusion;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -34,12 +33,12 @@ public class EIBlocks
         INFUSION_TABLE_TILE = Registry.register(
             Registries.BLOCK_ENTITY_TYPE,
             EnchantmentInfusion.id("enchantment_infusion_table"),
-            FabricBlockEntityTypeBuilder.create(EnchantmentInfusionTableTile::new, INFUSION_TABLE).build()
+            BlockEntityType.Builder.create(EnchantmentInfusionTableTile::new, INFUSION_TABLE).build()
         );
         INFUSION_PEDESTAL_TILE = Registry.register(
             Registries.BLOCK_ENTITY_TYPE,
             EnchantmentInfusion.id("enchantment_infusion_pedestal"),
-            FabricBlockEntityTypeBuilder.create(EnchantmentInfusionPedestalTile::new, INFUSION_PEDESTAL).build()
+            BlockEntityType.Builder.create(EnchantmentInfusionPedestalTile::new, INFUSION_PEDESTAL).build()
         );
     }
 }

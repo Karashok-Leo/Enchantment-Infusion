@@ -17,10 +17,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-@SuppressWarnings("deprecation")
 public abstract class AbstractInfusionBlock extends BlockWithEntity
 {
     protected AbstractInfusionBlock(Settings settings)

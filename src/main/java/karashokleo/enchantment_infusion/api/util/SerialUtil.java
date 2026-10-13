@@ -1,27 +1,17 @@
 package karashokleo.enchantment_infusion.api.util;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.List;
 
 public class SerialUtil
 {
-    public static final Codec<DefaultedList<Ingredient>> INGREDIENTS_CODEC = Ingredient.DISALLOW_EMPTY_CODEC.listOf()
+    public static final Codec<DefaultedList<Ingredient>> INGREDIENTS_CODEC = Ingredient.DISALLOW_EMPTY_CODEC
+        .listOf()
         .comapFlatMap(SerialUtil::validateIngredients, ingredients -> ingredients);
 
     private static DataResult<DefaultedList<Ingredient>> validateIngredients(List<Ingredient> values)
@@ -43,40 +33,6 @@ public class SerialUtil
             return DataResult.error(() -> "Too many ingredients for enchantment infusion recipe");
         }
         return DataResult.success(ingredients);
-    }
-
-    public static String enchantmentToString(RegistryEntry<Enchantment> enchantment)
-    {
-        return enchantment.getKey()
-            .orElseThrow(() -> new IllegalArgumentException("Enchantment " + enchantment + " is not registered"))
-            .getValue().toString();
-    }
-
-    public static RegistryEntry<Enchantment> enchantmentFromString(String id, RegistryWrapper.WrapperLookup lookup)
-    {
-        return lookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT)
-            .getOrThrow(RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.of(id)));
-    }
-
-    public static ItemStack itemStackFromJson(JsonElement json, RegistryWrapper.WrapperLookup lookup)
-    {
-        return ItemStack.CODEC.parse(lookup.getOps(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
-    }
-
-    public static JsonElement itemStackToJson(ItemStack stack, RegistryWrapper.WrapperLookup lookup)
-    {
-        return ItemStack.CODEC.encodeStart(lookup.getOps(JsonOps.INSTANCE), stack).getOrThrow(JsonParseException::new);
-    }
-
-    public static JsonArray ingredientsToJsonArray(List<Ingredient> ingredients, RegistryWrapper.WrapperLookup lookup)
-    {
-        return Ingredient.DISALLOW_EMPTY_CODEC.listOf()
-            .encodeStart(lookup.getOps(JsonOps.INSTANCE), ingredients).getOrThrow(JsonParseException::new).getAsJsonArray();
-    }
-
-    public static DefaultedList<Ingredient> ingredientsFromJsonArray(JsonArray json, RegistryWrapper.WrapperLookup lookup)
-    {
-        return INGREDIENTS_CODEC.parse(lookup.getOps(JsonOps.INSTANCE), json).getOrThrow(JsonParseException::new);
     }
 
     public static void ingredientsToPacket(RegistryByteBuf buf, DefaultedList<Ingredient> ingredients)

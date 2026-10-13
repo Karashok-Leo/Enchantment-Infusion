@@ -20,7 +20,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("deprecation")
 public class EnchantmentInfusionTableBlock extends AbstractInfusionBlock
 {
     protected static final VoxelShape SHAPE = VoxelShapes.union(

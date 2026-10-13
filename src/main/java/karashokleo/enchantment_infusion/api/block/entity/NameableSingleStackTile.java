@@ -137,6 +137,7 @@ public class NameableSingleStackTile extends BlockEntity implements SingleStackI
         builder.add(DataComponentTypes.CUSTOM_NAME, this.customName);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void removeFromCopiedStackNbt(NbtCompound nbt)
     {

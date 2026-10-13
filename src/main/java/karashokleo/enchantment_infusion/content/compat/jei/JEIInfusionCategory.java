@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.NotNull;
 
 public class JEIInfusionCategory implements IRecipeCategory<JEIInfusionRecipe>
 {
@@ -27,9 +28,11 @@ public class JEIInfusionCategory implements IRecipeCategory<JEIInfusionRecipe>
         arrow = gui.getRecipeArrow();
     }
 
+    @NotNull
     @Override
     public RecipeType<JEIInfusionRecipe> getRecipeType() { return JEICompat.INFUSION; }
 
+    @NotNull
     @Override
     public Text getTitle() { return EITexts.CATEGORY.get(); }
 

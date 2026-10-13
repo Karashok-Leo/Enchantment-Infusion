@@ -17,7 +17,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("deprecation")
 public class EnchantmentInfusionPedestalBlock extends AbstractInfusionBlock
 {
     protected static final VoxelShape SHAPE = VoxelShapes.union(
