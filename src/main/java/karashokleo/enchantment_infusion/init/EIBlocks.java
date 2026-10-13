@@ -5,13 +5,13 @@ import karashokleo.enchantment_infusion.content.block.EnchantmentInfusionTableBl
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionPedestalTile;
 import karashokleo.enchantment_infusion.content.block.entity.EnchantmentInfusionTableTile;
 import karashokleo.enchantment_infusion.forge.EnchantmentInfusion;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 public class EIBlocks
 {

@@ -4,8 +4,6 @@ import com.google.gson.JsonObject;
 import karashokleo.enchantment_infusion.api.util.SerialUtil;
 import karashokleo.enchantment_infusion.forge.EnchantmentInfusion;
 import karashokleo.enchantment_infusion.init.EIRecipes;
-import net.minecraftforge.common.crafting.AbstractIngredient;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
@@ -16,6 +14,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraftforge.common.crafting.AbstractIngredient;
+import net.minecraftforge.common.crafting.IIngredientSerializer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,43 +54,52 @@ public record EnchantmentIngredient(
         return stacks;
     }
 
-    public boolean requiresTesting()
-    {
-        return true;
-    }
-
-    public IIngredientSerializer<?> getSerializer()
-    {
-        return EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER;
-    }
-
     public Adapter toVanilla()
     {
         return new Adapter(this);
     }
 
-    /** Forge requires custom ingredients to subclass its Ingredient extension. */
     public static final class Adapter extends AbstractIngredient
     {
         private final EnchantmentIngredient ingredient;
 
-        private Adapter(EnchantmentIngredient ingredient) { this.ingredient = ingredient; }
+        private Adapter(EnchantmentIngredient ingredient)
+        {
+            this.ingredient = ingredient;
+        }
 
         @Override
-        public boolean test(ItemStack stack) { return ingredient.test(stack); }
+        public boolean test(ItemStack stack)
+        {
+            return ingredient.test(stack);
+        }
 
         @Override
-        public boolean isSimple() { return false; }
+        public boolean isSimple()
+        {
+            return false;
+        }
 
         @Override
-        public boolean isEmpty() { return false; }
+        public boolean isEmpty()
+        {
+            return false;
+        }
 
         @Override
-        public ItemStack[] getMatchingStacks() { return ingredient.getMatchingStacks().toArray(ItemStack[]::new); }
+        public ItemStack[] getMatchingStacks()
+        {
+            return ingredient.getMatchingStacks().toArray(ItemStack[]::new);
+        }
 
+        @NotNull
         @Override
-        public IIngredientSerializer<?> getSerializer() { return EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER; }
+        public IIngredientSerializer<?> getSerializer()
+        {
+            return EIRecipes.ENCHANTMENT_INGREDIENT_SERIALIZER;
+        }
 
+        @NotNull
         @Override
         public JsonObject toJson()
         {
@@ -102,14 +112,25 @@ public record EnchantmentIngredient(
 
     public static class Serializer implements IIngredientSerializer<Adapter>
     {
+        @NotNull
         @Override
-        public Adapter parse(JsonObject json) { return read(json).toVanilla(); }
+        public Adapter parse(@NotNull JsonObject json)
+        {
+            return read(json).toVanilla();
+        }
+
+        @NotNull
+        @Override
+        public Adapter parse(@NotNull PacketByteBuf buf)
+        {
+            return read(buf).toVanilla();
+        }
 
         @Override
-        public Adapter parse(PacketByteBuf buf) { return read(buf).toVanilla(); }
-
-        @Override
-        public void write(PacketByteBuf buf, Adapter ingredient) { write(buf, ingredient.ingredient); }
+        public void write(@NotNull PacketByteBuf buf, Adapter ingredient)
+        {
+            write(buf, ingredient.ingredient);
+        }
 
         private final Identifier id = EnchantmentInfusion.id("enchantment");
 

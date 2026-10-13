@@ -7,15 +7,15 @@ import karashokleo.enchantment_infusion.content.recipe.EnchantmentInfusionRecipe
 import karashokleo.enchantment_infusion.content.recipe.SimpleInfusionRecipe;
 import karashokleo.enchantment_infusion.content.recipe.SimpleInfusionRecipeSerializer;
 import karashokleo.enchantment_infusion.forge.EnchantmentInfusion;
-import net.minecraftforge.registries.RegisterEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegisterEvent;
+import net.minecraftforge.registries.RegistryObject;
 
 public class EIRecipes
 {
@@ -24,7 +24,7 @@ public class EIRecipes
     private static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(RegistryKeys.RECIPE_TYPE, EnchantmentInfusion.MOD_ID);
     private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(RegistryKeys.RECIPE_SERIALIZER, EnchantmentInfusion.MOD_ID);
 
-    public static final RegistryObject<RecipeType<InfusionRecipe>> INFUSION_RECIPE_TYPE = RECIPE_TYPES.register(INFUSION_ID.getPath(), () -> new RecipeType<InfusionRecipe>()
+    public static final RegistryObject<RecipeType<InfusionRecipe>> INFUSION_RECIPE_TYPE = RECIPE_TYPES.register(INFUSION_ID.getPath(), () -> new RecipeType<>()
     {
         @Override
         public String toString()
@@ -49,6 +49,8 @@ public class EIRecipes
     {
         // Forge 1.20.1 ingredient serializers use CraftingHelper, not a registry.
         if (event.getRegistryKey().equals(RegistryKeys.RECIPE_SERIALIZER))
+        {
             CraftingHelper.register(EnchantmentInfusion.id("enchantment"), ENCHANTMENT_INGREDIENT_SERIALIZER);
+        }
     }
 }

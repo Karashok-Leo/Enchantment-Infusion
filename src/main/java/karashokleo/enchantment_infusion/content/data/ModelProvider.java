@@ -30,9 +30,9 @@ public class ModelProvider extends BlockStateProvider
 
         getVariantBuilder(block)
             .partialState().with(EIBlocks.INFUSING, true)
-                .modelForState().modelFile(trueModel).addModel()
+            .modelForState().modelFile(trueModel).addModel()
             .partialState().with(EIBlocks.INFUSING, false)
-                .modelForState().modelFile(falseModel).addModel();
+            .modelForState().modelFile(falseModel).addModel();
         simpleBlockItem(block, falseModel);
     }
 }

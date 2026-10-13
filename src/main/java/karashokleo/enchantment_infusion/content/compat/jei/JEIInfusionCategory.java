@@ -16,6 +16,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -30,27 +31,46 @@ public class JEIInfusionCategory implements IRecipeCategory<InfusionRecipe>
         arrow = guiHelper.getRecipeArrow();
     }
 
+    @NotNull
     @Override
-    public RecipeType<InfusionRecipe> getRecipeType() { return JEICompat.INFUSION; }
+    public RecipeType<InfusionRecipe> getRecipeType()
+    {
+        return JEICompat.INFUSION;
+    }
+
+    @NotNull
+    @Override
+    public Text getTitle()
+    {
+        return EITexts.CATEGORY.get();
+    }
 
     @Override
-    public Text getTitle() { return EITexts.CATEGORY.get(); }
+    public IDrawable getIcon()
+    {
+        return icon;
+    }
 
     @Override
-    public IDrawable getIcon() { return icon; }
+    public int getWidth()
+    {
+        return 138;
+    }
 
     @Override
-    public int getWidth() { return 138; }
+    public int getHeight()
+    {
+        return 84;
+    }
 
     @Override
-    public int getHeight() { return 84; }
-
-    @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, InfusionRecipe recipe, IFocusGroup focuses)
+    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull InfusionRecipe recipe, @NotNull IFocusGroup focuses)
     {
         var world = MinecraftClient.getInstance().world;
         if (world != null)
+        {
             populateLayout(builder, recipe, recipe.getOutput(world.getRegistryManager()));
+        }
     }
 
     static void populateLayout(IRecipeLayoutBuilder builder, InfusionRecipe recipe, ItemStack output)
@@ -74,7 +94,7 @@ public class JEIInfusionCategory implements IRecipeCategory<InfusionRecipe>
     }
 
     @Override
-    public void draw(InfusionRecipe recipe, IRecipeSlotsView slots, DrawContext context, double mouseX, double mouseY)
+    public void draw(@NotNull InfusionRecipe recipe, @NotNull IRecipeSlotsView slots, @NotNull DrawContext context, double mouseX, double mouseY)
     {
         arrow.draw(context, 81, 34);
     }
